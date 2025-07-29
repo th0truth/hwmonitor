@@ -26,8 +26,9 @@ char *read_file(const char *filename) {
         free(buff);
         exit(1);
       }
-    } 
-    buff[nch++] = c;
+    } if (!(c == ' ' || c == '\t')) {
+      buff[nch++] = c;
+    }
   }
   
   fclose(fptr);
