@@ -1,10 +1,4 @@
-#ifndef UTILS
-#define UTILS
-char *read_file(char *filename);
-char *findstr(const char *src, const char *srch, const char *delim);
-#endif
-
-#ifndef CPU
-#define CPU
+#ifndef MEM_H
+#define MEM_H
 void getTotalMem();
 #endif

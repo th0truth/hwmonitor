@@ -3,7 +3,7 @@
 #include "hwmonitor.h"
 
 int main(int argc, char *argv[]) {
-
+  
   getTotalMem();
 
   return 0;
