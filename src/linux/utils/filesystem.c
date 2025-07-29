@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <errno.h>
-#include <sys/stat.h>
 
 #define BUFF_SIZE 1024
 
@@ -33,4 +31,4 @@ char *read_proc(const char *filename) {
   
   fclose(fptr);
   return buff;
-} 
+}
