@@ -3,12 +3,10 @@
 #include "hwmonitor.h"
 
 int main(int argc, char *argv[]) {
-  
-  char *buffer = read_proc("/proc/cpuinfo");
+  char *buffer = read_file("/proc/cpuinfo");
 
   printf("%s", buffer);
-
+  
   free(buffer);
-
   return 0;
 }

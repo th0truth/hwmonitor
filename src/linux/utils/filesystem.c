@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 
 #define BUFF_SIZE 1024
 
-char *read_proc(const char *filename) {
+char *read_file(const char *filename) {
   FILE *fptr = fopen(filename, "r");
   if ((ferror(fptr)) == 2) {
     fprintf(stderr, "Failed while opening file: %s", strerror(errno));

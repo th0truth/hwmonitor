@@ -1,2 +1,1 @@
-
-char *read_proc(char *filename);
+char *read_file(char *filename);
