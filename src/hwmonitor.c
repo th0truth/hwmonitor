@@ -3,10 +3,8 @@
 #include "hwmonitor.h"
 
 int main(int argc, char *argv[]) {
-  char *buffer = read_file("/proc/cpuinfo");
 
-  printf("%s", buffer);
-  
-  free(buffer);
+  getTotalMem();
+
   return 0;
 }
