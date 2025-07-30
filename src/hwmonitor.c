@@ -4,7 +4,8 @@
 
 int main(int argc, char *argv[]) {
   
-  getTotalMem();
+  // getTotalMem();
+  getCPUCores();
 
   return 0;
 }
