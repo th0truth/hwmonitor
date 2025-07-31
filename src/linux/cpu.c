@@ -13,11 +13,12 @@ CPU *getCPUspecs()
     exit(EXIT_FAILURE);
   }
 
-  char *cpu_info = read_file("/proc/cpuinfo");
+  char regex[] = {'\t'};
+  char *cpu_info = read_file("/proc/cpuinfo", regex);
 
-  cpu->total_cores = atoi(findstr(cpu_info, "cpu cores", "\n"));
-  cpu->total_threads = atoi(findstr(cpu_info, "siblings", "\n"));
-  cpu->model_name = findstr(cpu_info, "model name", "\n");
+  cpu->total_cores = atoi(findstr(cpu_info, "cpu cores: ", "\n"));
+  cpu->total_threads = atoi(findstr(cpu_info, "siblings: ", "\n"));
+  cpu->model_name = findstr(cpu_info, "model name: ", "\n");
 
   free(cpu_info);
   return cpu;
