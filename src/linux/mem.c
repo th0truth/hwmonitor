@@ -1,11 +1,23 @@
 #include "stdio.h"
 #include <stdlib.h>
-#include "utils/utils.h"
 
-void getTotalMem() {
-  char *meminfo = read_file("/proc/meminfo");
+#include "utils.h"
+#include "mem.h"
 
-  printf("RAM: %s kB", findstr(meminfo, "MemTotal:", "kB"));
-  
+MEM *getMEMinfo()
+{
+  MEM *mem = (MEM*)malloc(sizeof(MEM));
+  if (mem == NULL) {
+    fprintf(stderr, "Memory allocation failed.");
+    free(mem);
+    exit(EXIT_FAILURE);
+  }
+
+  char regex[] = {' '};
+  char *meminfo = read_file("/proc/meminfo", regex);
+
+  mem->total = atoi(findstr(meminfo, "MemTotal:", "kB"));
+
   free(meminfo);
+  return mem;
 }
