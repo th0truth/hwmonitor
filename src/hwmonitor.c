@@ -5,10 +5,13 @@
 
 int main(int argc, char *argv[]) {
   
-  // getTotalMem();
   CPU *cpu = getCPUspecs();
 
-  printf("%s", cpu->model_name);
+  printf("Total cores: %d\n", cpu->total_cores);
+  printf("Total threads: %d\n", cpu->total_threads);
+  printf("Model name: %s\n", cpu->model_name);
 
+  free(cpu);
+  
   return 0;
 }
