@@ -15,10 +15,10 @@ CPU *getCPUspecs()
 
   char *cpu_info = read_file("/proc/cpuinfo");
 
-  cpu->total_cores = atoi(findstr(cpu_info, "cpucores:", "\n"));
-  cpu->total_threads = atoi(findstr(cpu_info, "sibling:", "\n"));
-  cpu->model_name = findstr(cpu_info, "modelname:", "\n");
-  
+  cpu->total_cores = atoi(findstr(cpu_info, "cpu cores", "\n"));
+  cpu->total_threads = atoi(findstr(cpu_info, "siblings", "\n"));
+  cpu->model_name = findstr(cpu_info, "model name", "\n");
+
   free(cpu_info);
   return cpu;
 }
