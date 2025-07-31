@@ -5,13 +5,14 @@
 
 #define BUFF_SIZE 1024
 
-char *read_file(const char *filename) {
+char *read_file(const char *filename)
+{
   FILE *fptr = fopen(filename, "r");
   if ((ferror(fptr)) == 2) {
     fprintf(stderr, "Failed while opening file: %s", strerror(errno));
     exit(1);
   };
-  
+
   // https://stackoverflow.com/a/31057315
   // Read character then store it in the buffer.
   size_t nch = 0, size = 10;
@@ -24,9 +25,10 @@ char *read_file(const char *filename) {
       if (buff == NULL) {
         fprintf(stderr, "Out of memory");
         free(buff);
-        exit(1);
+        exit(EXIT_FAILURE);
       }
-    } else if (!(c == ' ' || c == '\t')) {
+    }
+    if (c != '\t' && c != ':') {
       buff[nch++] = c;
     }
   }
