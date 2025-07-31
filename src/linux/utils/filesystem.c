@@ -2,16 +2,31 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <ctype.h>
+
+// #include "utils.h"
 
 #define BUFF_SIZE 1024
 
-char *read_file(const char *filename)
+int isregex(const char ch, char *regex, char size) {
+  for (int i = 0; i < size; i++)
+  {
+    if (ch == regex[i]) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+char *read_file(const char *filename, char *regex)
 {
   FILE *fptr = fopen(filename, "r");
   if ((ferror(fptr)) == 2) {
     fprintf(stderr, "Failed while opening file: %s", strerror(errno));
     exit(1);
   };
+
+  unsigned rgx_sz = sizeof(regex) / sizeof(regex[0]);
 
   // https://stackoverflow.com/a/31057315
   // Read character then store it in the buffer.
@@ -28,7 +43,8 @@ char *read_file(const char *filename)
         exit(EXIT_FAILURE);
       }
     }
-    if (c != '\t' && c != ':') {
+
+    if (isregex(c, regex, rgx_sz)) {
       buff[nch++] = c;
     }
   }
