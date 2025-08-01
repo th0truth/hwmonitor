@@ -8,7 +8,7 @@
 
 #define BUFF_SIZE 1024
 
-int isregex(const char ch, char *regex, char size) {
+int isregex(const char ch, char *regex, int size) {
   for (int i = 0; i < size; i++)
   {
     if (ch == regex[i]) {
