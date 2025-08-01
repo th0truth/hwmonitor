@@ -6,15 +6,18 @@
 int main(int argc, char *argv[]) {
   
   CPU *cpu = getCPUspecs();
-  MEM *mem = getMEMinfo();
-
+  
   printf("Total cores: %d\n", cpu->total_cores);
   printf("Total threads: %d\n", cpu->total_threads);
   printf("Model name: %s\n", cpu->model_name);
   
+  free(cpu);
+  
+  MEM *mem = getMEMinfo();
+  
   printf("Total Mem: %d\n", mem->total);
   
-  free(cpu);
   free(mem);
+  
   return 0;
 }

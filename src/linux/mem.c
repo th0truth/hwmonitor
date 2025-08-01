@@ -13,10 +13,10 @@ MEM *getMEMinfo()
     exit(EXIT_FAILURE);
   }
 
-  char regex[] = {' '};
+  char regex[] = {' ', ':'};
   char *meminfo = read_file("/proc/meminfo", regex);
 
-  mem->total = atoi(findstr(meminfo, "MemTotal:", "kB"));
+  mem->total = atoi(findstr(meminfo, "MemTotal", "\n"));
 
   free(meminfo);
   return mem;
