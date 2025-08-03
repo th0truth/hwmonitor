@@ -4,9 +4,14 @@
 #define CPU_H
 
 typedef struct {
-  size_t total_cores;
-  size_t total_threads;
+  char *vendor_id;
+  unsigned cpu_family;
+  unsigned model;
   char *model_name;
+  unsigned stepping;
+  unsigned total_cores;
+  unsigned total_threads;
+  char *flags;
 } CPU;
 
 CPU *getCPUspecs();
