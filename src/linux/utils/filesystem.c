@@ -4,8 +4,6 @@
 #include <errno.h>
 #include <ctype.h>
 
-// #include "utils.h"
-
 #define BUFF_SIZE 1024
 
 int isregex(const char ch, char *regex, int size) {
@@ -21,9 +19,9 @@ int isregex(const char ch, char *regex, int size) {
 char *read_file(const char *filename, char *regex)
 {
   FILE *fptr = fopen(filename, "r");
-  if ((ferror(fptr)) == 2) {
-    fprintf(stderr, "Failed while opening file: %s", strerror(errno));
-    exit(1);
+  if (fptr == NULL) {
+    fprintf(stderr, "File '%s' openning failed: %s\n", filename, strerror(errno));
+    return NULL;
   };
 
   unsigned rgx_sz = sizeof(regex) / sizeof(regex[0]);
@@ -48,6 +46,7 @@ char *read_file(const char *filename, char *regex)
       buff[nch++] = c;
     }
   }
+  buff[nch] = '\0';
   
   fclose(fptr);
   return buff;
