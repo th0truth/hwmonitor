@@ -53,6 +53,9 @@ char *findstr(const char *src, const char *srch, const char *delim) {
   while (str[len] && !strchr(delim, str[len])) {
     len++;
   }
+
+  // Remove whitespaces from string
+  trim(str);
   
   // Allocate memory for the result
   char *result = (char*)malloc(sizeof(char) * len + 1);
@@ -64,5 +67,6 @@ char *findstr(const char *src, const char *srch, const char *delim) {
   // Copy str to string using safe approach
   strncpy(result, str, len);
   result[len] = '\0';
+  
   return result; 
 }
