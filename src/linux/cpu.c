@@ -49,6 +49,7 @@ int64_t getCoreMaxFreq_Hz(unsigned core_id)
     return MHz / 1000;
   }
 
+  free(cpufreq);
   return -1;
 }
 
@@ -68,6 +69,7 @@ int64_t getCoreMinFreq_Hz(unsigned core_id)
     return MHz / 1000;
   }
 
+  free(cpufreq);
   return -1;
 }
 
@@ -87,5 +89,6 @@ int64_t getCoreRegularFreq_Hz(unsigned core_id)
     return MHz / 1000;
   }
 
+  free(cpufreq);
   return -1;
 }
