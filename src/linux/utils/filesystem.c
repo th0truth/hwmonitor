@@ -6,17 +6,17 @@
 
 #define BUFF_SIZE 1024
 
-int isregex(const char ch, char *regex, int size) {
+int chmatch(const char c, char *chars, int size) {
   for (int i = 0; i < size; i++)
   {
-    if (ch == regex[i]) {
+    if (c == chars[i]) {
       return 0;
     }
   }
   return 1;
 }
 
-char *read_file(const char *filename, char *regex)
+char *read_file(const char *filename, char *rmch)
 {
   FILE *fptr = fopen(filename, "r");
   if (fptr == NULL) {
@@ -24,7 +24,7 @@ char *read_file(const char *filename, char *regex)
     return NULL;
   };
 
-  unsigned rgx_sz = sizeof(regex) / sizeof(regex[0]);
+  unsigned rmch_sz = sizeof(rmch) / sizeof(rmch[0]);
 
   // https://stackoverflow.com/a/31057315
   // Read character then store it in the buffer.
@@ -42,7 +42,7 @@ char *read_file(const char *filename, char *regex)
       }
     }
 
-    if (isregex(c, regex, rgx_sz)) {
+    if (chmatch(c, rmch, rmch_sz)) {
       buff[nch++] = c;
     }
   }
