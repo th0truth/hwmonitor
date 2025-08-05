@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include "utils.h"
 #include "cpu.h"
@@ -30,4 +31,23 @@ CPU *getCPUspecs()
 
   free(cpuinfo);
   return cpu;
+}
+
+int64_t getCoreMaxFreq_Hz(unsigned core_id)
+{
+  char buff[100];
+  snprintf(buff, sizeof(buff), "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", core_id);
+
+  char rmch[] = {' '};
+  char *cpufreq = read_file(buff, rmch);
+  if (cpufreq == NULL) {
+    return -1;
+  }
+
+  int64_t MHz = atoi(cpufreq);
+  if (MHz > -1) {
+    return MHz / 1000;
+  }
+
+  return -1;
 }
