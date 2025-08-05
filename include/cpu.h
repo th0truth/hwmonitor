@@ -15,7 +15,7 @@ typedef struct {
 } CPU;
 
 CPU *getCPUspecs();
-int64_t getCoreMaxFreq_Hz(unsigned core_id);
-int64_t getCoreMinFreq_Hz(unsigned core_id);
-int64_t getCoreRegularFreq_Hz(unsigned core_id);
+int64_t getCPUCoreMaxFreq_MHz(unsigned core_id);
+int64_t getCPUCoreMinFreq_MHz(unsigned core_id);
+int64_t getCPUCoreRegularFreq_MHz(unsigned core_id);
 #endif

@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include <stdlib.h>
 #include <inttypes.h>
+#include <math.h>
 
 #include "utils.h"
 #include "cpu.h"
@@ -33,7 +34,7 @@ CPU *getCPUspecs()
   return cpu;
 }
 
-int64_t getCoreMaxFreq_Hz(unsigned core_id)
+int64_t getCPUCoreMaxFreq_MHz(unsigned core_id)
 {
   char buff[100];
   snprintf(buff, sizeof(buff), "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", core_id);
@@ -44,16 +45,16 @@ int64_t getCoreMaxFreq_Hz(unsigned core_id)
     return -1;
   }
 
-  int64_t MHz = atoi(cpufreq);
-  if (MHz > -1) {
-    return MHz / 1000;
+  int64_t kHz = atoi(cpufreq);
+  if (kHz > -1) {
+    return kHz / 1000;
   }
 
   free(cpufreq);
   return -1;
 }
 
-int64_t getCoreMinFreq_Hz(unsigned core_id)
+int64_t getCPUCoreMinFreq_MHz(unsigned core_id)
 {
   char buff[100];
   snprintf(buff, sizeof(buff), "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", core_id);
@@ -64,16 +65,16 @@ int64_t getCoreMinFreq_Hz(unsigned core_id)
     return -1;
   }
 
-  int64_t MHz = atoi(cpufreq);
-  if (MHz > -1) {
-    return MHz / 1000;
+  int64_t kHz = atoi(cpufreq);
+  if (kHz > -1) {
+    return kHz / 1000;
   }
 
   free(cpufreq);
   return -1;
 }
 
-int64_t getCoreRegularFreq_Hz(unsigned core_id)
+int64_t getCPUCoreRegularFreq_MHz(unsigned core_id)
 {
   char buff[100];
   snprintf(buff, sizeof(buff), "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", core_id);
@@ -84,9 +85,9 @@ int64_t getCoreRegularFreq_Hz(unsigned core_id)
     return -1;
   }
 
-  int64_t MHz = atoi(cpufreq);
-  if (MHz > -1) {
-    return MHz / 1000;
+  int64_t kHz = atoi(cpufreq);
+  if (kHz > -1) {
+    return kHz / 1000;
   }
 
   free(cpufreq);
