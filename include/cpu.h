@@ -18,4 +18,5 @@ CPU *getCPUspecs();
 int64_t getCPUCoreMaxFreq_MHz(unsigned core_id);
 int64_t getCPUCoreMinFreq_MHz(unsigned core_id);
 int64_t getCPUCoreRegularFreq_MHz(unsigned core_id);
+float getCPUCurrentTemp_Celsius();
 #endif

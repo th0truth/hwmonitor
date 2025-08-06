@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include <stdlib.h>
 #include <inttypes.h>
+#include <string.h>
 #include <math.h>
 
 #include "utils.h"
@@ -92,4 +93,34 @@ int64_t getCPUCoreRegularFreq_MHz(unsigned core_id)
 
   free(cpufreq);
   return -1;
+}
+
+float getCPUCurrentTemp_Celsius()
+{
+  char buff[100];
+  int i = 0;
+  char rmch[] = {' ', '\n'};
+  for (;;) {
+    snprintf(buff, sizeof(buff), "/sys/class/thermal/thermal_zone%d/type", ++i);    
+    char *thtype = read_file(buff, rmch);
+    if (thtype == NULL) {
+      return -1;
+    }  
+    thtype[strcspn(thtype, "\xff")] = '\0';
+    if (strcmp(thtype, "x86_pkg_temp") == 0) {
+      break;
+    }
+    free(thtype);
+  }
+  
+  snprintf(buff, sizeof(buff), "/sys/class/thermal/thermal_zone%d/temp", i);
+  char *thtemp = (read_file(buff, rmch));
+  if (thtemp == NULL) {
+    return -1;
+  }
+  
+  float temp = atoi(thtemp) / 1000;
+  
+  free(thtemp);
+  return temp;
 }
