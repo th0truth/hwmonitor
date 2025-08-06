@@ -18,8 +18,8 @@ int main(int argc, char *argv[]) {
   printf("Stepping: %d\n", cpu->stepping);
   printf("Total threads: %d\n", cpu->total_threads);
   printf("Total cores: %d\n", cpu->total_cores);
-  printf("Max CPU: %d MHz\n", getCPUMaxFreq_MHz(cpu->total_cores));
-  printf("Min CPU: %d MHz\n", getCPUMinFreq_MHz(cpu->total_cores));
+  printf("Max CPU: %d MHz\n", cpu->max_freq);
+  printf("Min CPU: %d MHz\n", cpu->min_freq);
 
   free(cpu);
   
