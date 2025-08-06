@@ -2,12 +2,11 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <string.h>
-#include <math.h>
 
 #include "utils.h"
 #include "cpu.h"
 
-CPU *getCPUspecs()
+CPU *getCPUinfo()
 {
   CPU *cpu = (CPU*)malloc(sizeof(CPU));
   if (cpu == NULL) {
@@ -35,7 +34,7 @@ CPU *getCPUspecs()
   return cpu;
 }
 
-int64_t getCPUCoreMaxFreq_MHz(unsigned core_id)
+int64_t getCPUCoreMaxFreq_MHz(unsigned short core_id)
 {
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", core_id);
@@ -55,7 +54,7 @@ int64_t getCPUCoreMaxFreq_MHz(unsigned core_id)
   return -1;
 }
 
-int64_t getCPUCoreMinFreq_MHz(unsigned core_id)
+int64_t getCPUCoreMinFreq_MHz(unsigned short core_id)
 {
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", core_id);
@@ -75,7 +74,7 @@ int64_t getCPUCoreMinFreq_MHz(unsigned core_id)
   return -1;
 }
 
-int64_t getCPUCoreRegularFreq_MHz(unsigned core_id)
+int64_t getCPUCoreRegFreq_MHz(unsigned short core_id)
 {
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", core_id);
@@ -95,7 +94,7 @@ int64_t getCPUCoreRegularFreq_MHz(unsigned core_id)
   return -1;
 }
 
-float getCPUCurrentTemp_Celsius()
+float getCPUCurrTemp_Celsius()
 {
   char buff[BUFF_SIZE];
   int i = 0;
@@ -123,4 +122,30 @@ float getCPUCurrentTemp_Celsius()
   
   free(thtemp);
   return temp;
+}
+
+uint64_t getCPUMaxFreq_MHz(unsigned short t_cores)
+{
+  unsigned max = 0, tmp = 0;
+  for (int i = 0; i < t_cores; i++)
+  {
+    tmp = getCPUCoreMaxFreq_MHz(i);
+    if (tmp > max) {
+      max = tmp;
+    }
+  }
+  return max;
+}
+
+uint64_t getCPUMinFreq_MHz(unsigned short t_cores)
+{
+  unsigned min = 0, tmp = 0;
+  for (int i = 0; i < t_cores; i++)
+  {
+    tmp = getCPUCoreMaxFreq_MHz(i);
+    if (tmp < min) {
+      min = tmp;
+    }
+  }
+  return min;
 }

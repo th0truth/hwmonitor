@@ -1,3 +1,4 @@
+#include <stdint.h>
 #pragma once
 
 #ifndef CPU_H
@@ -16,9 +17,11 @@ typedef struct {
   char *flags;
 } CPU;
 
-CPU *getCPUspecs();
-int64_t getCPUCoreMaxFreq_MHz(unsigned core_id);
-int64_t getCPUCoreMinFreq_MHz(unsigned core_id);
-int64_t getCPUCoreRegularFreq_MHz(unsigned core_id);
-float getCPUCurrentTemp_Celsius();
+CPU *getCPUinfo();
+int64_t  getCPUCoreMaxFreq_MHz(unsigned short core_id);
+int64_t  getCPUCoreMinFreq_MHz(unsigned short core_id);
+int64_t  getCPUCoreRegFreq_MHz(unsigned short core_id);
+uint64_t getCPUMaxFreq_MHz(unsigned short t_cores);
+uint64_t getCPUMinFreq_MHz(unsigned short t_cores);
+float   getCPUCurrTemp_Celsius();
 #endif
