@@ -14,6 +14,8 @@ typedef struct {
   unsigned stepping;
   unsigned total_cores;
   unsigned total_threads;
+  uint64_t max_freq;
+  uint64_t min_freq;
   char *flags;
 } CPU;
 

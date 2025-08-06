@@ -28,6 +28,8 @@ CPU *getCPUinfo()
   cpu->stepping = atoi(findstr(cpuinfo, "stepping", "\n"));
   cpu->total_threads = atoi(findstr(cpuinfo, "siblings", "\n"));
   cpu->total_cores = atoi(findstr(cpuinfo, "cpu cores", "\n"));
+  cpu->max_freq = getCPUMaxFreq_MHz(cpu->total_cores);
+  cpu->min_freq = getCPUMinFreq_MHz(cpu->total_cores);
   cpu->flags = findstr(cpuinfo, "flags", "\n");
 
   free(cpuinfo);
