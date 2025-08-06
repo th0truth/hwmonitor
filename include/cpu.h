@@ -3,6 +3,8 @@
 #ifndef CPU_H
 #define CPU_H
 
+#define BUFF_SIZE 128
+
 typedef struct {
   char *vendor_id;
   unsigned cpu_family;
