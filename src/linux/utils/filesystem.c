@@ -2,19 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <ctype.h>
 
 #define BUFF_SIZE 1024
-
-int chmatch(const char c, char *chars, int size) {
-  for (int i = 0; i < size; i++)
-  {
-    if (c == chars[i]) {
-      return 0;
-    }
-  }
-  return 1;
-}
 
 char *read_file(const char *filename, char *rmch)
 {
@@ -23,8 +12,6 @@ char *read_file(const char *filename, char *rmch)
     fprintf(stderr, "File '%s' openning failed: %s\n", filename, strerror(errno));
     return NULL;
   };
-
-  unsigned rmch_sz = sizeof(rmch) / sizeof(rmch[0]);
 
   // https://stackoverflow.com/a/31057315
   // Read character then store it in the buffer.
@@ -42,7 +29,7 @@ char *read_file(const char *filename, char *rmch)
       }
     }
 
-    if (chmatch(c, rmch, rmch_sz)) {
+    if (strchr(rmch, c) == 0) {
       buff[nch++] = c;
     }
   }
