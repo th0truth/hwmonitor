@@ -6,34 +6,17 @@
 #include "utils.h"
 #include "cpu.h"
 
-CPU *getCPUinfo()
+int16_t getCPUTotalProcessors()
 {
-  CPU *cpu = (CPU*)malloc(sizeof(CPU));
-  if (cpu == NULL) {
-    fprintf(stderr, "Memory allocation failed.");
-    return NULL;
+  char *cpus = read_file("/sys/devices/system/cpu/online", "-");
+  if (cpus == NULL) {
+    return -1;
   }
-
-  char regex[] = {'\t', ':'};
-  char *cpuinfo = read_file("/proc/cpuinfo", regex);
-  if (cpuinfo == NULL) {
-    free(cpu);
-    return NULL;
-  }
-
-  cpu->vendor_id = findstr(cpuinfo, "vendor_id", "\n");
-  cpu->cpu_family = atoi(findstr(cpuinfo, "cpu family", "\n"));
-  cpu->model = atoi(findstr(cpuinfo, "model", "\n"));
-  cpu->model_name = findstr(cpuinfo, "model name", "\n");
-  cpu->stepping = atoi(findstr(cpuinfo, "stepping", "\n"));
-  cpu->total_threads = atoi(findstr(cpuinfo, "siblings", "\n"));
-  cpu->total_cores = atoi(findstr(cpuinfo, "cpu cores", "\n"));
-  cpu->max_freq = getCPUMaxFreq_MHz(cpu->total_cores);
-  cpu->min_freq = getCPUMinFreq_MHz(cpu->total_cores);
-  cpu->flags = findstr(cpuinfo, "flags", "\n");
-
-  free(cpuinfo);
-  return cpu;
+  
+  int32_t processors = atoi(cpus);
+  
+  free(cpus);
+  return processors;
 }
 
 int64_t getCPUCoreMaxFreq_MHz(unsigned short core_id)
@@ -41,8 +24,7 @@ int64_t getCPUCoreMaxFreq_MHz(unsigned short core_id)
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", core_id);
   
-  char rmch[] = {' '};
-  char *cpufreq = read_file(buff, rmch);
+  char *cpufreq = read_file(buff, NULL);
   if (cpufreq == NULL) {
     return -1;
   }
@@ -62,7 +44,7 @@ int64_t getCPUCoreMinFreq_MHz(unsigned short core_id)
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", core_id);
 
   char rmch[] = {' '};
-  char *cpufreq = read_file(buff, rmch);
+  char *cpufreq = read_file(buff, NULL);
   if (cpufreq == NULL) {
     return -1;
   }
@@ -82,7 +64,7 @@ int64_t getCPUCoreRegFreq_MHz(unsigned short core_id)
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", core_id);
 
   char rmch[] = {' '};
-  char *cpufreq = read_file(buff, rmch);
+  char *cpufreq = read_file(buff, NULL);
   if (cpufreq == NULL) {
     return -1;
   }
@@ -96,18 +78,63 @@ int64_t getCPUCoreRegFreq_MHz(unsigned short core_id)
   return -1;
 }
 
+float getCPUMaxFreq_MHz(unsigned short t_processors)
+{
+  char buff[BUFF_SIZE];
+  float max = 0, tmp = 0;
+  for (int i = 0; i < t_processors; i++)
+  {
+    snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", i);
+    char *kHz = read_file(buff, NULL);
+    if (kHz == NULL) {
+      return -1;
+    }
+    tmp = atof(kHz);
+    if (tmp > max) {
+      max = tmp;
+    }
+    free(kHz);
+  }
+  // convert kHz to MHz
+  max /= 1000;
+  return max;
+}
+
+float getCPUMinFreq_MHz(unsigned short t_processors)
+{
+  char buff[BUFF_SIZE];
+  float min = 0, tmp = 0;
+  for (int i = 0; i < t_processors; i++)
+  {
+    snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_min_freq", i);
+    char *kHz = read_file(buff, NULL);
+    if (kHz == NULL) {
+      return -1;
+    }
+    tmp = atof(kHz);
+    if (tmp != 0 || tmp < min) {
+      min = tmp;
+    }
+  }
+  // convert kHz to MHz
+  min /= 1000;
+  return min;
+}
+
 float getCPUCurrTemp_Celsius()
 {
   char buff[BUFF_SIZE];
+  char rmch[] = {' '};
   int i = 0;
-  char rmch[] = {' ', '\n'};
   for (;;) {
-    snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/type", ++i);    
-    char *thtype = read_file(buff, rmch);
+    snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/type", i++);
+    char *thtype = read_file(buff, NULL);
+    printf("\n'%s'\n", thtype);
     if (thtype == NULL) {
       return -1;
     }  
-    thtype[strcspn(thtype, "\xff")] = '\0';
+    // thtype[strcspn(thtype, "\xff")] = '\0';
+    // printf("\n'%s' - %d\n", thtype, strlen(thtype));
     if (strcmp(thtype, "x86_pkg_temp") == 0) {
       break;
     }
@@ -126,28 +153,33 @@ float getCPUCurrTemp_Celsius()
   return temp;
 }
 
-uint64_t getCPUMaxFreq_MHz(unsigned short t_cores)
+CPU *getCPUinfo()
 {
-  unsigned max = 0, tmp = 0;
-  for (int i = 0; i < t_cores; i++)
-  {
-    tmp = getCPUCoreMaxFreq_MHz(i);
-    if (tmp > max) {
-      max = tmp;
-    }
+  CPU *cpu = (CPU*)malloc(sizeof(CPU));
+  if (cpu == NULL) {
+    fprintf(stderr, "Memory allocation failed.");
+    return NULL;
   }
-  return max;
-}
 
-uint64_t getCPUMinFreq_MHz(unsigned short t_cores)
-{
-  unsigned min = 0, tmp = 0;
-  for (int i = 0; i < t_cores; i++)
-  {
-    tmp = getCPUCoreMaxFreq_MHz(i);
-    if (tmp < min) {
-      min = tmp;
-    }
+  char rmch[] = {'\t', ':'};
+  char *cpuinfo = read_file("/proc/cpuinfo", rmch);
+  if (cpuinfo == NULL) {
+    free(cpu);
+    return NULL;
   }
-  return min;
+
+  cpu->vendor_id = findstr(cpuinfo, "vendor_id", "\n");
+  cpu->cpu_family = atoi(findstr(cpuinfo, "cpu family", "\n"));
+  cpu->model = atoi(findstr(cpuinfo, "model", "\n"));
+  cpu->model_name = findstr(cpuinfo, "model name", "\n");
+  cpu->stepping = atoi(findstr(cpuinfo, "stepping", "\n"));
+  cpu->total_threads = atoi(findstr(cpuinfo, "siblings", "\n"));
+  cpu->total_cores = atoi(findstr(cpuinfo, "cpu cores", "\n"));
+  cpu->processors = getCPUTotalProcessors();
+  cpu->max_MHz = getCPUMaxFreq_MHz(cpu->processors);
+  cpu->min_MHz = getCPUMinFreq_MHz(cpu->processors);
+  cpu->flags = findstr(cpuinfo, "flags", "\n");
+
+  free(cpuinfo);
+  return cpu;
 }
