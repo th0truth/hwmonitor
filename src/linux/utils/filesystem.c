@@ -29,7 +29,7 @@ char *read_file(const char *filename, char *rmch)
       }
     }
 
-    if (strchr(rmch, c) == 0) {
+    if (rmch == NULL || strchr(rmch, c) == 0) {
       buff[nch++] = c;
     }
   }
