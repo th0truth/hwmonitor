@@ -124,17 +124,14 @@ float getCPUMinFreq_MHz(unsigned short t_processors)
 float getCPUCurrTemp_Celsius()
 {
   char buff[BUFF_SIZE];
-  char rmch[] = {' '};
   int i = 0;
   for (;;) {
-    snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/type", i++);
-    char *thtype = read_file(buff, NULL);
-    printf("\n'%s'\n", thtype);
+    snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/type", ++i);
+    char *thtype = read_file(buff, "\n");
+    thtype[strcspn(thtype, "\xff")] = '\0';
     if (thtype == NULL) {
       return -1;
     }  
-    // thtype[strcspn(thtype, "\xff")] = '\0';
-    // printf("\n'%s' - %d\n", thtype, strlen(thtype));
     if (strcmp(thtype, "x86_pkg_temp") == 0) {
       break;
     }
@@ -142,7 +139,7 @@ float getCPUCurrTemp_Celsius()
   }
   
   snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/temp", i);
-  char *thtemp = (read_file(buff, rmch));
+  char *thtemp = (read_file(buff, NULL));
   if (thtemp == NULL) {
     return -1;
   }
@@ -178,6 +175,7 @@ CPU *getCPUinfo()
   cpu->processors = getCPUTotalProcessors();
   cpu->max_MHz = getCPUMaxFreq_MHz(cpu->processors);
   cpu->min_MHz = getCPUMinFreq_MHz(cpu->processors);
+  cpu->curr_temp = getCPUCurrTemp_Celsius();
   cpu->flags = findstr(cpuinfo, "flags", "\n");
 
   free(cpuinfo);

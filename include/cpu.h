@@ -17,6 +17,7 @@ typedef struct {
   int64_t processors;
   float max_MHz;
   float min_MHz;
+  float curr_temp;
   char *flags;
 } CPU;
 
