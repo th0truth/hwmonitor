@@ -1,4 +1,3 @@
-#include <stdint.h>
 #pragma once
 
 #ifndef CPU_H
@@ -14,7 +13,7 @@ typedef struct {
   unsigned stepping;
   unsigned total_cores;
   unsigned total_threads;
-  int64_t processors;
+  int16_t processors;
   float max_MHz;
   float min_MHz;
   float curr_temp;
