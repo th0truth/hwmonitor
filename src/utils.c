@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <inttypes.h>
+#include <math.h>
+
+#define DIM(x) (sizeof(x) / sizeof(*(x)))
 
 // https://stackoverflow.com/a/122974
 char *trim(char *str)
@@ -69,4 +73,18 @@ char *findstr(const char *src, const char *srch, const char *delim) {
   result[len] = '\0';
   
   return result; 
+}
+
+// Convert size to appopriate unit
+float calcsz(char *unit, uint64_t size)
+{
+  uint64_t multiplier = 1ULL << 60;
+  const char *sizes[] = {"ZiB", "EiB", "PiB", "TiB", "GiB", "MiB", "KiB", "B"};
+  for (int i = 0; i < (sizeof(sizes) / sizeof(*sizes)); i++, multiplier /= 1024) {
+    if (strcmp(sizes[i], unit) == 0) {
+      break;
+    }
+  }
+  
+  return size / (float)multiplier;
 }
