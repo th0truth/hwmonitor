@@ -9,28 +9,27 @@ MEM *getMEMinfo()
   MEM *mem = (MEM*)malloc(sizeof(MEM));
   if (mem == NULL) {
     fprintf(stderr, "Memory allocation failed.");
-    free(mem);
-    exit(EXIT_FAILURE);
+    return NULL;
   }
 
-  char regex[] = {' ', ':'};
-  char *meminfo = read_file("/proc/meminfo", regex);
+  char rmch[] = {' ', ':'};
+  char *meminfo = read_file("/proc/meminfo", rmch);
   if (meminfo == NULL) {
     free(mem);
     return NULL;
   }
 
-  mem->total = atoi(findstr(meminfo, "MemTotal", "kB"));
-  mem->free = atoi(findstr(meminfo, "MemFree", "kB"));
-  mem->available = atoi(findstr(meminfo, "MemAvailable", "kB"));
-  mem->buffers = atoi(findstr(meminfo, "Buffers", "kB"));
-  mem->cached = atoi(findstr(meminfo, "Cached", "kB"));
-  mem->swap_total = atoi(findstr(meminfo, "SwapTotal", "kB"));
-  mem->swap_free = atoi(findstr(meminfo, "SwapFree", "kB"));
-  mem->Zswap = atoi(findstr(meminfo, "Zswap", "kB"));
-  mem->Zswapped = atoi(findstr(meminfo, "Zswapped", "kB"));
-  mem->dirty = atoi(findstr(meminfo, "Dirty", "kB"));
-  mem->perCpu = atoi(findstr(meminfo, "Percpu", "kB"));
+  mem->total      = atof(findstr(meminfo, "MemTotal", "kB"));
+  mem->free       = atof(findstr(meminfo, "MemFree", "kB"));
+  mem->available  = atof(findstr(meminfo, "MemAvailable", "kB"));
+  mem->buffers    = atof(findstr(meminfo, "Buffers", "kB"));
+  mem->cached     = atof(findstr(meminfo, "Cached", "kB"));
+  mem->swap_total = atof(findstr(meminfo, "SwapTotal", "kB"));
+  mem->swap_free  = atof(findstr(meminfo, "SwapFree", "kB"));
+  mem->Zswap      = atof(findstr(meminfo, "Zswap", "kB"));
+  mem->Zswapped   = atof(findstr(meminfo, "Zswapped", "kB"));
+  mem->dirty      = atof(findstr(meminfo, "Dirty", "kB"));
+  mem->perCpu     = atof(findstr(meminfo, "Percpu", "kB"));
 
   free(meminfo);
   return mem;
