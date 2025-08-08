@@ -31,17 +31,17 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
   
-  printf("\nMem Total: %d\n", mem->total);
-  printf("Mem Free: %d\n", mem->free);
-  printf("Mem Available: %d\n", mem->available);
-  printf("Mem Buffers: %d\n", mem->buffers);
-  printf("Mem Cached: %d\n", mem->cached);
-  printf("Mem SwapTotal: %d\n", mem->swap_total);
-  printf("Mem SwapFree: %d\n", mem->swap_free);
-  printf("Mem Zswap: %d\n", mem->Zswap);
-  printf("Mem Zswapped: %d\n", mem->Zswapped);
-  printf("Mem Dirty: %d\n", mem->dirty);
-  printf("Mem perCPU: %d\n", mem->perCpu);
+  printf("\nMem Total: %.2f GiB\n", calcsz("GiB", mem->total));
+  printf("Mem Free: %.2f GiB\n", calcsz("GiB", mem->free));
+  printf("Mem Available: %.2f GiB\n", calcsz("GiB", mem->available));
+  printf("Mem Buffers: %.2f GiB\n", calcsz("GiB", mem->buffers));
+  printf("Mem Cached: %.2f GiB\n", calcsz("GiB", mem->cached));
+  printf("Mem SwapTotal: %.2f GiB\n", calcsz("GiB", mem->swap_total));
+  printf("Mem SwapFree: %.2f GiB\n", calcsz("GiB", mem->swap_free));
+  printf("Mem Zswap: %.2f GiB\n", calcsz("GiB", mem->Zswap));
+  printf("Mem Zswapped: %.2f GiB\n", calcsz("GiB", mem->Zswapped));
+  printf("Mem Dirty: %.2f GiB\n", calcsz("GiB", mem->dirty));
+  printf("Mem perCPU: %.2f GiB\n", calcsz("GiB", mem->perCpu));
 
   free(mem);
   
