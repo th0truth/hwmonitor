@@ -19,7 +19,7 @@ int16_t getCPUTotalProcessors()
   return processors;
 }
 
-int64_t getCPUCoreMaxFreq_MHz(unsigned short core_id)
+int16_t getCPUCoreMaxFreq_MHz(unsigned short core_id)
 {
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", core_id);
@@ -35,10 +35,10 @@ int64_t getCPUCoreMaxFreq_MHz(unsigned short core_id)
   }
 
   free(cpufreq);
-  return -1;
+  return kHz;
 }
 
-int64_t getCPUCoreMinFreq_MHz(unsigned short core_id)
+int16_t getCPUCoreMinFreq_MHz(unsigned short core_id)
 {
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", core_id);
@@ -55,10 +55,10 @@ int64_t getCPUCoreMinFreq_MHz(unsigned short core_id)
   }
 
   free(cpufreq);
-  return -1;
+  return kHz;
 }
 
-int64_t getCPUCoreRegFreq_MHz(unsigned short core_id)
+int16_t getCPUCoreRegFreq_MHz(unsigned short core_id)
 {
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", core_id);
@@ -69,13 +69,13 @@ int64_t getCPUCoreRegFreq_MHz(unsigned short core_id)
     return -1;
   }
 
-  int64_t kHz = atoi(cpufreq);
+  int32_t kHz = atoi(cpufreq);
   if (kHz > -1) {
     return kHz / 1000;
   }
 
   free(cpufreq);
-  return -1;
+  return kHz;
 }
 
 float getCPUMaxFreq_MHz(unsigned short t_processors)
@@ -165,18 +165,18 @@ CPU *getCPUinfo()
     return NULL;
   }
 
-  cpu->vendor_id = findstr(cpuinfo, "vendor_id", "\n");
-  cpu->cpu_family = atoi(findstr(cpuinfo, "cpu family", "\n"));
-  cpu->model = atoi(findstr(cpuinfo, "model", "\n"));
-  cpu->model_name = findstr(cpuinfo, "model name", "\n");
-  cpu->stepping = atoi(findstr(cpuinfo, "stepping", "\n"));
-  cpu->total_threads = atoi(findstr(cpuinfo, "siblings", "\n"));
-  cpu->total_cores = atoi(findstr(cpuinfo, "cpu cores", "\n"));
-  cpu->processors = getCPUTotalProcessors();
-  cpu->max_MHz = getCPUMaxFreq_MHz(cpu->processors);
-  cpu->min_MHz = getCPUMinFreq_MHz(cpu->processors);
-  cpu->curr_temp = getCPUCurrTemp_Celsius();
-  cpu->flags = findstr(cpuinfo, "flags", "\n");
+  cpu->vendor_id      = findstr(cpuinfo, "vendor_id", "\n");
+  cpu->cpu_family     = atoi(findstr(cpuinfo, "cpu family", "\n"));
+  cpu->model          = atoi(findstr(cpuinfo, "model", "\n"));
+  cpu->model_name     = findstr(cpuinfo, "model name", "\n");
+  cpu->stepping       = atoi(findstr(cpuinfo, "stepping", "\n"));
+  cpu->total_threads  = atoi(findstr(cpuinfo, "siblings", "\n"));
+  cpu->total_cores    = atoi(findstr(cpuinfo, "cpu cores", "\n"));
+  cpu->processors     = getCPUTotalProcessors();
+  cpu->max_MHz        = getCPUMaxFreq_MHz(cpu->processors);
+  cpu->min_MHz        = getCPUMinFreq_MHz(cpu->processors);
+  cpu->curr_temp      = getCPUCurrTemp_Celsius();
+  cpu->flags          = findstr(cpuinfo, "flags", "\n");
 
   free(cpuinfo);
   return cpu;
