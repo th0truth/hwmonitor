@@ -5,8 +5,6 @@
 #include <inttypes.h>
 #include <math.h>
 
-#define DIM(x) (sizeof(x) / sizeof(*(x)))
-
 // https://stackoverflow.com/a/122974
 char *trim(char *str)
 {
