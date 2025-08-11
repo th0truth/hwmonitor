@@ -44,6 +44,17 @@ int main(int argc, char *argv[]) {
   printf("Mem perCPU: %.2f GiB\n", calcsz("GiB", mem->perCpu));
 
   free(mem);
-  
+
+  OS *os = getOSinfo();
+  if (os == NULL) {
+    exit(EXIT_FAILURE);
+  }
+
+  printf("\nOS: %s %d (%s)\n", os->NAME, os->VERSION_ID, os->DE);
+  printf("Release type: %s\n", os->RELEASE_TYPE);
+
+
+  free(os);
+
   return 0;
 }
