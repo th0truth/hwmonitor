@@ -179,5 +179,14 @@ CPU *getCPUinfo()
   cpu->flags          = findstr(cpuinfo, "flags", "\n");
 
   free(cpuinfo);
+
+  char *online = read_file("/sys/devices/system/cpu/online", NULL);
+  if (online == NULL) {
+    return NULL;
+  }
+  cpu->online = malloc(strlen(online));
+  strncpy(cpu->online, online, (strlen(online) + 1));
+  free(online);
+  
   return cpu;
 }
