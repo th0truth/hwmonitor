@@ -1,5 +1,6 @@
-#include <stdint.h>
+#pragma once
 
+#include <stdint.h>
 #ifndef UTILS_H
 #define UTILS_H
 char *read_file(char *filename, char *rmch);
