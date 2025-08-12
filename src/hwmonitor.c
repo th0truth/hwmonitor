@@ -89,8 +89,19 @@ int main(int argc, char *argv[]) {
       free(bios);
 
       continue;
-    }
+    } else if (strcmp(argv[i], "--mainboard") == 0) {
+      MAINBOARD *mainboard = getMainboardInfo();
+      if (mainboard == NULL) {
+        fprintf(stderr, "Failed to get mainboard info.\n");
+        exit(EXIT_FAILURE);
+      }
+      
+      printf("Hardware model: %s\n", mainboard->name);
+      printf("Hardware family: %s\n", mainboard->family);
+      printf("Hardware sku: %s\n", mainboard->sku);
 
+      free(mainboard);
+    }
   }
 
   return 0;
