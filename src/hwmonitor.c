@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
       printf("Max CPU: %.3f MHz\n", cpu->max_MHz);
       printf("Min CPU: %.3f MHz\n", cpu->min_MHz);
       printf("Temp: %.2f °C\n", cpu->curr_temp);
+      printf("Online: %s\n", cpu->online);
 
       free(cpu);
       continue;
