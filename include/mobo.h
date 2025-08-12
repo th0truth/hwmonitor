@@ -9,5 +9,12 @@ typedef struct {
   char *version;
 } MOBO;
 
+typedef struct {
+  char *vendor;
+  char *version;
+  char *release_date;
+} BIOS;
+
 MOBO *getMOBOinfo();
+BIOS *getBIOSinfo();
 #endif

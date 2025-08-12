@@ -42,3 +42,44 @@ MOBO *getMOBOinfo()
 
   return motherboard;
 }
+
+BIOS *getBIOSinfo()
+{
+  BIOS *bios = malloc(sizeof *bios);
+  if (bios == NULL) {
+    fprintf(stderr, "Memory allocation filed.\n");
+    return NULL;
+  }
+
+  // Get BIOS vendor
+  char *vendor = read_file("/sys/class/dmi/id/bios_vendor", "\n");
+  if (vendor == NULL) {
+    free(bios);
+    return NULL;
+  }
+  bios->vendor = malloc(strlen(vendor));
+  strncpy(bios->vendor, vendor, (strlen(vendor) + 1));
+  free(vendor);
+
+  // Get BIOS version
+  char *version = read_file("/sys/class/dmi/id/bios_version", "\n");
+  if (version == NULL) {
+    free(bios);
+    return NULL;
+  }
+  bios->version = malloc(strlen(version));
+  strncpy(bios->version, version, (strlen(version) + 1));
+  free(version);
+
+  // Get BIOS release date
+  char *date = read_file("/sys/class/dmi/id/bios_date", "\n");
+  if (date == NULL) {
+    free(bios);
+    return NULL;
+  }
+  bios->release_date = malloc(strlen(date));
+  strncpy(bios->release_date, date, (strlen(date) + 1));
+  free(date);
+
+  return bios;
+}
