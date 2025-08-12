@@ -180,7 +180,7 @@ CPU *getCPUinfo()
 
   free(cpuinfo);
 
-  char *online = read_file("/sys/devices/system/cpu/online", NULL);
+  char *online = read_file("/sys/devices/system/cpu/online", "\n");
   if (online == NULL) {
     return NULL;
   }
