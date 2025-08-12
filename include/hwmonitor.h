@@ -5,3 +5,4 @@
 #include "mem.h"
 #include "os.h"
 #include "mobo.h"
+#include "mainboard.h"
