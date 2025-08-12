@@ -152,7 +152,7 @@ float getCPUCurrTemp_Celsius()
 
 CPU *getCPUinfo()
 {
-  CPU *cpu = (CPU*)malloc(sizeof(CPU));
+  CPU *cpu = malloc(sizeof *cpu);
   if (cpu == NULL) {
     fprintf(stderr, "Memory allocation failed.");
     return NULL;

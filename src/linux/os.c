@@ -6,7 +6,7 @@
 
 OS *getOSinfo()
 {
-  OS *os = (OS*)malloc(sizeof(OS));
+  OS *os = malloc(sizeof *os);
   if (os == NULL) {
     fprintf(stderr, "Memory allocation failed.");
     return NULL;

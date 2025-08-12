@@ -6,7 +6,7 @@
 
 MEM *getMEMinfo()
 {
-  MEM *mem = (MEM*)malloc(sizeof(MEM));
+  MEM *mem = malloc(sizeof *mem);
   if (mem == NULL) {
     fprintf(stderr, "Memory allocation failed.");
     return NULL;

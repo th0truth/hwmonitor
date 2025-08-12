@@ -8,7 +8,11 @@
 
 MOBO *getMOBOinfo()
 {
-  MOBO *motherboard = (MOBO*)malloc(sizeof(MOBO));
+  MOBO *motherboard = malloc(sizeof *motherboard);
+  if (motherboard == NULL) {
+    fprintf(stderr, "Memory allocation filed.\n");
+    return NULL;
+  }
 
   // Get motherboard manufacturer
   char *manufacturer = read_file("/sys/class/dmi/id/board_vendor", "\n");
