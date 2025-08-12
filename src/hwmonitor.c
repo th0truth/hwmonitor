@@ -67,11 +67,26 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Failed to get motherboard info.\n");
         exit(EXIT_FAILURE);
       }
+
       printf("Motherboard manufacturer: %s\n", motherboard->manufacturer);
       printf("Motherboard model: %s\n", motherboard->model);
       printf("Motherboard version: %s\n", motherboard->version);
 
       free(motherboard);
+
+      BIOS *bios = getBIOSinfo();
+      if (bios == NULL) {
+        fprintf(stderr, "Failed to get BIOS info.\n");
+        exit(EXIT_FAILURE);
+      }
+
+
+      printf("BIOS Vendor: %s\n", bios->vendor);
+      printf("BIOS Version: %s\n", bios->version);
+      printf("BIOS Release date: %s\n", bios->release_date);
+
+      free(bios);
+
       continue;
     }
 
