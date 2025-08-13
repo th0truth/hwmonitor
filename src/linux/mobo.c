@@ -15,7 +15,7 @@ MOBO *getMOBOinfo()
   }
 
   // Get motherboard manufacturer
-  char *manufacturer = read_file("/sys/class/dmi/id/board_vendor", "\n");
+  char *manufacturer = read_file("/sys/class/dmi/id/board_vendor", "\n", 1);
   if (manufacturer == NULL) {
     free(motherboard);
     return NULL;
@@ -25,7 +25,7 @@ MOBO *getMOBOinfo()
   free(manufacturer);
 
   // Get motherboard model
-  char *model = read_file("/sys/class/dmi/id/board_name", "\n");
+  char *model = read_file("/sys/class/dmi/id/board_name", "\n", 1);
   if (model == NULL) {
     free(motherboard);
     return NULL;
@@ -35,7 +35,7 @@ MOBO *getMOBOinfo()
   free(model);
 
   // Get motherboard version
-  char *version = read_file("/sys/class/dmi/id/board_version", "\n");
+  char *version = read_file("/sys/class/dmi/id/board_version", "\n", 1);
   if (version == NULL) {
     free(motherboard);
     return NULL;
@@ -56,7 +56,7 @@ BIOS *getBIOSinfo()
   }
 
   // Get BIOS vendor
-  char *vendor = read_file("/sys/class/dmi/id/bios_vendor", "\n");
+  char *vendor = read_file("/sys/class/dmi/id/bios_vendor", "\n", 1);
   if (vendor == NULL) {
     free(bios);
     return NULL;
@@ -66,7 +66,7 @@ BIOS *getBIOSinfo()
   free(vendor);
 
   // Get BIOS version
-  char *version = read_file("/sys/class/dmi/id/bios_version", "\n");
+  char *version = read_file("/sys/class/dmi/id/bios_version", "\n", 1);
   if (version == NULL) {
     free(bios);
     return NULL;
@@ -76,7 +76,7 @@ BIOS *getBIOSinfo()
   free(version);
 
   // Get BIOS release date
-  char *date = read_file("/sys/class/dmi/id/bios_date", "\n");
+  char *date = read_file("/sys/class/dmi/id/bios_date", "\n", 1);
   if (date == NULL) {
     free(bios);
     return NULL;

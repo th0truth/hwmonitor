@@ -14,7 +14,7 @@ MAINBOARD *getMainboardInfo()
   }
 
   // Get product name  
-  char *name = read_file("/sys/class/dmi/id/product_name", "\n");
+  char *name = read_file("/sys/class/dmi/id/product_name", "\n", 1);
   if (name == NULL) {
     free(mainboard);
     return NULL;
@@ -24,7 +24,7 @@ MAINBOARD *getMainboardInfo()
   free(name);
 
   // Get product family  
-  char *family = read_file("/sys/class/dmi/id/product_family", "\n");
+  char *family = read_file("/sys/class/dmi/id/product_family", "\n", 1);
   if (family == NULL) {
     free(mainboard);
     return NULL;
@@ -34,7 +34,7 @@ MAINBOARD *getMainboardInfo()
   free(family);
 
   // Get product serial
-  char *serial = read_file("/sys/class/dmi/id/product_serial", "\n");
+  char *serial = read_file("/sys/class/dmi/id/product_serial", "\n", 1);
   if (serial == NULL) {
     free(mainboard);
     return NULL;
@@ -44,7 +44,7 @@ MAINBOARD *getMainboardInfo()
   free(serial);
 
   // Get product sku
-  char *sku = read_file("/sys/class/dmi/id/product_sku", "\n");
+  char *sku = read_file("/sys/class/dmi/id/product_sku", "\n", 1);
   if (sku == NULL) {
     free(mainboard);
     return NULL;

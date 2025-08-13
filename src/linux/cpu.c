@@ -8,7 +8,7 @@
 
 int16_t getCPUTotalProcessors()
 {
-  char *cpus = read_file("/sys/devices/system/cpu/online", "-");
+  char *cpus = read_file("/sys/devices/system/cpu/online", "-", 0);
   if (cpus == NULL) {
     return -1;
   }
@@ -24,7 +24,7 @@ int16_t getCPUCoreMaxFreq_MHz(unsigned short core_id)
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", core_id);
   
-  char *cpufreq = read_file(buff, NULL);
+  char *cpufreq = read_file(buff, NULL, 1);
   if (cpufreq == NULL) {
     return -1;
   }
@@ -44,7 +44,7 @@ int16_t getCPUCoreMinFreq_MHz(unsigned short core_id)
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", core_id);
 
   char rmch[] = {' '};
-  char *cpufreq = read_file(buff, NULL);
+  char *cpufreq = read_file(buff, NULL, 1);
   if (cpufreq == NULL) {
     return -1;
   }
@@ -64,7 +64,7 @@ int16_t getCPUCoreRegFreq_MHz(unsigned short core_id)
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", core_id);
 
   char rmch[] = {' '};
-  char *cpufreq = read_file(buff, NULL);
+  char *cpufreq = read_file(buff, NULL, 1);
   if (cpufreq == NULL) {
     return -1;
   }
@@ -85,7 +85,7 @@ float getCPUMaxFreq_MHz(unsigned short t_processors)
   for (int i = 0; i < t_processors; i++)
   {
     snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", i);
-    char *kHz = read_file(buff, NULL);
+    char *kHz = read_file(buff, NULL, 1);
     if (kHz == NULL) {
       return -1;
     }
@@ -107,7 +107,7 @@ float getCPUMinFreq_MHz(unsigned short t_processors)
   for (int i = 0; i < t_processors; i++)
   {
     snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_min_freq", i);
-    char *kHz = read_file(buff, NULL);
+    char *kHz = read_file(buff, NULL, 1);
     if (kHz == NULL) {
       return -1;
     }
@@ -127,7 +127,7 @@ float getCPUCurrTemp_Celsius()
   int i = 0;
   for (;;) {
     snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/type", ++i);
-    char *thtype = read_file(buff, "\n");
+    char *thtype = read_file(buff, "\n", 1);
     thtype[strcspn(thtype, "\xff")] = '\0';
     if (thtype == NULL) {
       return -1;
@@ -139,7 +139,7 @@ float getCPUCurrTemp_Celsius()
   }
   
   snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/temp", i);
-  char *thtemp = (read_file(buff, NULL));
+  char *thtemp = (read_file(buff, NULL, 1));
   if (thtemp == NULL) {
     return -1;
   }
@@ -159,7 +159,7 @@ CPU *getCPUinfo()
   }
 
   char rmch[] = {'\t', ':'};
-  char *cpuinfo = read_file("/proc/cpuinfo", rmch);
+  char *cpuinfo = read_file("/proc/cpuinfo", rmch, 0);
   if (cpuinfo == NULL) {
     free(cpu);
     return NULL;
@@ -180,7 +180,7 @@ CPU *getCPUinfo()
 
   free(cpuinfo);
 
-  char *online = read_file("/sys/devices/system/cpu/online", "\n");
+  char *online = read_file("/sys/devices/system/cpu/online", "\n", 1);
   if (online == NULL) {
     return NULL;
   }
