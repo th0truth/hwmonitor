@@ -5,11 +5,13 @@
 
 #define BUFF_SIZE 1024
 
-char *read_file(const char *filename, char *rmch)
+char *read_file(const char *filename, char *rmch, int p_err)
 {
   FILE *fptr = fopen(filename, "r");
   if (fptr == NULL) {
-    fprintf(stderr, "File '%s' openning failed: %s\n", filename, strerror(errno));
+    if (p_err) {
+      fprintf(stderr, "File '%s' openning failed: %s\n", filename, strerror(errno));
+    }
     return NULL;
   };
 
