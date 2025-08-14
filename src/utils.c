@@ -68,7 +68,7 @@ char *findstr(const char *src, const char *srch, const char *delim) {
 
   // Copy str to string using safe approach
   strncpy(result, str, len);
-  result[(strlen(result) + 1)] = '\0';
+  result[len] = '\0';
   
   return result; 
 }
