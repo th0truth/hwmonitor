@@ -13,46 +13,11 @@ MAINBOARD *getMainboardInfo()
     return NULL;
   }
 
-  // Get product name  
-  char *name = read_file("/sys/class/dmi/id/product_name", "\n", 1);
-  if (name == NULL) {
-    free(mainboard);
-    return NULL;
-  } 
-  mainboard->name = malloc(strlen(name));
-  strncpy(mainboard->name, name, (strlen(name) + 1));
-  free(name);
-
-  // Get product family  
-  char *family = read_file("/sys/class/dmi/id/product_family", "\n", 1);
-  if (family == NULL) {
-    free(mainboard);
-    return NULL;
-  } 
-  mainboard->family = malloc(strlen(family));
-  strncpy(mainboard->family, family, (strlen(family) + 1));
-  free(family);
-
-  // Get product serial
-  char *serial = read_file("/sys/class/dmi/id/product_serial", "\n", 1);
-  if (serial == NULL) {
-    free(mainboard);
-    return NULL;
-  } 
-  mainboard->serial = malloc(strlen(serial));
-  strncpy(mainboard->serial, serial, (strlen(serial) + 1));
-  free(serial);
-
-  // Get product sku
-  char *sku = read_file("/sys/class/dmi/id/product_sku", "\n", 1);
-  if (sku == NULL) {
-    free(mainboard);
-    return NULL;
-  } 
-  mainboard->sku = malloc(strlen(sku));
-  strncpy(mainboard->sku, sku, (strlen(sku) + 1));
-  free(sku);
-
+  // Gather mainboard information
+  mainboard->name   = read_file("/sys/class/dmi/id/product_name", "\n", 1);
+  mainboard->family = read_file("/sys/class/dmi/id/product_family", "\n", 1);
+  mainboard->serial = read_file("/sys/class/dmi/id/product_serial", "\n", 1);
+  mainboard->sku    = read_file("/sys/class/dmi/id/product_sku", "\n", 1);
 
   return mainboard;
 };
