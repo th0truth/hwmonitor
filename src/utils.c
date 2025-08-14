@@ -50,8 +50,8 @@ char *findstr(const char *src, const char *srch, const char *delim) {
   }
 
   // Move past the search string
-  str += strlen(srch);
   size_t len = 0;
+  str += strlen(srch);
   while (str[len] && !strchr(delim, str[len])) {
     len++;
   }
@@ -68,7 +68,7 @@ char *findstr(const char *src, const char *srch, const char *delim) {
 
   // Copy str to string using safe approach
   strncpy(result, str, len);
-  result[len] = '\0';
+  result[(strlen(result) + 1)] = '\0';
   
   return result; 
 }
