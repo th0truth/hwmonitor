@@ -14,4 +14,5 @@ typedef struct {
 } OS;
 
 OS *getOSinfo();
+void free_os(OS *os);
 #endif

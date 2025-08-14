@@ -8,43 +8,18 @@
 
 MOBO *getMOBOinfo()
 {
-  MOBO *motherboard = malloc(sizeof *motherboard);
-  if (motherboard == NULL) {
+  MOBO *mobo = malloc(sizeof *mobo);
+  if (mobo == NULL) {
     fprintf(stderr, "Memory allocation filed.\n");
     return NULL;
   }
 
-  // Get motherboard manufacturer
-  char *manufacturer = read_file("/sys/class/dmi/id/board_vendor", "\n", 1);
-  if (manufacturer == NULL) {
-    free(motherboard);
-    return NULL;
-  }
-  motherboard->manufacturer = malloc(strlen(manufacturer));
-  strncpy(motherboard->manufacturer, manufacturer, (strlen(manufacturer) + 1));
-  free(manufacturer);
+  // Gather motheboard information
+  mobo->manufacturer = read_file("/sys/class/dmi/id/board_vendor", "\n", 1);
+  mobo->model        = read_file("/sys/class/dmi/id/board_name", "\n", 1);
+  mobo->version      = read_file("/sys/class/dmi/id/board_version", "\n", 1);
 
-  // Get motherboard model
-  char *model = read_file("/sys/class/dmi/id/board_name", "\n", 1);
-  if (model == NULL) {
-    free(motherboard);
-    return NULL;
-  }
-  motherboard->model = malloc(strlen(model));
-  strncpy(motherboard->model, model, (strlen(model) + 1));
-  free(model);
-
-  // Get motherboard version
-  char *version = read_file("/sys/class/dmi/id/board_version", "\n", 1);
-  if (version == NULL) {
-    free(motherboard);
-    return NULL;
-  }
-  motherboard->version = malloc(strlen(version));
-  strncpy(motherboard->version, version, (strlen(version) + 1));
-  free(version);
-
-  return motherboard;
+  return mobo;
 }
 
 BIOS *getBIOSinfo()
@@ -55,35 +30,28 @@ BIOS *getBIOSinfo()
     return NULL;
   }
 
-  // Get BIOS vendor
-  char *vendor = read_file("/sys/class/dmi/id/bios_vendor", "\n", 1);
-  if (vendor == NULL) {
-    free(bios);
-    return NULL;
-  }
-  bios->vendor = malloc(strlen(vendor));
-  strncpy(bios->vendor, vendor, (strlen(vendor) + 1));
-  free(vendor);
-
-  // Get BIOS version
-  char *version = read_file("/sys/class/dmi/id/bios_version", "\n", 1);
-  if (version == NULL) {
-    free(bios);
-    return NULL;
-  }
-  bios->version = malloc(strlen(version));
-  strncpy(bios->version, version, (strlen(version) + 1));
-  free(version);
-
-  // Get BIOS release date
-  char *date = read_file("/sys/class/dmi/id/bios_date", "\n", 1);
-  if (date == NULL) {
-    free(bios);
-    return NULL;
-  }
-  bios->release_date = malloc(strlen(date));
-  strncpy(bios->release_date, date, (strlen(date) + 1));
-  free(date);
+  // Gather BIOS information
+  bios->vendor  = read_file("/sys/class/dmi/id/bios_vendor", "\n", 1);
+  bios->version = read_file("/sys/class/dmi/id/bios_version", "\n", 1);
+  bios->date    = read_file("/sys/class/dmi/id/bios_date", "\n", 1);
 
   return bios;
+}
+
+void free_mobo(MOBO *mobo)
+{
+  if (!mobo) return;
+  free(mobo->manufacturer);
+  free(mobo->model);
+  free(mobo->version);
+  free(mobo);
+}
+
+void free_bios(BIOS *bios)
+{
+  if (!bios) return;
+  free(bios->vendor);
+  free(bios->version);
+  free(bios->date);
+  free(bios);
 }

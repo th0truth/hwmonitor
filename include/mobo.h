@@ -12,9 +12,11 @@ typedef struct {
 typedef struct {
   char *vendor;
   char *version;
-  char *release_date;
+  char *date;
 } BIOS;
 
 MOBO *getMOBOinfo();
 BIOS *getBIOSinfo();
+void free_mobo(MOBO *mobo);
+void free_bios(BIOS *bios);
 #endif

@@ -22,4 +22,5 @@ typedef struct {
 } CPU;
 
 CPU *getCPUinfo();
+void free_cpu(CPU *cpu);
 #endif

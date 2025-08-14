@@ -165,6 +165,7 @@ CPU *getCPUinfo()
     return NULL;
   }
 
+  // Gather CPU information
   cpu->vendor_id      = findstr(cpuinfo, "vendor_id", "\n");
   cpu->cpu_family     = atoi(findstr(cpuinfo, "cpu family", "\n"));
   cpu->model          = atoi(findstr(cpuinfo, "model", "\n"));
@@ -177,16 +178,17 @@ CPU *getCPUinfo()
   cpu->min_MHz        = getCPUMinFreq_MHz(cpu->processors);
   cpu->curr_temp      = getCPUCurrTemp_Celsius();
   cpu->flags          = findstr(cpuinfo, "flags", "\n");
-
-  free(cpuinfo);
-
-  char *online = read_file("/sys/devices/system/cpu/online", "\n", 1);
-  if (online == NULL) {
-    return NULL;
-  }
-  cpu->online = malloc(strlen(online));
-  strncpy(cpu->online, online, (strlen(online) + 1));
-  free(online);
+  cpu->online         = read_file("/sys/devices/system/cpu/online", "\n", 1);
   
+  free(cpuinfo);
   return cpu;
+}
+
+void free_cpu(CPU *cpu)
+{
+  if (!cpu) return;
+  free(cpu->vendor_id);
+  free(cpu->model_name);
+  free(cpu->flags);
+  free(cpu);
 }

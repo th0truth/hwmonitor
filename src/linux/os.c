@@ -19,13 +19,25 @@ OS *getOSinfo()
     return NULL;
   }
   
-  os->NAME =          findstr(osinfo, "NAME=", "\n");
-  os->VERSION_ID =    atoi(findstr(osinfo, "VERSION_ID=", "\n"));
-  os->RELEASE_TYPE =  findstr(osinfo, "RELEASE_TYPE=", "\n");
-  os->ID =            findstr(osinfo, "ID=", "\n");
-  os->DE =            findstr(osinfo, "VARIANT=", "\n");
-  os->DE_ID =         findstr(osinfo, "VARIANT_ID=", "\n"); 
+  // Gather OS information
+  os->NAME         = findstr(osinfo, "NAME=", "\n");
+  os->VERSION_ID   =  atoi(findstr(osinfo, "VERSION_ID=", "\n"));
+  os->RELEASE_TYPE = findstr(osinfo, "RELEASE_TYPE=", "\n");
+  os->ID           = findstr(osinfo, "ID=", "\n");
+  os->DE           = findstr(osinfo, "VARIANT=", "\n");
+  os->DE_ID        = findstr(osinfo, "VARIANT_ID=", "\n"); 
 
   free(osinfo);  
   return os;
-};
+}
+
+void free_os(OS *os)
+{
+  if (!os) return;
+  free(os->NAME);
+  free(os->RELEASE_TYPE);
+  free(os->ID);
+  free(os->DE);
+  free(os->DE_ID);
+  free(os);
+}
