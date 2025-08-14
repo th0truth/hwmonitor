@@ -11,5 +11,5 @@ typedef struct {
 } MAINBOARD;
 
 MAINBOARD *getMainboardInfo();
-
+void free_mainboard(MAINBOARD *mb);
 #endif

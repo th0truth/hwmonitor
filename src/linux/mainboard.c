@@ -21,3 +21,13 @@ MAINBOARD *getMainboardInfo()
 
   return mainboard;
 };
+
+void free_mainboard(MAINBOARD *mb)
+{
+  if (!mb) return;
+  free(mb->name);
+  free(mb->family);
+  free(mb->serial);
+  free(mb->sku);
+  free(mb);
+}
