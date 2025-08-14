@@ -11,8 +11,14 @@
 
 typedef struct {
   char *vendor;
+  char *device_id;
+  char *subsys_vendor;
+  char *subsys_device;
   char *driver;
   char *model;
+  char *pci_id;
+  char *pci_subsys;
+  char *pci_slot_name;
 } GPU;
 
 GPU *getGPUinfo();

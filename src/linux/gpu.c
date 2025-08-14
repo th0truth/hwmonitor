@@ -14,35 +14,43 @@ GPU *getGPUinfo()
     return NULL;
   }
 
-  // Gather specific GPU info
   char buff[BUFF_SIZE];
   for (int i = 0; ; ++i) {
-    // Get a GPU Vendor ID
+    // Get the GPU Vendor ID
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/vendor", i);
-    char *vendor = read_file(buff, "\n", 0);
-    if (vendor == NULL) {
+    gpu->vendor = read_file(buff, "\n", 0) ;
+    if (gpu->vendor == NULL) {
       free(gpu);
       return NULL;
     }
-    vendor[strcspn(vendor, "\xff")] = '\0';
+    gpu->vendor[strcspn(gpu->vendor, "\xff")] = '\0';
     
+    snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/device", i);
+    gpu->device_id = read_file(buff, NULL, 0);
+
+    snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/subsystem_device", i);
+    gpu->subsys_device = read_file(buff, NULL, 0);
+
+    snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/subsystem_vendor", i);
+    gpu->subsys_vendor = read_file(buff, NULL, 0);
+
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/uevent", i);
-    char *uevent = read_file(buff, NULL, 0);
+    char *uevent = read_file(buff, "=", 0);
     if (uevent == NULL) {
       free(gpu);
       return NULL;
     }
-  
-    if (strcmp(vendor, NVIDIA) == 0) {
-      // Extract PCI_SLOT from driver detal
-      char *PCI_SLOT = findstr(uevent, "PCI_SLOT_NAME=", "\n");
-      if (PCI_SLOT == NULL) {
-        free(gpu);
-        return NULL;
-      }
-      
-      snprintf(buff, BUFF_SIZE, "/proc/driver/nvidia/gpus/%s/information", PCI_SLOT);
-      free(PCI_SLOT);
+
+    // Extract GPU info from uevent
+    gpu->driver        = findstr(uevent, "DRIVER", "\n");
+    gpu->pci_id        = findstr(uevent, "PCI_ID", "\n");
+    gpu->pci_subsys    = findstr(uevent, "PCI_SUBSYS_ID", "\n");
+    gpu->pci_slot_name = findstr(uevent, "PCI_SLOT_NAME", "\n");
+    
+    free(uevent);
+    
+    if (strcmp(gpu->vendor, NVIDIA) == 0) {
+      snprintf(buff, BUFF_SIZE, "/proc/driver/nvidia/gpus/%s/information", gpu->pci_slot_name);
       
       // Get details about an NVIDIA GPU
       char *n_info = read_file(buff, ":\t", 0);
@@ -50,16 +58,13 @@ GPU *getGPUinfo()
         return NULL;
       }
       
-      gpu->vendor = vendor;
-      gpu->driver = findstr(uevent, "DRIVER=", "\n");
       gpu->model = findstr(n_info, "Model  ", "\n");
       
-      free(uevent);
       free(n_info);
 
       return gpu;
-  }
-    free(vendor);
+    }
+    free(gpu->vendor);
   }
 }
 
@@ -67,7 +72,13 @@ void free_gpu(GPU *gpu)
 {
   if (!gpu) return;
   free(gpu->vendor);
+  free(gpu->device_id);
+  free(gpu->subsys_vendor);
+  free(gpu->subsys_device);
   free(gpu->driver);
   free(gpu->model);
+  free(gpu->pci_id);
+  free(gpu->pci_subsys);
+  free(gpu->pci_slot_name);
   free(gpu);
 }
