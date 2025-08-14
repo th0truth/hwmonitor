@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
       printf("Temp: %.2f °C\n", cpu->curr_temp);
       printf("Online: %s\n", cpu->online);
 
-      free(cpu);
+      free_cpu(cpu);
       continue;
     } else if (strcmp(argv[i], "--mem") == 0) {
       MEM *mem = getMEMinfo();
@@ -51,6 +51,18 @@ int main(int argc, char *argv[]) {
 
       free(mem);
       continue;
+    } else if (strcmp(argv[i], "--gpu") == 0) {
+      GPU *gpu = getGPUinfo();
+      if (gpu == NULL) {
+        fprintf(stderr, "Failed to get GPU info.\n");
+        exit(EXIT_FAILURE);
+      }
+
+      printf("Vendor ID: %s\n", gpu->vendor);
+      printf("Driver: %s\n", gpu->driver);
+      printf("Model: %s\n", gpu->model);
+
+      free_gpu(gpu);
     } else if (strcmp(argv[i], "--os") == 0) {
       OS *os = getOSinfo();
       if (os == NULL) {
@@ -60,7 +72,7 @@ int main(int argc, char *argv[]) {
 
       printf("OS: %s %d (%s)\n", os->NAME, os->VERSION_ID, os->DE);
 
-      free(os);
+      free_os(os);
       continue;
     } else if (strcmp(argv[i], "--mobo") == 0) {
       MOBO *motherboard = getMOBOinfo();
@@ -73,7 +85,7 @@ int main(int argc, char *argv[]) {
       printf("Motherboard model: %s\n", motherboard->model);
       printf("Motherboard version: %s\n", motherboard->version);
 
-      free(motherboard);
+      free_mobo(motherboard);
 
       BIOS *bios = getBIOSinfo();
       if (bios == NULL) {
@@ -84,9 +96,9 @@ int main(int argc, char *argv[]) {
 
       printf("BIOS Vendor: %s\n", bios->vendor);
       printf("BIOS Version: %s\n", bios->version);
-      printf("BIOS Release date: %s\n", bios->release_date);
+      printf("BIOS Release date: %s\n", bios->date);
 
-      free(bios);
+      free_bios(bios);
 
       continue;
     } else if (strcmp(argv[i], "--mainboard") == 0) {
@@ -98,9 +110,10 @@ int main(int argc, char *argv[]) {
       
       printf("Hardware model: %s\n", mainboard->name);
       printf("Hardware family: %s\n", mainboard->family);
+      printf("Hardware serial: %s\n", mainboard->serial);
       printf("Hardware sku: %s\n", mainboard->sku);
 
-      free(mainboard);
+      free_mainboard(mainboard);
     }
   }
 
