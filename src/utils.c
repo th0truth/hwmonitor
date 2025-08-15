@@ -41,11 +41,11 @@ char *trim(char *str)
   return str;
 }
 
-char *findstr(const char *src, const char *srch, const char *delim) {
+char *findstr(const char *src, const char *srch, const char *delim)
+{
   // Find the substring
   char *str = strstr(src, srch);
   if (str == NULL) {
-    fprintf(stderr, "Substring '%s' not found.\n", srch);
     return NULL;
   }
 
