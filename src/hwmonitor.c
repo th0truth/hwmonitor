@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
       }
      
+      printf("Architecture: %s\n", cpu->arch);
       printf("CPU Vendor ID: %s", cpu->vendor_id);
       printf("CPU Family: %d\n", cpu->cpu_family);
       printf("Model: %d\n", cpu->model);
