@@ -150,6 +150,16 @@ float getCPUCurrTemp_Celsius()
   return temp;
 }
 
+char *getCPUArchitecture(char *flags)
+{
+  char *s = findstr(flags, "lm", " ");
+  if (s == NULL) {
+    return "x86";
+  } else {
+    return "x86_64";
+  }
+}
+
 CPU *getCPUinfo()
 {
   CPU *cpu = malloc(sizeof *cpu);
@@ -178,8 +188,9 @@ CPU *getCPUinfo()
   cpu->min_MHz        = getCPUMinFreq_MHz(cpu->processors);
   cpu->curr_temp      = getCPUCurrTemp_Celsius();
   cpu->flags          = findstr(cpuinfo, "flags", "\n");
+  cpu->arch           = getCPUArchitecture(cpu->flags);
   cpu->online         = read_file("/sys/devices/system/cpu/online", "\n", 1);
-  
+
   free(cpuinfo);
   return cpu;
 }

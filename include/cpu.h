@@ -18,6 +18,7 @@ typedef struct {
   float min_MHz;
   float curr_temp;
   char *flags;
+  char *arch;
   char *online;
 } CPU;
 
