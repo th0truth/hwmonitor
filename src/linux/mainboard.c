@@ -16,7 +16,7 @@ MAINBOARD *getMainboardInfo()
   // Gather mainboard information
   mainboard->name   = read_file("/sys/class/dmi/id/product_name", "\n", 1);
   mainboard->family = read_file("/sys/class/dmi/id/product_family", "\n", 1);
-  mainboard->serial = read_file("/sys/class/dmi/id/product_serial", "\n", 1);
+  mainboard->serial = read_file("/sys/class/dmi/id/product_serial", "\n", 0);
   mainboard->sku    = read_file("/sys/class/dmi/id/product_sku", "\n", 1);
   
   return mainboard;
