@@ -7,4 +7,4 @@
 #include "os.h"
 #include "mobo.h"
 #include "mainboard.h"
-#include "power.h"
+#include "battery.h"
