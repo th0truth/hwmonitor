@@ -26,13 +26,13 @@ GPU *getGPUinfo()
     gpu->vendor[strcspn(gpu->vendor, "\xff")] = '\0';
     
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/device", i);
-    gpu->device_id = read_file(buff, NULL, 0);
+    gpu->device_id = read_file(buff, "\n", 0);
 
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/subsystem_device", i);
-    gpu->subsys_device = read_file(buff, NULL, 0);
+    gpu->subsys_device = read_file(buff, "\n", 0);
 
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/subsystem_vendor", i);
-    gpu->subsys_vendor = read_file(buff, NULL, 0);
+    gpu->subsys_vendor = read_file(buff, "\n", 0);
 
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/uevent", i);
     char *uevent = read_file(buff, "=", 0);
