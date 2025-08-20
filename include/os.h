@@ -1,5 +1,6 @@
 #pragma once
 
+#include <inttypes.h>
 #include "platform.h"
 
 #if defined(HWMONITOR_UNIX)
@@ -8,7 +9,6 @@ typedef struct {
   int16_t VERSION_ID;
   char *RELEASE_TYPE;
   char *ID;
-  char *ID_LIKE;
   char *DE;
   char *DE_ID;
 } OS;
