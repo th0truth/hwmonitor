@@ -1,10 +1,11 @@
 #pragma once
 
-#ifndef GPU_H
-#define GPU_H
+#include "platform.h"
 
+#if defined(HWMONITOR_UNIX)
 #define BUFF_SIZE 128
 
+// GPUs vendor id
 #define NVIDIA "0x10de"
 #define INTEL "0x8086"
 #define AMD "0x1002"
@@ -22,5 +23,5 @@ typedef struct {
 } GPU;
 
 GPU *getGPUinfo();
-void free_gpu(GPU *gpu);    
+void free_gpu(GPU *gpu);
 #endif

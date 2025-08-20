@@ -1,8 +1,8 @@
 #pragma once
 
-#ifndef CPU_H
-#define CPU_H
+#include "platform.h"
 
+#if defined(HWMONITOR_UNIX)
 #define BUFF_SIZE 128
 
 typedef struct {

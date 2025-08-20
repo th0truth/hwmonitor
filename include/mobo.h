@@ -1,8 +1,8 @@
 #pragma once
 
-#ifndef MOBO_H
-#define MOBO_H
+#include "platform.h"
 
+#if defined(HWMONITOR_UNIX)
 typedef struct {
   char *manufacturer;
   char *model;

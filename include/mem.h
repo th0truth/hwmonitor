@@ -1,8 +1,8 @@
 #pragma once
 
-#ifndef MEM_H
-#define MEM_H
+#include "platform.h"
 
+#if defined(HWMONITOR_UNIX)
 typedef struct {
   size_t total;
   size_t free;

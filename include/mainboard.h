@@ -1,8 +1,8 @@
 #pragma once
 
-#ifndef MAINBOARD_H
-#define MAINBOARD_H
+#include "platform.h"
 
+#if defined(HWMONITOR_UNIX)
 typedef struct {
   char *name;
   char *family;
