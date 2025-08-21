@@ -5,11 +5,15 @@
 
 #if defined(HWMONITOR_UNIX)
 #define BUFF_SIZE 128
-
+#define Watt 1000000
+ 
 typedef struct {
   uint16_t capacity;
-  uint64_t voltage_min;
-  uint64_t voltage_now;
+  float voltage_min_design;
+  float voltage_now;
+  float energy_full_design;
+  float energy_full;
+  float energy_now;
   char *supply_name;
   char *supply_type; 
   char *capacity_level; 
@@ -20,5 +24,6 @@ typedef struct {
   char *serial;
 } BAT; 
 
-BAT *getBatteryinfo();
+BAT *getBATTERYinfo();
+void free_battery(BAT *bat);
 #endif
