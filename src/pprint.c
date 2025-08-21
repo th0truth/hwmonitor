@@ -10,6 +10,7 @@
 #include "os.h"
 #include "mobo.h"
 #include "mainboard.h"
+#include "battery.h"
 
 #define pprint_equals(str) printf("\n============ %s ============\n\n", str)
 
@@ -151,6 +152,33 @@ void print_MAINBOARD()
   printf("Hardware sku: %s\n", mainboard->sku);
 
   free_mainboard(mainboard);
+}
+
+void print_BAT()
+{
+  BAT *bat = getBATTERYinfo();
+  if (bat == NULL) {
+    fprintf(stderr, "Failed to get battery info.\n");
+  }
+
+  pprint_equals("Battery");
+
+  printf("Capacity: %d%%\n", bat->capacity);
+  printf("Voltage min design: %f\n", bat->voltage_min_design);
+  printf("Voltage now: %f\n", bat->voltage_now);
+  printf("Supply energy full design: %f\n", bat->energy_full_design);
+  printf("Supply energy full: %f\n", bat->energy_full);
+  printf("Supply energy now: %f\n", bat->energy_now);
+  printf("Supply name: %s\n", bat->supply_name);
+  printf("Supply type: %s\n", bat->supply_type);
+  printf("Supply Capacity lavel: %s\n", bat->capacity_level);
+  printf("Supply status: %s\n", bat->status);
+  printf("Supply technology: %s\n", bat->technology);
+  printf("Model name: %s\n", bat->model_name);
+  printf("Manufacturer: %s\n", bat->manufacturer);
+  printf("Serial: %s\n", bat->serial);
+
+  free_battery(bat);
 }
 
 #endif

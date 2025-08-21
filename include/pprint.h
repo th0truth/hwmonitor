@@ -7,3 +7,4 @@ void print_OS();
 void print_MOBO();
 void print_BIOS();
 void print_MAINBOARD();
+void print_BAT();
