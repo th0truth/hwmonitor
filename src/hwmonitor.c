@@ -29,6 +29,9 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(argv[i], "--mainboard") == 0) {
       print_MAINBOARD();
       continue;
+    } else if (strcmp(argv[i], "--battery") == 0) {
+      print_BAT();
+      continue;
     }
   }
 
