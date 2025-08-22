@@ -9,7 +9,7 @@ The current recommended way to install hwmonitor is from source.
 ### **From source**
 
 ```bash
-git clone git@github.com:th0truth/hwmonitor.git
+git clone https://github.com/th0truth/hwmonitor.git 
 cd hwmonitor
 make
 ```
