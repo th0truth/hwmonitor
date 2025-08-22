@@ -13,3 +13,9 @@ git clone git@github.com:th0truth/hwmonitor.git
 cd hwmonitor
 make
 ```
+
+## **Usage**
+
+```bash
+./build/hwmonitor.o # Pass arguments. (e.g. --cpu | --gpu | --mem | --os |etc.)
+```
