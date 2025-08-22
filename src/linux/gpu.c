@@ -60,8 +60,21 @@ GPU *getGPUinfo()
       
       gpu->model = findstr(n_info, "Model  ", "\n");
       
-      free(n_info);
-
+      return gpu;
+    } else if (strcmp(gpu->vendor, INTEL) == 0) {
+      FILE *fp = popen("lspci -nnk | grep i915 -B2", "r");
+      if (fp == NULL) {
+        return NULL;
+      }
+      
+      // Extract Intel CPU model name
+      while (fgets(buff, BUFF_SIZE, fp) != NULL) {
+        char *model = findstr(buff, "VGA compatible controller [0300]:", "\0");
+        if (model) {
+          gpu->model = model;
+        }
+      }
+  
       return gpu;
     }
     free(gpu->vendor);
