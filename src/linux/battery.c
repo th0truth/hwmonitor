@@ -12,13 +12,15 @@ BAT *getBATTERYinfo()
   }
 
   char buff[BUFF_SIZE];
-  for (int i = 1; ; i++)
+  for (int i = 0; ; i++)
   {
     snprintf(buff, BUFF_SIZE, "/sys/class/power_supply/BAT%d/uevent", i);
     char *uevent = read_file(buff, "=", 0);
-    if (uevent == NULL) {
+    if (i >= 5) {
       return NULL;
-    }
+    } else if (uevent == NULL){
+      continue;
+    } 
 
     // Gather battery information
     bat->capacity           = atoi(findstr(uevent, "POWER_SUPPLY_CAPACITY", "\n"));
