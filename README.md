@@ -4,7 +4,7 @@ hwmonitor is a C-library that provides easy way to retrieve hardware information
 
 ## **Installation**
 
-The current recommended way to install hwmonitor is from source.
+The current way to install hwmonitor is from source.
 
 ### **From source**
 
@@ -17,5 +17,5 @@ make
 ## **Usage**
 
 ```bash
-./build/hwmonitor.o # Pass arguments. (e.g. --cpu | --gpu | --mem | --os |etc.)
+./build/hwmonitor.o # Pass arguments. (e.g. --cpu | --gpu | --mem | --os | etc.)
 ```
