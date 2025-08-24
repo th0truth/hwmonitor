@@ -13,6 +13,7 @@
 #include "battery.h"
 
 #define pprint_equals(str) printf("\n============ %s ============\n\n", str)
+#define pprint_error(str) fprintf(stderr, "[x] %s\n", str)
 
 #if defined(HWMONITOR_UNIX)
 void print_CPU()
@@ -20,6 +21,7 @@ void print_CPU()
   CPU *cpu = getCPUinfo();
   if (cpu == NULL) {
     fprintf(stderr, "Failed to get CPU specification.\n");
+    exit(EXIT_FAILURE);
   }
 
   pprint_equals("Central Processing Unit (CPU)");
@@ -45,6 +47,7 @@ void print_GPU()
   GPU *gpu = getGPUinfo();
   if (gpu == NULL) {
     fprintf(stderr, "Failed to get GPU info.\n");
+    exit(EXIT_FAILURE);
   }
 
   pprint_equals("Graphics Processing Unit (GPU)");
@@ -67,6 +70,7 @@ void print_MEM()
   MEM *mem = getMEMinfo();
   if (mem == NULL) {
     fprintf(stderr, "Failed to get Memory info.");
+    exit(EXIT_FAILURE);
   }
   
   pprint_equals("Memory");
@@ -91,6 +95,7 @@ void print_OS()
   OS *os = getOSinfo();
   if (os == NULL) {
     fprintf(stderr, "Failed to get operation system info.\n");
+    exit(EXIT_FAILURE);
   }
 
   pprint_equals("Operation System (OS)");
@@ -110,6 +115,7 @@ void print_MOBO()
   MOBO *motherboard = getMOBOinfo();
   if (motherboard == NULL) {
     fprintf(stderr, "Failed to get motherboard info.\n");
+    exit(EXIT_FAILURE);
   }
 
   pprint_equals("Motherboard");
@@ -126,6 +132,7 @@ void print_BIOS()
   BIOS *bios = getBIOSinfo();
   if (bios == NULL) {
     fprintf(stderr, "Failed to get BIOS info.\n");
+    exit(EXIT_FAILURE);
   }
 
   pprint_equals("Basic Input/Output System (BIOS)");
@@ -142,6 +149,7 @@ void print_MAINBOARD()
   MAINBOARD *mainboard = getMainboardInfo();
   if (mainboard == NULL) {
     fprintf(stderr, "Failed to get mainboard info.\n");
+    exit(EXIT_FAILURE);
   }
       
   pprint_equals("Mainboard");
@@ -158,7 +166,8 @@ void print_BAT()
 {
   BAT *bat = getBATTERYinfo();
   if (bat == NULL) {
-    fprintf(stderr, "Failed to get battery info.\n");
+    pprint_error("Failed to get battery info.");
+    exit(EXIT_FAILURE);
   }
 
   pprint_equals("Battery");
