@@ -12,8 +12,7 @@ OS *getOSinfo()
     return NULL;
   }
 
-  char rmch[] = {'"'};
-  char *osinfo = read_file("/etc/os-release", rmch, 1);
+  char *osinfo = read_file("/etc/os-release", "\"", 1);
   if (osinfo == NULL) {
     free(os);
     return NULL;

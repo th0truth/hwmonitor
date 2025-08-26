@@ -43,7 +43,6 @@ int16_t getCPUCoreMinFreq_MHz(unsigned short core_id)
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", core_id);
 
-  char rmch[] = {' '};
   char *cpufreq = read_file(buff, NULL, 1);
   if (cpufreq == NULL) {
     return -1;
@@ -63,7 +62,6 @@ int16_t getCPUCoreRegFreq_MHz(unsigned short core_id)
   char buff[BUFF_SIZE];
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", core_id);
 
-  char rmch[] = {' '};
   char *cpufreq = read_file(buff, NULL, 1);
   if (cpufreq == NULL) {
     return -1;
@@ -168,8 +166,7 @@ CPU *getCPUinfo()
     return NULL;
   }
 
-  char rmch[] = {'\t', ':'};
-  char *cpuinfo = read_file("/proc/cpuinfo", rmch, 0);
+  char *cpuinfo = read_file("/proc/cpuinfo", ":\t", 0);
   if (cpuinfo == NULL) {
     free(cpu);
     return NULL;

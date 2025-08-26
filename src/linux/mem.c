@@ -12,8 +12,7 @@ MEM *getMEMinfo()
     return NULL;
   }
 
-  char rmch[] = {' ', ':'};
-  char *meminfo = read_file("/proc/meminfo", rmch, 0);
+  char *meminfo = read_file("/proc/meminfo", " :", 0);
   if (meminfo == NULL) {
     free(mem);
     return NULL;
