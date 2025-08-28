@@ -100,9 +100,9 @@ void print_OS()
 
   pprint_equals("Operation System (OS)");
 
-  printf("OS: %s %d (%s)\n", os->NAME, os->VERSION_ID, os->DE);
+  printf("OS: %s\n", os->NAME);
   printf("Distro: %s\n", os->ID);
-  printf("Version: %d\n", os->VERSION_ID);
+  printf("Version: %s\n", os->VERSION_ID);
   printf("DE: %s\n", os->DE);
   printf("DE ID: %s\n", os->DE_ID);
   printf("RELEASE TYPE: %s\n", os->RELEASE_TYPE);

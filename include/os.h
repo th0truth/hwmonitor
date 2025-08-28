@@ -6,7 +6,7 @@
 #if defined(HWMONITOR_UNIX)
 typedef struct {
   char *NAME;
-  int16_t VERSION_ID;
+  char *VERSION_ID;
   char *RELEASE_TYPE;
   char *ID;
   char *DE;

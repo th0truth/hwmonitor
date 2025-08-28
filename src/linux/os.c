@@ -20,7 +20,7 @@ OS *getOSinfo()
   
   // Gather OS information
   os->NAME         = findstr(osinfo, "NAME=", "\n");
-  os->VERSION_ID   =  atoi(findstr(osinfo, "VERSION_ID=", "\n"));
+  os->VERSION_ID   = findstr(osinfo, "VERSION_ID=", "\n");
   os->RELEASE_TYPE = findstr(osinfo, "RELEASE_TYPE=", "\n");
   os->ID           = findstr(osinfo, "ID=", "\n");
   os->DE           = findstr(osinfo, "VARIANT=", "\n");
@@ -34,6 +34,7 @@ void free_os(OS *os)
 {
   if (!os) return;
   free(os->NAME);
+  free(os->VERSION_ID);
   free(os->RELEASE_TYPE);
   free(os->ID);
   free(os->DE);
