@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <getopt.h>
 
 #include "hwmonitor.h"
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
   while ((opt = getopt_long(argc, argv, "hcgrbMBHs", long_options, &option_index)) != -1) {
     switch (opt) {
       case 'h':
-        printHelp(argv[0]);
+        print_Help(argv[0]);
         return 0;
       case 'c':
         print_CPU();
@@ -51,6 +52,10 @@ int main(int argc, char *argv[])
       case 's':
         print_OS();
         break;
+      
+        default:
+          print_Help(argv[0]);
+          exit(EXIT_FAILURE);
     }
   }
 
