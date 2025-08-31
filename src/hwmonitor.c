@@ -1,37 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
 
 #include "hwmonitor.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
+  int opt;
+  static struct option long_options[] = {
+    {"help",        no_argument,  NULL, 'h'},
+    {"cpu",         no_argument,  NULL, 'c'},
+    {"gpu",         no_argument,  NULL, 'g'},
+    {"ram",         no_argument,  NULL, 'r'},
+    {"battery",     no_argument,  NULL, 'b'},
+    {"motherboard", no_argument,  NULL, 'M'},
+    {"bios",        no_argument,  NULL, 'B'},
+    {"mainboard",   no_argument,  NULL, 'H'},
+    {"os",          no_argument,  NULL, 's'},
+    {NULL,          0,            NULL,  0}
+  };
   
-  for (int i = 1; i < argc; i++)
-  {
-    if (strcmp(argv[i], "--cpu") == 0) {
-      print_CPU();
-      continue;
-    } else if (strcmp(argv[i], "--mem") == 0) {
-      print_MEM();
-      continue;
-    } else if (strcmp(argv[i], "--gpu") == 0) {
-      print_GPU();
-      continue;
-    } else if (strcmp(argv[i], "--os") == 0) {
-      print_OS();
-      continue;
-    } else if (strcmp(argv[i], "--mobo") == 0) {
-      print_MOBO();
-      continue;
-    } else if (strcmp(argv[i], "--bios") == 0) {
-      print_BIOS();
-      continue; 
-    } else if (strcmp(argv[i], "--mainboard") == 0) {
-      print_MAINBOARD();
-      continue;
-    } else if (strcmp(argv[i], "--battery") == 0) {
-      print_BAT();
-      continue;
+  int option_index = 0;
+  while ((opt = getopt_long(argc, argv, "c::a", long_options, &option_index)) != -1) {
+    switch (opt) {
+      case 'h':
+        printHelp(argv[0]);
+        return 0;
+      case 'c':
+        print_CPU();
+        break;
+      case 'g':
+        print_GPU();
+        break;
+      case 'r':
+        print_RAM();
+        break;
+      case 'b':
+        print_BAT();
+        break;
+      case 'M':
+        print_Motherboard();
+        break;
+      case 'B':
+        print_BIOS();
+        break;
+      case 'H':
+        print_MAINBOARD();
+        break;
+      case 's':
+        print_OS();
+        break;
     }
   }
 
