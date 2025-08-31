@@ -3,7 +3,7 @@
 #include "utils.h"
 #include "cpu.h"
 #include "gpu.h"
-#include "mem.h"
+#include "ram.h"
 #include "os.h"
 #include "motherboard.h"
 #include "mainboard.h"
