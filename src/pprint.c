@@ -22,7 +22,7 @@ struct helpInfo {
 };
 
 #if defined(HWMONITOR_UNIX)
-void printHelp(char *argv)
+void print_Help(char *argv)
 {
   struct helpInfo info[] = {
     {"-h, --help", "Show this help message."},
@@ -126,7 +126,7 @@ void print_OS()
   }
 
   printf("OS: %s\n", os->NAME);
-  printf("Distro: %s\n", os->ID);
+  printf("Distro: %s\n", os->DE_ID);
   printf("Version: %s\n", os->VERSION_ID);
   printf("DE: %s\n", os->DE);
   printf("DE ID: %s\n", os->DE_ID);
