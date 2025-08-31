@@ -1,6 +1,6 @@
 #pragma once
 
-void printHelp(char *argv);
+void print_Help(char *argv);
 void print_CPU();
 void print_GPU();
 void print_RAM();
