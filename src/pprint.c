@@ -8,6 +8,7 @@
 #include "gpu.h"
 #include "mem.h"
 #include "os.h"
+#include "bios.h"
 #include "motherboard.h"
 #include "mainboard.h"
 #include "battery.h"
@@ -107,19 +108,19 @@ void print_OS()
   free_os(os);
 }
 
-void print_MOBO()
+void print_Motherboard()
 {
-  MOBO *motherboard = getMOBOinfo();
-  if (motherboard == NULL) {
+  Motherboard *mobo = getMotherboardInfo();
+  if (mobo == NULL) {
     fprintf(stderr, "Failed to get motherboard info.\n");
     exit(EXIT_FAILURE);
   }
 
-  printf("Motherboard manufacturer: %s\n", motherboard->manufacturer);
-  printf("Motherboard model: %s\n", motherboard->model);
-  printf("Motherboard version: %s\n", motherboard->version);
+  printf("Motherboard manufacturer: %s\n", mobo->manufacturer);
+  printf("Motherboard model: %s\n", mobo->model);
+  printf("Motherboard version: %s\n", mobo->version);
 
-  free_mobo(motherboard);
+  free_mobo(mobo);
 }
 
 void print_BIOS()
