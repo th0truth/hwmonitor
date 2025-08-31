@@ -5,7 +5,7 @@
 #include "gpu.h"
 #include "mem.h"
 #include "os.h"
-#include "mobo.h"
+#include "motherboard.h"
 #include "mainboard.h"
 #include "battery.h"
 
