@@ -16,6 +16,11 @@
 #define pprint_error(str) fprintf(stderr, "[x] %s\n", str)
 
 #if defined(HWMONITOR_UNIX)
+void printHelp(char *argv)
+{
+  printf("usage: %s [-c] [-g]\n", argv);
+}
+
 void print_CPU()
 {
   CPU *cpu = getCPUinfo();
