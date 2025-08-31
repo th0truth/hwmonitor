@@ -6,7 +6,7 @@
 
 #include "cpu.h" 
 #include "gpu.h"
-#include "mem.h"
+#include "ram.h"
 #include "os.h"
 #include "bios.h"
 #include "motherboard.h"
@@ -67,9 +67,9 @@ void print_GPU()
   free_gpu(gpu);
 }
 
-void print_MEM()
+void print_RAM()
 {
-  MEM *mem = getMEMinfo();
+  MEM *mem = getRAMinfo();
   if (mem == NULL) {
     fprintf(stderr, "Failed to get Memory info.");
     exit(EXIT_FAILURE);
