@@ -15,6 +15,7 @@
 
 #define pprint_equals(str) printf("\n============ %s ============\n\n", str)
 #define pprint_error(str) fprintf(stderr, "[x] %s\n", str)
+#define pprint_unknown(str) str == NULL ? "<unknown>" : str
 
 struct helpInfo {
   char *name;
@@ -126,11 +127,11 @@ void print_OS()
   }
 
   printf("OS: %s\n", os->NAME);
-  printf("Distro: %s\n", os->DE_ID);
-  printf("Version: %s\n", os->VERSION_ID);
-  printf("DE: %s\n", os->DE);
-  printf("DE ID: %s\n", os->DE_ID);
-  printf("RELEASE TYPE: %s\n", os->RELEASE_TYPE);
+  printf("Distro: %s\n", pprint_unknown(os->DE_ID));
+  printf("Version: %s\n", pprint_unknown(os->VERSION_ID));
+  printf("DE: %s\n", pprint_unknown(os->DE));
+  printf("DE ID: %s\n", pprint_unknown(os->DE_ID));
+  printf("RELEASE TYPE: %s\n", pprint_unknown(os->RELEASE_TYPE));
 
   free_os(os);
 }
@@ -178,7 +179,7 @@ void print_MAINBOARD()
 
   printf("Hardware model: %s\n", mainboard->name);
   printf("Hardware family: %s\n", mainboard->family);
-  printf("Hardware serial: %s\n", mainboard->serial);
+  printf("Hardware serial: %s\n", pprint_unknown(mainboard->serial));
   printf("Hardware sku: %s\n", mainboard->sku);
 
   free_mainboard(mainboard);
