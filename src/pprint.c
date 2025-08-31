@@ -168,7 +168,7 @@ void print_BIOS()
   free_bios(bios);
 }
 
-void print_MAINBOARD()
+void print_Mainboard()
 {
   MAINBOARD *mainboard = getMainboardInfo();
   if (mainboard == NULL)
