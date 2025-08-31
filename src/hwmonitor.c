@@ -13,16 +13,16 @@ int main(int argc, char *argv[])
     {"cpu",         no_argument,  NULL, 'c'},
     {"gpu",         no_argument,  NULL, 'g'},
     {"ram",         no_argument,  NULL, 'r'},
-    {"battery",     no_argument,  NULL, 'b'},
-    {"motherboard", no_argument,  NULL, 'M'},
+    {"bat",     no_argument,  NULL, 'b'},
+    {"motherboard", no_argument,  NULL, 'm'},
     {"bios",        no_argument,  NULL, 'B'},
-    {"mainboard",   no_argument,  NULL, 'H'},
+    {"mainboard",   no_argument,  NULL, 'M'},
     {"os",          no_argument,  NULL, 's'},
     {NULL,          0,            NULL,  0}
   };
   
   int option_index = 0;
-  while ((opt = getopt_long(argc, argv, "c::a", long_options, &option_index)) != -1) {
+  while ((opt = getopt_long(argc, argv, "hcgrbMBHs", long_options, &option_index)) != -1) {
     switch (opt) {
       case 'h':
         printHelp(argv[0]);
@@ -39,13 +39,13 @@ int main(int argc, char *argv[])
       case 'b':
         print_BAT();
         break;
-      case 'M':
+      case 'm':
         print_Motherboard();
         break;
       case 'B':
         print_BIOS();
         break;
-      case 'H':
+      case 'M':
         print_MAINBOARD();
         break;
       case 's':
