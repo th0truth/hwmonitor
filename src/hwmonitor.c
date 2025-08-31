@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         print_BIOS();
         break;
       case 'M':
-        print_MAINBOARD();
+        print_Mainboard();
         break;
       case 's':
         print_OS();
