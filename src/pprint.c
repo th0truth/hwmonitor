@@ -8,7 +8,7 @@
 #include "gpu.h"
 #include "mem.h"
 #include "os.h"
-#include "mobo.h"
+#include "motherboard.h"
 #include "mainboard.h"
 #include "battery.h"
 
@@ -23,8 +23,6 @@ void print_CPU()
     fprintf(stderr, "Failed to get CPU specification.\n");
     exit(EXIT_FAILURE);
   }
-
-  pprint_equals("Central Processing Unit (CPU)");
 
   printf("Architecture: %s\n", cpu->arch);
   printf("CPU Vendor ID: %s", cpu->vendor_id);
@@ -50,8 +48,6 @@ void print_GPU()
     exit(EXIT_FAILURE);
   }
 
-  pprint_equals("Graphics Processing Unit (GPU)");
-
   printf("Vendor ID: %s\n", gpu->vendor);
   printf("Device ID: %s\n", gpu->device_id);
   printf("Driver: %s\n", gpu->driver);
@@ -73,8 +69,6 @@ void print_MEM()
     exit(EXIT_FAILURE);
   }
   
-  pprint_equals("Memory");
-
   printf("Mem Total: %.2f GiB\n", calcsz("GiB", mem->total));
   printf("Mem Free: %.2f GiB\n", calcsz("GiB", mem->free));
   printf("Mem Available: %.2f GiB\n", calcsz("GiB", mem->available));
@@ -98,8 +92,6 @@ void print_OS()
     exit(EXIT_FAILURE);
   }
 
-  pprint_equals("Operation System (OS)");
-
   printf("OS: %s\n", os->NAME);
   printf("Distro: %s\n", os->ID);
   printf("Version: %s\n", os->VERSION_ID);
@@ -118,8 +110,6 @@ void print_MOBO()
     exit(EXIT_FAILURE);
   }
 
-  pprint_equals("Motherboard");
-
   printf("Motherboard manufacturer: %s\n", motherboard->manufacturer);
   printf("Motherboard model: %s\n", motherboard->model);
   printf("Motherboard version: %s\n", motherboard->version);
@@ -134,8 +124,6 @@ void print_BIOS()
     fprintf(stderr, "Failed to get BIOS info.\n");
     exit(EXIT_FAILURE);
   }
-
-  pprint_equals("Basic Input/Output System (BIOS)");
 
   printf("BIOS Vendor: %s\n", bios->vendor);
   printf("BIOS Version: %s\n", bios->version);
@@ -152,8 +140,6 @@ void print_MAINBOARD()
     exit(EXIT_FAILURE);
   }
       
-  pprint_equals("Mainboard");
-
   printf("Hardware model: %s\n", mainboard->name);
   printf("Hardware family: %s\n", mainboard->family);
   printf("Hardware serial: %s\n", mainboard->serial);
@@ -169,8 +155,6 @@ void print_BAT()
     pprint_error("Failed to get battery info.");
     exit(EXIT_FAILURE);
   }
-
-  pprint_equals("Battery");
 
   printf("Capacity: %d%%\n", bat->capacity);
   printf("Voltage min design: %f\n", bat->voltage_min_design);
