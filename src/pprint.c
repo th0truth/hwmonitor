@@ -4,7 +4,7 @@
 #include "platform.h"
 #include "utils.h"
 
-#include "cpu.h" 
+#include "cpu.h"
 #include "gpu.h"
 #include "ram.h"
 #include "os.h"
@@ -16,16 +16,40 @@
 #define pprint_equals(str) printf("\n============ %s ============\n\n", str)
 #define pprint_error(str) fprintf(stderr, "[x] %s\n", str)
 
+struct helpInfo {
+  char *name;
+  char *description;
+};
+
 #if defined(HWMONITOR_UNIX)
 void printHelp(char *argv)
 {
-  printf("usage: %s [-c] [-g]\n", argv);
+  struct helpInfo info[] = {
+    {"-h, --help", "Show this help message."},
+    {"-c, --cpu", "Output CPU details."},
+    {"-g, --gpu", "Output GPU details."},
+    {"-r, --ram", "Output memory usage."},
+    {"-b, --bat", "Output battery details."},
+    {"-B, --bios", "Output BIOS information."},
+    {"-s, --os", "Output Operation System information."},
+    {"-m, --motherboard", "Output motherboard information."},
+    {"-M, --mainboard", "Output hardware information."}
+  };
+
+  printf("usage: %s [-c] [-g] [-r] [-b] [-B] [-s] [-m] [-M]\n", argv);
+  printf("\noptions:\n");
+
+  for (int i = 0; info[i].name != NULL; i++)
+    {
+      printf("  %s: \t%s\n", info[i].name, info[i].description);
+    }
 }
 
 void print_CPU()
 {
   CPU *cpu = getCPUinfo();
-  if (cpu == NULL) {
+  if (cpu == NULL)
+  {
     fprintf(stderr, "Failed to get CPU specification.\n");
     exit(EXIT_FAILURE);
   }
@@ -49,7 +73,8 @@ void print_CPU()
 void print_GPU()
 {
   GPU *gpu = getGPUinfo();
-  if (gpu == NULL) {
+  if (gpu == NULL)
+  {
     fprintf(stderr, "Failed to get GPU info.\n");
     exit(EXIT_FAILURE);
   }
@@ -70,11 +95,12 @@ void print_GPU()
 void print_RAM()
 {
   MEM *mem = getRAMinfo();
-  if (mem == NULL) {
+  if (mem == NULL)
+  {
     fprintf(stderr, "Failed to get Memory info.");
     exit(EXIT_FAILURE);
   }
-  
+
   printf("Mem Total: %.2f GiB\n", calcsz("GiB", mem->total));
   printf("Mem Free: %.2f GiB\n", calcsz("GiB", mem->free));
   printf("Mem Available: %.2f GiB\n", calcsz("GiB", mem->available));
@@ -93,7 +119,8 @@ void print_RAM()
 void print_OS()
 {
   OS *os = getOSinfo();
-  if (os == NULL) {
+  if (os == NULL)
+  {
     fprintf(stderr, "Failed to get operation system info.\n");
     exit(EXIT_FAILURE);
   }
@@ -111,7 +138,8 @@ void print_OS()
 void print_Motherboard()
 {
   Motherboard *mobo = getMotherboardInfo();
-  if (mobo == NULL) {
+  if (mobo == NULL)
+  {
     fprintf(stderr, "Failed to get motherboard info.\n");
     exit(EXIT_FAILURE);
   }
@@ -126,7 +154,8 @@ void print_Motherboard()
 void print_BIOS()
 {
   BIOS *bios = getBIOSinfo();
-  if (bios == NULL) {
+  if (bios == NULL)
+  {
     fprintf(stderr, "Failed to get BIOS info.\n");
     exit(EXIT_FAILURE);
   }
@@ -141,11 +170,12 @@ void print_BIOS()
 void print_MAINBOARD()
 {
   MAINBOARD *mainboard = getMainboardInfo();
-  if (mainboard == NULL) {
+  if (mainboard == NULL)
+  {
     fprintf(stderr, "Failed to get mainboard info.\n");
     exit(EXIT_FAILURE);
   }
-      
+
   printf("Hardware model: %s\n", mainboard->name);
   printf("Hardware family: %s\n", mainboard->family);
   printf("Hardware serial: %s\n", mainboard->serial);
@@ -157,7 +187,8 @@ void print_MAINBOARD()
 void print_BAT()
 {
   BAT *bat = getBATTERYinfo();
-  if (bat == NULL) {
+  if (bat == NULL)
+  {
     pprint_error("Failed to get battery info.");
     exit(EXIT_FAILURE);
   }
