@@ -12,6 +12,7 @@
 #include "motherboard.h"
 #include "mainboard.h"
 #include "battery.h"
+#include "network.h"
 
 #define pprint_equals(str) printf("\n============ %s ============\n\n", str)
 #define pprint_error(str) fprintf(stderr, "[x] %s\n", str)
@@ -211,5 +212,19 @@ void print_BAT()
 
   free_battery(bat);
 }
+
+void print_NET(const char *interface)
+{
+  NET *net = getNetworkInfo(interface);
+  if (net == NULL) {
+    pprint_error("Failed to get network info.");
+    exit(EXIT_FAILURE);
+  }
+
+  printf("Network driver: %s\n", net->driver);
+
+  free_net(net);
+}
+
 
 #endif
