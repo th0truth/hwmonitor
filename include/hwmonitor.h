@@ -8,5 +8,6 @@
 #include "motherboard.h"
 #include "mainboard.h"
 #include "battery.h"
+#include "network.h"
 
 #include "pprint.h"
