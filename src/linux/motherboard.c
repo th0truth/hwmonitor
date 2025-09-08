@@ -22,7 +22,7 @@ Motherboard *getMotherboardInfo()
   return mobo;
 }
 
-void free_mobo(Motherboard *mobo)
+void free_motherboard(Motherboard *mobo)
 {
   if (!mobo) return;
   free(mobo->manufacturer);

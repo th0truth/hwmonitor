@@ -10,5 +10,5 @@ typedef struct {
 } Motherboard;
 
 Motherboard *getMotherboardInfo();
-void free_mobo(Motherboard *mobo);
+void free_motherboard(Motherboard *mobo);
 #endif
