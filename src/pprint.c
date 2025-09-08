@@ -150,7 +150,7 @@ void print_Motherboard()
   printf("Motherboard model: %s\n", mobo->model);
   printf("Motherboard version: %s\n", mobo->version);
 
-  free_mobo(mobo);
+  free_motherboard(mobo);
 }
 
 void print_BIOS()
