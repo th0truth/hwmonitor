@@ -1,5 +1,6 @@
 #pragma once
 
+#include <inttypes.h>
 #include "platform.h"
 
 #if defined(HWMONITOR_UNIX)
@@ -12,12 +13,18 @@
 #define AMD "0x1002"
 
 typedef struct {
+  char *model;
+  uint16_t IRQ;
+  char *UUID;
+  char *vbios;
+  char *bus_type;
+  char *firmware;
+  char *kernel_version;
   char *vendor;
   char *device_id;
   char *subsys_vendor;
   char *subsys_device;
   char *driver;
-  char *model;
   char *pci_id;
   char *pci_subsys;
   char *pci_slot_name;

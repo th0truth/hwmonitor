@@ -53,14 +53,26 @@ int getGPUinfo(GPU **gpus)
       
     // Vendor-specific handling
     if (strcmp(gpu->vendor, NVIDIA) == 0) {
-      snprintf(buff, BUFF_SIZE, "/proc/driver/nvidia/gpus/%s/information", gpu->pci_slot_name);
-        
       // Get details about an NVIDIA GPU
-      char *n_info = read_file(buff, ":\t", 0);
+      snprintf(buff, BUFF_SIZE, "/proc/driver/nvidia/gpus/%s/information", gpu->pci_slot_name);
+      char *n_info = read_file(buff, "\t", 0);
       if (n_info) {
-        gpu->model = findstr(n_info, "Model  ", "\n");
+        gpu->model = findstr(n_info, "Model:  ", "\n");
+        gpu->IRQ = atoi(findstr(n_info, "IRQ: ", "\n"));
+        gpu->UUID = findstr(n_info, "UUID:  ", "\n");
+        gpu->vbios = findstr(n_info, "Video BIOS:  ", "\n");
+        gpu->bus_type = findstr(n_info, "Bus Type:  ", "\n");
+        gpu->firmware = findstr(n_info, "GPU Firmware:  ", "\n");
         free(n_info);
       }
+      
+      // Get version of NVIDIA kernel driver module
+      char *k_version = read_file("/proc/driver/nvidia/version", ":", 0);
+      if (k_version) {
+        gpu->kernel_version = trim(findstr(k_version, "NVRM version", "\n"));
+        free(k_version);
+      }
+      
     } else if (strcmp(gpu->vendor, INTEL) == 0) {
       FILE *fp = popen("lspci -nnk | grep i915 -B2", "r");
       if (fp) {
@@ -83,12 +95,17 @@ int getGPUinfo(GPU **gpus)
 void free_gpu(GPU *gpu)
 {
   if (!gpu) return;
+  free(gpu->model);
+  free(gpu->UUID);
+  free(gpu->vbios);
+  free(gpu->bus_type);
+  free(gpu->firmware);
+  free(gpu->kernel_version);
   free(gpu->vendor);
   free(gpu->device_id);
   free(gpu->subsys_vendor);
   free(gpu->subsys_device);
   free(gpu->driver);
-  free(gpu->model);
   free(gpu->pci_id);
   free(gpu->pci_subsys);
   free(gpu->pci_slot_name);
