@@ -74,24 +74,26 @@ void print_CPU()
 
 void print_GPU()
 {
-  GPU *gpu = getGPUinfo();
-  if (gpu == NULL)
-  {
-    fprintf(stderr, "Failed to get GPU info.\n");
-    exit(EXIT_FAILURE);
+  GPU *gpus[MAX_GPUS] = {0};
+  int count = getGPUinfo(gpus);
+
+  printf("Found %d GPU(s):\n\n", count);
+ 
+  for (int i = 0; i < count; i++) {
+    printf("GPU %d:\n", i);
+    printf("  Vendor ID: %s\n", gpus[i]->vendor);
+    printf("  Device ID: %s\n", gpus[i]->device_id);
+    printf("  Driver: %s\n", gpus[i]->driver);
+    printf("  Model: %s\n", gpus[i]->model);
+    printf("  Subsys Vendor: %s\n", gpus[i]->subsys_vendor);
+    printf("  Subsys Device: %s\n", gpus[i]->subsys_device);
+    printf("  PCI ID: %s\n", gpus[i]->pci_id);
+    printf("  PCI SUBSYS: %s\n", gpus[i]->pci_subsys);
+    printf("  PCI SLOT NAME: %s\n", gpus[i]->pci_slot_name);
+    printf("\n");
+
+    free_gpu(gpus[i]);
   }
-
-  printf("Vendor ID: %s\n", gpu->vendor);
-  printf("Device ID: %s\n", gpu->device_id);
-  printf("Driver: %s\n", gpu->driver);
-  printf("Model: %s\n", gpu->model);
-  printf("Subsys Vendor: %s\n", gpu->subsys_vendor);
-  printf("Subsys Device: %s\n", gpu->subsys_device);
-  printf("PCI ID: %s\n", gpu->pci_id);
-  printf("PCI SUBSYS: %s\n", gpu->pci_subsys);
-  printf("PCI SLOT NAME: %s\n", gpu->pci_slot_name);
-
-  free_gpu(gpu);
 }
 
 void print_RAM()
