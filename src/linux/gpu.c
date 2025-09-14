@@ -5,26 +5,29 @@
 #include "utils.h"
 #include "gpu.h"
 
-GPU *getGPUinfo()
+int getGPUinfo(GPU **gpus)
 {
-  // Allocate memory
-  GPU *gpu = malloc(sizeof *gpu);
-  if (gpu == NULL) {
-    fprintf(stderr, "Memory allocation failed.");
-    return NULL;
-  }
-
   char buff[BUFF_SIZE];
-  for (int i = 0; ; ++i) {
-    // Get the GPU Vendor ID
+  int count = 0;
+
+  for (int i = 0; i < MAX_GPUS; ++i) {
+    GPU *gpu = malloc(sizeof *gpu);
+    if (gpu == NULL) {
+      fprintf(stderr, "Memory allocation failed.");
+      break;
+    }
+    memset(gpu, 0, sizeof *gpu);
+
+      // Get the GPU Vendor ID
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/vendor", i);
     gpu->vendor = read_file(buff, "\n", 0) ;
     if (gpu->vendor == NULL) {
-      free(gpu);
-      return NULL;
+      free_gpu(gpu);
+      continue;
     }
+
     gpu->vendor[strcspn(gpu->vendor, "\xff")] = '\0';
-    
+      
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/device", i);
     gpu->device_id = read_file(buff, "\n", 0);
 
@@ -37,8 +40,8 @@ GPU *getGPUinfo()
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/uevent", i);
     char *uevent = read_file(buff, "=", 0);
     if (uevent == NULL) {
-      free(gpu);
-      return NULL;
+      free_gpu(gpu);
+      continue;
     }
 
     // Extract GPU info from uevent
@@ -46,39 +49,35 @@ GPU *getGPUinfo()
     gpu->pci_id        = findstr(uevent, "PCI_ID", "\n");
     gpu->pci_subsys    = findstr(uevent, "PCI_SUBSYS_ID", "\n");
     gpu->pci_slot_name = findstr(uevent, "PCI_SLOT_NAME", "\n");
-    
     free(uevent);
-    
+      
+    // Vendor-specific handling
     if (strcmp(gpu->vendor, NVIDIA) == 0) {
       snprintf(buff, BUFF_SIZE, "/proc/driver/nvidia/gpus/%s/information", gpu->pci_slot_name);
-      
+        
       // Get details about an NVIDIA GPU
       char *n_info = read_file(buff, ":\t", 0);
-      if (n_info == NULL) {
-        return NULL;
+      if (n_info) {
+        gpu->model = findstr(n_info, "Model  ", "\n");
+        free(n_info);
       }
-      
-      gpu->model = findstr(n_info, "Model  ", "\n");
-      
-      return gpu;
     } else if (strcmp(gpu->vendor, INTEL) == 0) {
       FILE *fp = popen("lspci -nnk | grep i915 -B2", "r");
-      if (fp == NULL) {
-        return NULL;
-      }
-      
-      // Extract Intel CPU model name
-      while (fgets(buff, BUFF_SIZE, fp) != NULL) {
-        char *model = findstr(buff, "VGA compatible controller [0300]:", "\0");
-        if (model) {
-          gpu->model = model;
+      if (fp) {
+        while (fgets(buff, BUFF_SIZE, fp) != NULL) {
+          char *model = findstr(buff, "VGA compatible controller [0300]:", "\0");
+          if (model) {
+            gpu->model = model;
+            break;
+          }
         }
+        pclose(fp);
       }
-  
-      return gpu;
     }
-    free(gpu->vendor);
+    gpus[count++] = gpu;
   }
+
+  return count;
 }
 
 void free_gpu(GPU *gpu)
