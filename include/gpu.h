@@ -14,7 +14,7 @@
 
 typedef struct {
   char *model;
-  uint16_t IRQ;
+  char *IRQ;
   char *UUID;
   char *vbios;
   char *bus_type;

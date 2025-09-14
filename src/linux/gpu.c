@@ -18,7 +18,7 @@ int getGPUinfo(GPU **gpus)
     }
     memset(gpu, 0, sizeof *gpu);
 
-      // Get the GPU Vendor ID
+    // Get the GPU Vendor ID
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/vendor", i);
     gpu->vendor = read_file(buff, "\n", 0) ;
     if (gpu->vendor == NULL) {
@@ -58,7 +58,7 @@ int getGPUinfo(GPU **gpus)
       char *n_info = read_file(buff, "\t", 0);
       if (n_info) {
         gpu->model = findstr(n_info, "Model:  ", "\n");
-        gpu->IRQ = atoi(findstr(n_info, "IRQ: ", "\n"));
+        gpu->IRQ = trim(findstr(n_info, "IRQ:   ", "\n"));
         gpu->UUID = findstr(n_info, "UUID:  ", "\n");
         gpu->vbios = findstr(n_info, "Video BIOS:  ", "\n");
         gpu->bus_type = findstr(n_info, "Bus Type:  ", "\n");
