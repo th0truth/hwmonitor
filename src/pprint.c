@@ -81,6 +81,12 @@ void print_GPU()
  
   for (int i = 0; i < count; i++) {
     printf("GPU %d:\n", i);
+    printf("  IRQ: %d\n", gpus[i]->IRQ);
+    printf("  UUID: %s\n", pprint_unknown(gpus[i]->UUID));
+    printf("  Video BIOS: %s\n", pprint_unknown(gpus[i]->vbios));
+    printf("  Bus Type: %s\n", pprint_unknown(gpus[i]->bus_type));
+    printf("  Firmware: %s\n", pprint_unknown(gpus[i])->firmware);
+    printf("  Kernel Verison: %s\n", pprint_unknown(gpus[i]->kernel_version));
     printf("  Vendor ID: %s\n", gpus[i]->vendor);
     printf("  Device ID: %s\n", gpus[i]->device_id);
     printf("  Driver: %s\n", gpus[i]->driver);
