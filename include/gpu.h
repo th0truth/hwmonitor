@@ -4,6 +4,7 @@
 
 #if defined(HWMONITOR_UNIX)
 #define BUFF_SIZE 128
+#define MAX_GPUS 8
 
 // GPUs vendor id
 #define NVIDIA "0x10de"
@@ -22,6 +23,6 @@ typedef struct {
   char *pci_slot_name;
 } GPU;
 
-GPU *getGPUinfo();
+int getGPUinfo(GPU **gpus);
 void free_gpu(GPU *gpu);
 #endif
