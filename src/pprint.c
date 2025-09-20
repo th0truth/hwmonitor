@@ -34,7 +34,8 @@ void print_Help(char *argv)
     {"-r, --ram", "Output memory usage."},
     {"-b, --bat", "Output battery details."},
     {"-B, --bios", "Output BIOS information."},
-    {"-s, --os", "Output Operation System information."},
+    {"-o, --os", "Output Operation System information."},
+    {"-s, --storage", "Output storage information."},
     {"-m, --motherboard", "Output motherboard information."},
     {"-M, --mainboard", "Output hardware information."}
   };
@@ -249,7 +250,7 @@ void print_STORAGE()
     printf("  Serial: %s\n", storages[i]->serial);
     printf("  Removable: %s\n", storages[i]->removable ? "false" : "true");
     printf("\n");
-    
+
     free_storage(storages[i]);
   }
   
