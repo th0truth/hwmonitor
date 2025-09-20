@@ -13,6 +13,7 @@
 #include "mainboard.h"
 #include "battery.h"
 #include "network.h"
+#include "storage.h"
 
 #define pprint_equals(str) printf("\n============ %s ============\n\n", str)
 #define pprint_error(str) fprintf(stderr, "[x] %s\n", str)
@@ -234,5 +235,23 @@ void print_NET(const char *interface)
   free_net(net);
 }
 
+void print_STORAGE()
+{
+  STORAGE *storages[MAX_STORAGE_DEVICES] = {0};
+  int count = getStorageInfo(storages);
 
+  for (int i = 0; i < count; i++) {
+    printf("STORAGE %d: %s\n", i, storages[i]->device);
+    printf("  Model: %s\n", (storages[i]->model));
+    printf("  UUID: %s\n", storages[i]->uuid);
+    printf("  PCI SLOT NAME: %s\n", storages[i]->PCI_SLOT_NAME);
+    printf("  Size: %.2f GiB\n", calcsz("GiB", (storages[i]->size * 512 / 1024)));
+    printf("  Serial: %s\n", storages[i]->serial);
+    printf("  Removable: %s\n", storages[i]->removable ? "false" : "true");
+    printf("\n");
+    
+    free_storage(storages[i]);
+  }
+  
+}
 #endif

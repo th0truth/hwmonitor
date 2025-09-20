@@ -19,12 +19,13 @@ int main(int argc, char *argv[])
     {"motherboard", no_argument,  NULL, 'm'},
     {"bios",        no_argument,  NULL, 'B'},
     {"mainboard",   no_argument,  NULL, 'M'},
-    {"os",          no_argument,  NULL, 's'},
+    {"os",          no_argument,  NULL, 'o'},
+    {"storage",     no_argument,  NULL, 's'},
     {NULL,          0,            NULL,  0}
   };
   
   int option_index = 0;
-  while ((opt = getopt_long(argc, argv, "hcgrbn:mMBHs", long_options, &option_index)) != -1) {
+  while ((opt = getopt_long(argc, argv, "hcgrbn:mMBHos", long_options, &option_index)) != -1) {
     switch (opt) {
       case 'h':
         print_Help(argv[0]);
@@ -53,13 +54,15 @@ int main(int argc, char *argv[])
       case 'M':
         print_Mainboard();
         break;
-      case 's':
+      case 'o':
         print_OS();
         break;
-      
-        default:
-          print_Help(argv[0]);
-          exit(EXIT_FAILURE);
+      case 's':
+        print_STORAGE();
+        break;
+      default:
+        print_Help(argv[0]);
+        exit(EXIT_FAILURE);
     }
   }
 

@@ -10,3 +10,4 @@ void print_BIOS();
 void print_Mainboard();
 void print_BAT();
 void print_NET(const char *interface);
+void print_STORAGE();
