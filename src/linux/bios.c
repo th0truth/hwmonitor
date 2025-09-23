@@ -9,7 +9,7 @@
 BIOS *getBIOSinfo()
 {
   BIOS *bios = malloc(sizeof *bios);
-  if (bios == NULL) {
+  if (!bios) {
     fprintf(stderr, "Memory allocation filed.\n");
     return NULL;
   }

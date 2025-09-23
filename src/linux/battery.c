@@ -7,7 +7,7 @@
 BAT *getBATTERYinfo()
 {
   BAT *bat = malloc(sizeof *bat); 
-  if (bat == NULL) {
+  if (!bat) {
     return NULL;
   }
 
@@ -18,7 +18,7 @@ BAT *getBATTERYinfo()
     char *uevent = read_file(buff, "=", 0);
     if (i >= 5) {
       return NULL;
-    } else if (uevent == NULL){
+    } else if (!uevent){
       continue;
     } 
 

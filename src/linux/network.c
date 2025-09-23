@@ -8,7 +8,7 @@
 NET *getNetworkInfo(const char *interface)
 {
   NET *net = malloc(sizeof *net);
-  if (net == NULL) {
+  if (!net) {
     fprintf(stderr, "Memory allocation failed.\n");
     return NULL;
   }
@@ -17,7 +17,7 @@ NET *getNetworkInfo(const char *interface)
   if (strcmp(interface, "wlo1") == 0) {
     snprintf(buff, BUFF_SIZE, "/sys/class/net/wlo1/device/uevent");
     char *uevent = read_file(buff, "=", 0);
-    if (uevent == NULL) {
+    if (!uevent) {
       free(net);
       return NULL;
     }

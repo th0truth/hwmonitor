@@ -8,7 +8,7 @@
 MAINBOARD *getMainboardInfo()
 {
   MAINBOARD *mainboard = malloc(sizeof *mainboard);
-  if (mainboard == NULL) {
+  if (!mainboard) {
     fprintf(stderr, "Memory allocation failed.");
     return NULL;
   }

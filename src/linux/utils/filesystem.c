@@ -8,7 +8,7 @@
 char *read_file(const char *filename, char *rmch, int p_err)
 {
   FILE *fptr = fopen(filename, "r");
-  if (fptr == NULL) {
+  if (!fptr) {
     if (p_err) {
       fprintf(stderr, "File '%s' openning failed: %s\n", filename, strerror(errno));
     }
@@ -24,7 +24,7 @@ char *read_file(const char *filename, char *rmch, int p_err)
     if (nch >= size-1) {
       size += 10;
       buff = realloc(buff, size);
-      if (buff == NULL) {
+      if (!buff) {
         fprintf(stderr, "Out of memory");
         free(buff);
         exit(EXIT_FAILURE);

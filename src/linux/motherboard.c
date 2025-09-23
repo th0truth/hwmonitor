@@ -9,7 +9,7 @@
 Motherboard *getMotherboardInfo()
 {
   Motherboard *mobo = malloc(sizeof *mobo);
-  if (mobo == NULL) {
+  if (!mobo) {
     fprintf(stderr, "Memory allocation filed.\n");
     return NULL;
   }

@@ -7,13 +7,13 @@
 MEM *getMEMinfo()
 {
   MEM *mem = malloc(sizeof *mem);
-  if (mem == NULL) {
+  if (!mem) {
     fprintf(stderr, "Memory allocation failed.");
     return NULL;
   }
 
   char *meminfo = read_file("/proc/meminfo", " :", 0);
-  if (meminfo == NULL) {
+  if (!meminfo) {
     free(mem);
     return NULL;
   }

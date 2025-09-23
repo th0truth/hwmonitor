@@ -52,7 +52,7 @@ void print_Help(char *argv)
 void print_CPU()
 {
   CPU *cpu = getCPUinfo();
-  if (cpu == NULL)
+  if (!cpu)
   {
     fprintf(stderr, "Failed to get CPU specification.\n");
     exit(EXIT_FAILURE);
@@ -107,7 +107,7 @@ void print_GPU()
 void print_RAM()
 {
   MEM *mem = getRAMinfo();
-  if (mem == NULL)
+  if (!mem)
   {
     fprintf(stderr, "Failed to get Memory info.");
     exit(EXIT_FAILURE);
@@ -131,7 +131,7 @@ void print_RAM()
 void print_OS()
 {
   OS *os = getOSinfo();
-  if (os == NULL)
+  if (!os)
   {
     fprintf(stderr, "Failed to get operation system info.\n");
     exit(EXIT_FAILURE);
@@ -150,7 +150,7 @@ void print_OS()
 void print_Motherboard()
 {
   Motherboard *mobo = getMotherboardInfo();
-  if (mobo == NULL)
+  if (!mobo)
   {
     fprintf(stderr, "Failed to get motherboard info.\n");
     exit(EXIT_FAILURE);
@@ -166,7 +166,7 @@ void print_Motherboard()
 void print_BIOS()
 {
   BIOS *bios = getBIOSinfo();
-  if (bios == NULL)
+  if (!bios)
   {
     fprintf(stderr, "Failed to get BIOS info.\n");
     exit(EXIT_FAILURE);
@@ -182,7 +182,7 @@ void print_BIOS()
 void print_Mainboard()
 {
   MAINBOARD *mainboard = getMainboardInfo();
-  if (mainboard == NULL)
+  if (!mainboard)
   {
     fprintf(stderr, "Failed to get mainboard info.\n");
     exit(EXIT_FAILURE);
@@ -199,7 +199,7 @@ void print_Mainboard()
 void print_BAT()
 {
   BAT *bat = getBATTERYinfo();
-  if (bat == NULL)
+  if (!bat)
   {
     pprint_error("Failed to get battery info.");
     exit(EXIT_FAILURE);
@@ -226,7 +226,7 @@ void print_BAT()
 void print_NET(const char *interface)
 {
   NET *net = getNetworkInfo(interface);
-  if (net == NULL) {
+  if (!net) {
     pprint_error("Failed to get network info.");
     exit(EXIT_FAILURE);
   }

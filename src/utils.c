@@ -12,7 +12,7 @@ char *trim(char *str)
   char *frontp = str;
   char *endp = NULL; 
 
-  if ( str == NULL ) { return NULL; }
+  if ( !str ) { return NULL; }
   if ( str[0] == '\0' ) { return str; }
   
   len = strlen(str);
@@ -45,7 +45,7 @@ char *findstr(const char *src, const char *srch, const char *delim)
 {
   // Find the substring
   char *str = strstr(src, srch);
-  if (str == NULL) {
+  if (!str) {
     return NULL;
   }
 
@@ -61,7 +61,7 @@ char *findstr(const char *src, const char *srch, const char *delim)
   
   // Allocate memory for the result
   char *result = (char*)malloc(sizeof(char) * len + 1);
-  if (result == NULL) {
+  if (!result) {
     fprintf(stderr, "Memory allocation failed.\n");
     return NULL;
   }

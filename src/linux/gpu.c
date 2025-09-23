@@ -12,7 +12,7 @@ int getGPUinfo(GPU **gpus)
 
   for (int i = 0; i < MAX_GPUS; ++i) {
     GPU *gpu = malloc(sizeof *gpu);
-    if (gpu == NULL) {
+    if (!gpu) {
       fprintf(stderr, "Memory allocation failed.");
       break;
     }
@@ -21,7 +21,7 @@ int getGPUinfo(GPU **gpus)
     // Get the GPU Vendor ID
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/vendor", i);
     gpu->vendor = read_file(buff, "\n", 0) ;
-    if (gpu->vendor == NULL) {
+    if (!gpu->vendor) {
       free_gpu(gpu);
       continue;
     }
@@ -39,7 +39,7 @@ int getGPUinfo(GPU **gpus)
 
     snprintf(buff, BUFF_SIZE, "/sys/class/drm/card%d/device/uevent", i);
     char *uevent = read_file(buff, "=", 0);
-    if (uevent == NULL) {
+    if (!uevent) {
       free_gpu(gpu);
       continue;
     }

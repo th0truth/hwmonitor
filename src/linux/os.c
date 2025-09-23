@@ -7,13 +7,13 @@
 OS *getOSinfo()
 {
   OS *os = malloc(sizeof *os);
-  if (os == NULL) {
+  if (!os) {
     fprintf(stderr, "Memory allocation failed.");
     return NULL;
   }
 
   char *osinfo = read_file("/etc/os-release", "\"", 1);
-  if (osinfo == NULL) {
+  if (!osinfo) {
     free(os);
     return NULL;
   }

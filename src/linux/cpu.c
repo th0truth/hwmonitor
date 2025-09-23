@@ -9,7 +9,7 @@
 int16_t getCPUTotalProcessors()
 {
   char *cpus = read_file("/sys/devices/system/cpu/online", "-", 0);
-  if (cpus == NULL) {
+  if (!cpus) {
     return -1;
   }
   
@@ -25,7 +25,7 @@ int16_t getCPUCoreMaxFreq_MHz(unsigned short core_id)
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", core_id);
   
   char *cpufreq = read_file(buff, NULL, 1);
-  if (cpufreq == NULL) {
+  if (!cpufreq) {
     return -1;
   }
 
@@ -44,7 +44,7 @@ int16_t getCPUCoreMinFreq_MHz(unsigned short core_id)
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", core_id);
 
   char *cpufreq = read_file(buff, NULL, 1);
-  if (cpufreq == NULL) {
+  if (!cpufreq) {
     return -1;
   }
 
@@ -63,7 +63,7 @@ int16_t getCPUCoreRegFreq_MHz(unsigned short core_id)
   snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", core_id);
 
   char *cpufreq = read_file(buff, NULL, 1);
-  if (cpufreq == NULL) {
+  if (!cpufreq) {
     return -1;
   }
 
@@ -84,7 +84,7 @@ float getCPUMaxFreq_MHz(unsigned short t_processors)
   {
     snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", i);
     char *kHz = read_file(buff, NULL, 1);
-    if (kHz == NULL) {
+    if (!kHz) {
       return -1;
     }
     tmp = atof(kHz);
@@ -106,7 +106,7 @@ float getCPUMinFreq_MHz(unsigned short t_processors)
   {
     snprintf(buff, BUFF_SIZE, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_min_freq", i);
     char *kHz = read_file(buff, NULL, 1);
-    if (kHz == NULL) {
+    if (!kHz) {
       return -1;
     }
     tmp = atof(kHz);
@@ -127,7 +127,7 @@ float getCPUCurrTemp_Celsius()
     snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/type", ++i);
     char *thtype = read_file(buff, "\n", 1);
     thtype[strcspn(thtype, "\xff")] = '\0';
-    if (thtype == NULL) {
+    if (!thtype) {
       return -1;
     }  
     if (strcmp(thtype, "x86_pkg_temp") == 0) {
@@ -138,7 +138,7 @@ float getCPUCurrTemp_Celsius()
   
   snprintf(buff, BUFF_SIZE, "/sys/class/thermal/thermal_zone%d/temp", i);
   char *thtemp = (read_file(buff, NULL, 1));
-  if (thtemp == NULL) {
+  if (!thtemp) {
     return -1;
   }
   
@@ -151,7 +151,7 @@ float getCPUCurrTemp_Celsius()
 char *getCPUArchitecture(char *flags)
 {
   char *s = findstr(flags, "lm", " ");
-  if (s == NULL) {
+  if (!s) {
     return "x86";
   } else {
     return "x86_64";
@@ -161,13 +161,13 @@ char *getCPUArchitecture(char *flags)
 CPU *getCPUinfo()
 {
   CPU *cpu = malloc(sizeof *cpu);
-  if (cpu == NULL) {
+  if (!cpu) {
     fprintf(stderr, "Memory allocation failed.");
     return NULL;
   }
 
   char *cpuinfo = read_file("/proc/cpuinfo", ":\t", 0);
-  if (cpuinfo == NULL) {
+  if (!cpuinfo) {
     free(cpu);
     return NULL;
   }
