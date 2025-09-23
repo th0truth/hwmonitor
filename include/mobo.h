@@ -18,5 +18,4 @@ typedef struct {
 MOBO *getMOBOinfo();
 BIOS *getBIOSinfo();
 void free_mobo(MOBO *mobo);
-void free_bios(BIOS *bios);
 #endif

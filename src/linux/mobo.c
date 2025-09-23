@@ -22,22 +22,6 @@ MOBO *getMOBOinfo()
   return mobo;
 }
 
-BIOS *getBIOSinfo()
-{
-  BIOS *bios = malloc(sizeof *bios);
-  if (bios == NULL) {
-    fprintf(stderr, "Memory allocation filed.\n");
-    return NULL;
-  }
-
-  // Gather BIOS information
-  bios->vendor  = read_file("/sys/class/dmi/id/bios_vendor", "\n", 1);
-  bios->version = read_file("/sys/class/dmi/id/bios_version", "\n", 1);
-  bios->date    = read_file("/sys/class/dmi/id/bios_date", "\n", 1);
-
-  return bios;
-}
-
 void free_mobo(MOBO *mobo)
 {
   if (!mobo) return;
@@ -45,13 +29,4 @@ void free_mobo(MOBO *mobo)
   free(mobo->model);
   free(mobo->version);
   free(mobo);
-}
-
-void free_bios(BIOS *bios)
-{
-  if (!bios) return;
-  free(bios->vendor);
-  free(bios->version);
-  free(bios->date);
-  free(bios);
 }
