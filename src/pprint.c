@@ -243,12 +243,12 @@ void print_STORAGE()
 
   for (int i = 0; i < count; i++) {
     printf("STORAGE %d: %s\n", i, storages[i]->device);
-    printf("  Model: %s\n", (storages[i]->model));
-    printf("  UUID: %s\n", storages[i]->uuid);
-    printf("  PCI SLOT NAME: %s\n", storages[i]->PCI_SLOT_NAME);
+    printf("  Model: %s\n", pprint_unknown(storages[i]->model));
+    printf("  UUID: %s\n", pprint_unknown(storages[i]->uuid));
+    printf("  PCI SLOT NAME: %s\n", pprint_unknown(storages[i]->PCI_SLOT_NAME));
     printf("  Size: %.2f GiB\n", calcsz("GiB", (storages[i]->size * 512 / 1024)));
-    printf("  Serial: %s\n", storages[i]->serial);
-    printf("  Removable: %s\n", storages[i]->removable ? "false" : "true");
+    printf("  Serial: %s\n", pprint_unknown(storages[i]->serial));
+    printf("  Removable: %s\n", storages[i]->removable ? "true" : "false");
     printf("\n");
 
     free_storage(storages[i]);
