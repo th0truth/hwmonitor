@@ -5,8 +5,7 @@
 #if defined(HWMONITOR_UNIX)
 #define BUFF_SIZE 128
 
-typedef struct
-{
+typedef struct {
   char *driver;
   char *pci_id;
   char *pci_subsys_id;

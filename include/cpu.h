@@ -6,20 +6,20 @@
 #define BUFF_SIZE 128
 
 typedef struct {
+  char *arch;
   char *vendor_id;
-  unsigned cpu_family;
-  unsigned model;
   char *model_name;
-  unsigned stepping;
-  unsigned total_cores;
-  unsigned total_threads;
-  int16_t processors;
+  char *flags;
+  char *online;
   float max_MHz;
   float min_MHz;
   float curr_temp;
-  char *flags;
-  char *arch;
-  char *online;
+  unsigned cpu_family;
+  unsigned model;
+  unsigned stepping;
+  unsigned total_cores;
+  unsigned total_threads;
+  uint16_t processors;
 } CPU;
 
 CPU *getCPUinfo();

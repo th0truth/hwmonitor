@@ -8,12 +8,6 @@
 #define Watt 1000000
  
 typedef struct {
-  uint16_t capacity;
-  float voltage_min_design;
-  float voltage_now;
-  float energy_full_design;
-  float energy_full;
-  float energy_now;
   char *supply_name;
   char *supply_type; 
   char *capacity_level; 
@@ -22,6 +16,12 @@ typedef struct {
   char *model_name;
   char *manufacturer;
   char *serial;
+  float voltage_min_design;
+  float voltage_now;
+  float energy_full_design;
+  float energy_full;
+  float energy_now;
+  uint16_t capacity;
 } BAT; 
 
 BAT *getBATTERYinfo();

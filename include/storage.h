@@ -14,8 +14,8 @@ typedef struct {
   char *serial;
   char *uuid;
   char* PCI_SLOT_NAME;
-  uint64_t size;
   bool removable;
+  uint64_t size;
 } STORAGE;
 
 int getStorageInfo(STORAGE **storages);

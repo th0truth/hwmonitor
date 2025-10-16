@@ -34,7 +34,7 @@ int getStorageInfo(STORAGE **storages)
     
     snprintf(path, BUFF_SIZE, "/sys/block/%s/uuid", buff);
     storage->uuid = read_file(path, "\n", 0);
-    
+
     snprintf(path, BUFF_SIZE, "/sys/block/%s/device/model", buff);
     storage->model = read_file(path, "\n", 0);
 
