@@ -1,27 +1,24 @@
 #pragma once
 
-#include "platform.h"
+#include <inttypes.h>
+#include <stdbool.h>
 
-#if defined(HWMONITOR_UNIX)
-#define BUFF_SIZE 128
-
-typedef struct {
-  char *arch;
-  char *vendor_id;
-  char *model_name;
-  char *flags;
-  char *online;
+typedef struct
+{
+  char* vendor_id;
+  char* model_name;
+  char* flags;
+  char* arch;
+  char* online;
   float max_MHz;
   float min_MHz;
   float curr_temp;
-  unsigned cpu_family;
-  unsigned model;
-  unsigned stepping;
-  unsigned total_cores;
-  unsigned total_threads;
+  uint16_t cpu_family;
+  uint16_t model;
+  uint16_t stepping;
+  uint16_t total_cores;
+  uint16_t total_threads;
   uint16_t processors;
 } CPU;
 
-CPU *getCPUinfo();
-void free_cpu(CPU *cpu);
-#endif
+CPU* cpu_get_info();
