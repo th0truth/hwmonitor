@@ -2,9 +2,9 @@ TARGET = hwmonitor
 
 CC = gcc
 
-SRC_DIRS = ./src
+SRC_DIRS = ./src ./external/cJSON/cJSON.c
 BUILD_DIR= ./build
-INC_DIRS = ./include
+INC_DIRS = ./include ./external/cJSON
 
 SRCS = $(shell find $(SRC_DIRS) -name "*.c") 
 INCS = $(shell find $(INC_DIRS) -name "*.h")
