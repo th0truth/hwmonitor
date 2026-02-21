@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HWMonitor Dashboard</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #3b82f6;
+            --text: #f1f5f9;
+            --subtext: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            margin: 2.5rem 0;
+            text-align: center;
+        }
+
+        h1 { margin: 0 0 10px 0; font-weight: 800; letter-spacing: -1px; }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.75rem;
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .pulse {
+            width: 8px; height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            width: 90%;
+            max-width: 1200px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); }
+
+        .card h3 { 
+            margin: 0 0 12px 0; 
+            color: var(--subtext); 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            font-weight: 700;
+        }
+
+        .main-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; line-height: 1.2; }
+        .sub-value { font-size: 0.9rem; color: var(--subtext); margin-bottom: 16px; }
+
+        .bar-container { background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden; margin-top: auto; }
+        .bar { height: 100%; width: 0%; transition: width 0.6s ease-out; border-radius: 3px; }
+        
+        .bar.cpu { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .bar.ram { background: linear-gradient(90deg, #a855f7, #c084fc); }
+        .bar.gpu { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .bar.battery { background: linear-gradient(90deg, #10b981, #34d399); }
+
+        .detail-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; }
+        .detail-label { color: var(--subtext); }
+
+        .gpu-item { margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
+        .gpu-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>System Monitor</h1>
+        <div class="status"><div class="pulse"></div> LIVE DATA</div>
+    </header>
+
+    <div class="grid">
+        <!-- CPU Card -->
+        <div class="card">
+            <h3>Processor</h3>
+            <div id="cpu-model" class="main-value">--</div>
+            <div id="cpu-freq" class="sub-value">-- MHz</div>
+            <div class="detail-row">
+                <span class="detail-label">Cores/Threads</span>
+                <span id="cpu-cores">-- / --</span>
+            </div>
+             <div class="detail-row">
+                <span class="detail-label">Arch</span>
+                <span id="cpu-arch">--</span>
+            </div>
+        </div>
+
+        <!-- RAM Card -->
+        <div class="card">
+            <h3>Memory</h3>
+            <div id="ram-usage" class="main-value">0%</div>
+            <div id="ram-details" class="sub-value">-- / -- GB</div>
+            <div class="bar-container"><div id="ram-bar" class="bar ram"></div></div>
+             <div class="detail-row">
+                <span class="detail-label">Cached</span>
+                <span id="ram-cached">-- MB</span>
+            </div>
+        </div>
+
+        <!-- GPU Card -->
+        <div class="card">
+            <h3>Graphics</h3>
+            <div id="gpu-container">
+                <div class="sub-value">No GPU detected</div>
+            </div>
+        </div>
+
+        <!-- Battery Card -->
+        <div class="card">
+            <h3>Battery</h3>
+            <div id="batt-percent" class="main-value">--%</div>
+            <div id="batt-status" class="sub-value">--</div>
+            <div class="bar-container"><div id="batt-bar" class="bar battery"></div></div>
+             <div class="detail-row">
+                <span class="detail-label">Voltage</span>
+                <span id="batt-volts">-- V</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatBytes(bytes, decimals = 2) {
+            if (!+bytes) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        }
+
+        async function updateStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                
+                // CPU
+                if (data.cpu) {
+                    document.getElementById('cpu-model').innerText = data.cpu.model_name.replace("(R)", "").replace("(TM)", "").replace("Core", "");
+                    document.getElementById('cpu-freq').innerText = `${data.cpu.min_freq_mhz} - ${data.cpu.max_freq_mhz} MHz`;
+                    document.getElementById('cpu-cores').innerText = `${data.cpu.total_cores}C / ${data.cpu.total_threads}T`;
+                    document.getElementById('cpu-arch').innerText = data.cpu.arch;
+                }
+
+                // RAM (Input is in KB)
+                if (data.ram) {
+                    const total = data.ram.total;
+                    const avail = data.ram.available;
+                    const used = total - avail;
+                    const percent = Math.round((used / total) * 100);
+                    
+                    document.getElementById('ram-usage').innerText = `${percent}% Used`;
+                    document.getElementById('ram-details').innerText = `${formatBytes(used)} / ${formatBytes(total)}`;
+                    document.getElementById('ram-bar').style.width = `${percent}%`;
+                    document.getElementById('ram-cached').innerText = formatBytes(data.ram.cached);
+                }
+
+                // GPU
+                if (data.gpus && data.gpus.length > 0) {
+                    const container = document.getElementById('gpu-container');
+                    container.innerHTML = '';
+                    data.gpus.forEach(gpu => {
+                        const div = document.createElement('div');
+                        div.className = 'gpu-item';
+                        div.innerHTML = `
+                            <div class="main-value" style="font-size: 1.1rem">${gpu.model}</div>
+                            <div class="sub-value" style="margin-bottom: 4px">${gpu.vendor}</div>
+                            <div class="detail-row"><span class="detail-label">Driver</span><span>${gpu.driver}</span></div>
+                            <div class="detail-row"><span class="detail-label">PCI</span><span>${gpu.pci_id}</span></div>
+                        `;
+                        container.appendChild(div);
+                    });
+                }
+
+                // Battery
+                if (data.battery) {
+                    const cap = data.battery.capacity_percent;
+                    document.getElementById('batt-percent').innerText = `${cap}%`;
+                    document.getElementById('batt-status').innerText = data.battery.status;
+                    document.getElementById('batt-bar').style.width = `${cap}%`;
+                    // Color code battery
+                    const bar = document.getElementById('batt-bar');
+                    if (cap < 20) bar.style.background = '#ef4444';
+                    else if (cap < 50) bar.style.background = '#f59e0b';
+                    else bar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+
+                    document.getElementById('batt-volts').innerText = data.battery.voltage_now.toFixed(2) + ' V';
+                }
+
+            } catch (e) { console.error("Update failed", e); }
+        }
+        
+        setInterval(updateStats, 2000);
+        updateStats();
+    </script>
+</body>
+</html>

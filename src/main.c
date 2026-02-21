@@ -1,6 +1,9 @@
 #include "base.h"
+
 #include <getopt.h>
-#include <cJSON.h>
+
+#include "cJSON.h"
+#include "mongoose.h"
 
 #include "file.h"
 #include "cpu.h"
@@ -19,6 +22,7 @@ static struct option options[] = {
   {"ram",         no_argument,        NULL, 'r'},
   {"gpu",         no_argument,        NULL, 'g'},
   {"help",        no_argument,        NULL, 'h'},
+  {"server",      no_argument,        NULL, 's'},
   {NULL,          0,                  NULL,  0}
 };
 
@@ -33,7 +37,59 @@ typedef struct
   bool show_cpu;
   bool show_ram;
   bool show_gpu;
+  bool run_server;
 } Config;
+
+// The Mongoose Event Handler
+static void ev_handler(struct mg_connection *c, int ev, void *ev_data) {
+  if (ev == MG_EV_HTTP_MSG) {  // New HTTP request received
+    struct mg_http_message *hm = (struct mg_http_message *) ev_data;
+    if (mg_match(hm->uri, mg_str("/api/stats"), NULL)) {
+      cJSON* json = cJSON_CreateObject();
+
+      // CPU
+      CPU* cpu = cpu_get_info();
+      if (cpu) {
+        cJSON_AddItemToObject(json, "cpu", cpu_to_json_obj(cpu));
+        free_cpu(cpu);
+      }
+      
+      // RAM
+      RAM* ram = ram_get_info();
+      if (ram) {
+        cJSON_AddItemToObject(json, "ram", ram_to_json_obj(ram));
+        free_ram(ram);
+      }
+
+      // GPU
+      int count = 0;
+      GPU** gpus = gpu_get_all(&count);
+      if (gpus) {
+        cJSON* gpu_list = cJSON_CreateArray();
+        for (int i = 0; i < count; i++) {
+          cJSON_AddItemToArray(gpu_list, gpu_to_json_obj(gpus[i]));
+        }
+        cJSON_AddItemToObject(json, "gpus", gpu_list);
+        free_gpus(gpus, count);
+      }
+
+      // Battery
+      BATTERY* battery = battery_get_info();
+      if (battery) {
+        cJSON_AddItemToObject(json, "battery", battery_to_json_obj(battery));
+        free_battery(battery);
+      }
+
+      char* json_str = cJSON_PrintUnformatted(json);
+      mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s", json_str); 
+      free(json_str);
+      cJSON_Delete(json);
+    } else {
+      struct mg_http_serve_opts opts = {.root_dir = "web"};
+      mg_http_serve_dir(c, hm, &opts);
+    }
+  }
+}
 
 /**
  * Prints usage and help documentation for the tool.
@@ -62,7 +118,7 @@ int main(int argc, char** argv)
   int opt_idx = 0;
 
   // 1. Parse command-line arguments
-  while ((opt = getopt_long(argc, argv, "hrbcgjro:", options, &opt_idx)) != -1) {
+  while ((opt = getopt_long(argc, argv, "hrbcgsjro:", options, &opt_idx)) != -1) {
     switch (opt) {
       case 'j':
         config.use_json = true;
@@ -81,6 +137,9 @@ int main(int argc, char** argv)
         break;
       case 'g':
         config.show_gpu = true;
+        break;
+      case 's':
+        config.run_server = true;
         break;
       case 'h':
         print_usage(argv[0]);
@@ -151,7 +210,16 @@ int main(int argc, char** argv)
 
     free(json_str);
     cJSON_Delete(json);
-  } 
+  }
+  else if (config.run_server) {
+    struct mg_mgr mgr;  // Mongoose event manager. Holds all connections
+    mg_mgr_init(&mgr);  // Initialise event manager
+    mg_http_listen(&mgr, "http://0.0.0.0:8000", ev_handler, NULL);
+    for (;;) {
+      mg_mgr_poll(&mgr, 1000);  // Infinite event loop
+    }
+    mg_mgr_free(&mgr);
+  }
   else {
     // 4. Default: Basic Plain Text View
     if (config.show_cpu) {
