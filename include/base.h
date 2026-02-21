@@ -8,6 +8,6 @@
 #include <errno.h>
 #include <ctype.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 128
 
 #define STR_OR_UNK(s) ((s) ? (s) : "<unknown>")

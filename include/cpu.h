@@ -6,7 +6,6 @@ typedef struct
   char* model_name;
   char* flags;
   char* arch;
-  char* online;
   float max_MHz;
   float min_MHz;
   float curr_temp;
@@ -15,7 +14,7 @@ typedef struct
   uint16_t stepping;
   uint16_t total_cores;
   uint16_t total_threads;
-  uint16_t processors;
+  uint16_t online_cores;
 } CPU;
 
 CPU* cpu_get_info();
