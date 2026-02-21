@@ -42,6 +42,28 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
 
   buffer[n] = '\0';
   fclose(fp);
-  
+
   return buffer;
+}
+
+bool file_write_string(const char* filename, const char* data)
+{
+  if (filename == NULL || data == NULL) {
+    return false;
+  }
+
+  FILE* fp = fopen(filename, "w");
+  if (fp == NULL) {
+    fprintf(stderr, "error: failed to open '%s' for writing: %s\n", filename, strerror(errno));
+    return false;
+  }
+  
+  if (fputs(data, fp) == EOF) {
+    fprintf(stderr, "error: failed to write to '%s': %s\n", filename, strerror(errno));
+    return false;
+  }
+
+  fclose(fp);
+
+  return true;
 }

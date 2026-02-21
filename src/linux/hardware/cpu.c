@@ -58,38 +58,32 @@ char* cpu_get_arch(const char* flags)
   }
 }
 
-char* cpu_to_json(const CPU* cpu)
+cJSON* cpu_to_json_obj(const CPU* cpu)
 {
+  // Create the root JSON object
+  cJSON* obj = cJSON_CreateObject();
+  
   if (!cpu) {
-    return NULL;
+    return obj;
   }
 
-  // Create the root JSON object
-  cJSON* json = cJSON_CreateObject();
-  
   // Add string values
-  cJSON_AddStringToObject(json, "vendor", STR_OR_UNK(cpu->vendor_id));
-  cJSON_AddStringToObject(json, "model_name", STR_OR_UNK(cpu->model_name));
-  cJSON_AddStringToObject(json, "flags", STR_OR_UNK(cpu->flags));
-  cJSON_AddStringToObject(json, "arch", STR_OR_UNK(cpu->arch));
+  cJSON_AddStringToObject(obj, "vendor", STR_OR_UNK(cpu->vendor_id));
+  cJSON_AddStringToObject(obj, "model_name", STR_OR_UNK(cpu->model_name));
+  cJSON_AddStringToObject(obj, "flags", STR_OR_UNK(cpu->flags));
+  cJSON_AddStringToObject(obj, "arch", STR_OR_UNK(cpu->arch));
 
   // Add number values
-  cJSON_AddNumberToObject(json, "max_freq_mhz", cpu->max_MHz);
-  cJSON_AddNumberToObject(json, "min_freq_mhz", cpu->min_MHz);
-  cJSON_AddNumberToObject(json, "online_cores", cpu->online_cores);
-  cJSON_AddNumberToObject(json, "cpu_family", cpu->cpu_family);
-  cJSON_AddNumberToObject(json, "model", cpu->model);
-  cJSON_AddNumberToObject(json, "stepping", cpu->stepping);
-  cJSON_AddNumberToObject(json, "total_cores", cpu->total_cores);
-  cJSON_AddNumberToObject(json, "total_threads", cpu->total_threads);
+  cJSON_AddNumberToObject(obj, "max_freq_mhz", cpu->max_MHz);
+  cJSON_AddNumberToObject(obj, "min_freq_mhz", cpu->min_MHz);
+  cJSON_AddNumberToObject(obj, "online_cores", cpu->online_cores);
+  cJSON_AddNumberToObject(obj, "cpu_family", cpu->cpu_family);
+  cJSON_AddNumberToObject(obj, "model", cpu->model);
+  cJSON_AddNumberToObject(obj, "stepping", cpu->stepping);
+  cJSON_AddNumberToObject(obj, "total_cores", cpu->total_cores);
+  cJSON_AddNumberToObject(obj, "total_threads", cpu->total_threads);
 
-  // Convert the cJSON object to a JSON string
-  char* json_string = cJSON_Print(json);
-
-  // Clean up the JSON object memory
-  cJSON_Delete(json);
-
-  return json_string;
+  return obj;
 }
 
 CPU* cpu_get_info()
