@@ -118,3 +118,14 @@ CPU* cpu_get_info()
 
   return cpu;
 }
+
+void free_cpu(CPU* cpu)
+{
+  if (cpu == NULL) {
+    return;
+  }
+  free(cpu->vendor_id);
+  free(cpu->model_name);
+  free(cpu->flags);
+  free(cpu);
+}

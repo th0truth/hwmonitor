@@ -70,7 +70,7 @@ int main(int argc, char** argv)
     if (config.show_cpu) {
       CPU* cpu = cpu_get_info();
       cJSON_AddItemToObject(json, "cpu", cpu_to_json_obj(cpu));
-      free(cpu);
+      free_cpu(cpu);
     }
 
     char* json_str = cJSON_Print(json);

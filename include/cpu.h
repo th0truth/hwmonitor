@@ -19,3 +19,4 @@ typedef struct
 
 CPU* cpu_get_info();
 cJSON* cpu_to_json_obj(const CPU* cpu);
+void free_cpu(CPU* cpu);
