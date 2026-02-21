@@ -19,3 +19,4 @@ typedef struct
 } CPU;
 
 CPU* cpu_get_info();
+char* cpu_to_json(const CPU* cpu);
