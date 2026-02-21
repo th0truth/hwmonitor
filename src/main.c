@@ -7,6 +7,9 @@
 #include "ram.h"
 #include "gpu.h"
 
+/**
+ * Command-line options defined for getopt_long.
+ */
 static struct option options[] = {
   {"output",      required_argument,  NULL, 'o'},
   {"json",        no_argument,        NULL, 'j'},
@@ -17,6 +20,9 @@ static struct option options[] = {
   {NULL,          0,                  NULL,  0}
 };
 
+/**
+ * Config structure to hold user preferences from flags.
+ */
 typedef struct
 {
   char* output_file;
@@ -26,33 +32,40 @@ typedef struct
   bool use_json;
 } Config;
 
+/**
+ * Prints usage and help documentation for the tool.
+ * @param prog_name The executable name (argv[0]).
+ */
 void print_usage(const char* prog_name)
 {
   printf("Usage %s: [options]\n", prog_name);
   printf("Options:\n");
   printf("  -h, --help       Show this help message\n");
-  printf("  -c, --cpu        Show CPU info\n");
-  printf("  -r, --ram        Show RAM info\n");
-  printf("  -g, --gpu        Show GPU info\n");
-  printf("  -j, --json       Output in JSON format\n");
-  printf("  -o, --output <f> Save output to file\n");
+  printf("  -c, --cpu        Show CPU information\n");
+  printf("  -r, --ram        Show RAM information\n");
+  printf("  -g, --gpu        Show GPU information\n");
+  printf("  -j, --json       Output in formatted JSON\n");
+  printf("  -o, --output <f> Save output to a JSON file\n");
 }
 
+/**
+ * Main entry point of the application.
+ * Manages configuration, hardware discovery, and final output.
+ */
 int main(int argc, char** argv)
 {
   Config config = {0};
   int opt;
   int opt_idx = 0;
 
+  // 1. Parse command-line arguments
   while ((opt = getopt_long(argc, argv, "hcgjro:", options, &opt_idx)) != -1) {
     switch (opt) {
       case 'j':
         config.use_json = true;
         break;
       case 'o':
-        if (optarg) {
-          config.output_file = strdup(optarg);
-        }
+        if (optarg) config.output_file = strdup(optarg);
         break;
       case 'c':
         config.show_cpu = true;
@@ -71,12 +84,14 @@ int main(int argc, char** argv)
     }
   }
   
+  // 2. Default behavior: if --json is set without filters, show all hardware
   if (config.use_json && !config.show_cpu && !config.show_ram && !config.show_gpu) {
     config.show_cpu = true;
     config.show_ram = true;
     config.show_gpu = true;
   }
 
+  // 3. Output logic: JSON or Plain Text
   if (config.use_json) {
     cJSON* json = cJSON_CreateObject();
 
@@ -121,31 +136,33 @@ int main(int argc, char** argv)
 
     free(json_str);
     cJSON_Delete(json);
-  } else {
-      if (config.show_cpu) {
-          CPU* cpu = cpu_get_info();
-          if (cpu) {
-              printf("CPU Model: %s\n", STR_OR_UNK(cpu->model_name));
-              free_cpu(cpu);
-          }
+  } 
+  else {
+    // 4. Default: Basic Plain Text View
+    if (config.show_cpu) {
+      CPU* cpu = cpu_get_info();
+      if (cpu) {
+        printf("CPU Model: %s\n", STR_OR_UNK(cpu->model_name));
+        free_cpu(cpu);
       }
-      if (config.show_ram) {
-          RAM* ram = ram_get_info();
-          if (ram) {
-              printf("RAM Total: %lu kB\n", ram->total);
-              free_ram(ram);
-          }
+    }
+    if (config.show_ram) {
+      RAM* ram = ram_get_info();
+      if (ram) {
+        printf("RAM Total: %" PRIu64 " kB\n", ram->total);
+        free_ram(ram);
       }
-      if (config.show_gpu) {
-          int count = 0;
-          GPU** gpus = gpu_get_all(&count);
-          if (gpus) {
-              for (int i = 0; i < count; i++) {
-                  printf("GPU [%d]: %s (%s)\n", i, STR_OR_UNK(gpus[i]->model), STR_OR_UNK(gpus[i]->vendor));
-              }
-              free_gpus(gpus, count);
-          }
+    }
+    if (config.show_gpu) {
+      int count = 0;
+      GPU** gpus = gpu_get_all(&count);
+      if (gpus) {
+        for (int i = 0; i < count; i++) {
+          printf("GPU [%d]: %s (%s)\n", i, STR_OR_UNK(gpus[i]->model), STR_OR_UNK(gpus[i]->vendor));
+        }
+        free_gpus(gpus, count);
       }
+    }
   }
 
   return 0;

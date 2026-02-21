@@ -3,20 +3,35 @@
 #include "io.h"
 #include "ram.h"
 
+/**
+ * Internal helper for parsing memory values in kB from meminfo.
+ * @param info The raw string contents of /proc/meminfo.
+ * @param search The key to search for (e.g., "MemTotal").
+ * @return Value in kB as a 64-bit integer, or 0 on failure.
+ */
 static uint64_t parse_mem_value(const char* info, const char* search)
 {
   char* val = str_find_value(info, search, "kB");
-  if (!val) return 0;
-    
+  if (val == NULL) {
+    return 0;
+  }
+  
   uint64_t result = (uint64_t)atoll(val);
   free(val);
   return result;
 }
 
+/**
+ * Converts a RAM structure to a cJSON object.
+ * @param ram Pointer to the RAM structure.
+ * @return Pointer to a cJSON object (caller must delete).
+ */
 cJSON* ram_to_json_obj(const RAM* ram)
 {
   cJSON* obj = cJSON_CreateObject();
-  if (ram == NULL) return obj;
+  if (ram == NULL) {
+    return obj;
+  }
 
   cJSON_AddNumberToObject(obj, "total", ram->total);
   cJSON_AddNumberToObject(obj, "free", ram->free);
@@ -33,10 +48,16 @@ cJSON* ram_to_json_obj(const RAM* ram)
   return obj;
 }
 
-RAM* ram_get_info()
+/**
+ * Discovers and parses memory information from /proc/meminfo.
+ * @return Pointer to a newly allocated RAM struct, or NULL on failure.
+ */
+RAM* ram_get_info(void)
 {
-  RAM* ram = malloc(sizeof(*ram));
-  if (ram == NULL) return NULL;
+  RAM* ram = calloc(1, sizeof(*ram));
+  if (ram == NULL) {
+    return NULL;
+  }
 
   char* info = file_read_stripped("/proc/meminfo", "\n", false);
   if (info == NULL) {
@@ -44,6 +65,7 @@ RAM* ram_get_info()
     return NULL;
   }
 
+  // Use the helper to populate the RAM fields in kB
   ram->total      = parse_mem_value(info, "MemTotal");
   ram->free       = parse_mem_value(info, "MemFree");
   ram->available  = parse_mem_value(info, "MemAvailable");
@@ -60,7 +82,13 @@ RAM* ram_get_info()
   return ram;
 }
 
+/**
+ * Frees a RAM structure.
+ * @param ram Pointer to the RAM structure to free.
+ */
 void free_ram(RAM* ram)
 {
-  if (ram) free(ram);
+  if (ram != NULL) {
+    free(ram);
+  }
 }

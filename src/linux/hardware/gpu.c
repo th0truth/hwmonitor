@@ -16,7 +16,7 @@ static void gpu_handle_nvidia(GPU* gpu)
   snprintf(buffer, sizeof(buffer), "/proc/driver/nvidia/gpus/%s/information", gpu->pci_slot_name);
   
   char* n_info = file_read_stripped(buffer, "\t", false);
-  if (n_info) {
+  if (n_info != NULL) {
     gpu->model = str_find_value(n_info, "Model:  ", "\n");
     gpu->irq   = str_find_value(n_info, "IRQ:   ", "\n");
     gpu->uuid  = str_find_value(n_info, "UUID:  ", "\n");
@@ -28,7 +28,7 @@ static void gpu_handle_nvidia(GPU* gpu)
 
   // Retrieve global NVIDIA kernel module version
   char* k_version = file_read_stripped("/proc/driver/nvidia/version", ":", false);
-  if (k_version) {
+  if (k_version != NULL) {
     gpu->kernel_version = str_find_value(k_version, "NVRM version", "\n");
     free(k_version);
   }
@@ -46,10 +46,12 @@ static GPU* gpu_parse_sysfs(const char* card_name)
   snprintf(buffer, sizeof(buffer), "/sys/class/drm/%s/device/vendor", card_name);
   
   char* vendor = file_read_stripped(buffer, "\n", false);
-  if (!vendor) return NULL;
+  if (vendor == NULL) {
+    return NULL;
+  }
 
   GPU* gpu = calloc(1, sizeof(*gpu));
-  if (!gpu) {
+  if (gpu == NULL) {
     free(vendor);
     return NULL;
   }
@@ -68,7 +70,7 @@ static GPU* gpu_parse_sysfs(const char* card_name)
   // Parse uevent file for driver and slot information
   snprintf(buffer, sizeof(buffer), "/sys/class/drm/%s/device/uevent", card_name);
   char* uevent = file_read_stripped(buffer, "=", false);
-  if (uevent) {
+  if (uevent != NULL) {
     gpu->driver        = str_find_value(uevent, "DRIVER", "\n");
     gpu->pci_id        = str_find_value(uevent, "PCI_ID", "\n");
     gpu->pci_subsys    = str_find_value(uevent, "PCI_SUBSYS_ID", "\n");
@@ -77,7 +79,7 @@ static GPU* gpu_parse_sysfs(const char* card_name)
   }
 
   // Check for vendor-specific extended data (e.g., NVIDIA)
-  if (gpu->vendor && strcmp(gpu->vendor, PCI_VENDOR_NVIDIA) == 0 && gpu->pci_slot_name) {
+  if (gpu->vendor != NULL && strcmp(gpu->vendor, PCI_VENDOR_NVIDIA) == 0 && gpu->pci_slot_name != NULL) {
     gpu_handle_nvidia(gpu);
   }
 
@@ -93,10 +95,12 @@ GPU** gpu_get_all(int* count)
 {
   *count = 0;
   DIR* dir = opendir("/sys/class/drm");
-  if (!dir) return NULL;
+  if (dir == NULL) {
+    return NULL;
+  }
 
   GPU** list = calloc(MAX_GPUS, sizeof(GPU*));
-  if (!list) {
+  if (list == NULL) {
     closedir(dir);
     return NULL;
   }
@@ -106,7 +110,7 @@ GPU** gpu_get_all(int* count)
     // Only process directories named "cardX" where X is a digit (ignore renderD nodes)
     if (strncmp(entry->d_name, "card", 4) == 0 && isdigit(entry->d_name[4])) {
       GPU* gpu = gpu_parse_sysfs(entry->d_name);
-      if (gpu) {
+      if (gpu != NULL) {
         list[(*count)++] = gpu;
       }
     }
@@ -122,7 +126,9 @@ GPU** gpu_get_all(int* count)
  */
 void free_gpu(GPU* gpu)
 {
-  if (!gpu) return;
+  if (gpu == NULL) {
+    return;
+  }
   free(gpu->model);
   free(gpu->irq);
   free(gpu->uuid);
@@ -148,7 +154,9 @@ void free_gpu(GPU* gpu)
  */
 void free_gpus(GPU** gpus, int count)
 {
-  if (!gpus) return;
+  if (gpus == NULL) {
+    return;
+  }
   for (int i = 0; i < count; i++) {
     free_gpu(gpus[i]);
   }
@@ -163,7 +171,9 @@ void free_gpus(GPU** gpus, int count)
 cJSON* gpu_to_json_obj(const GPU* gpu)
 {
   cJSON* obj = cJSON_CreateObject();
-  if (!gpu) return obj;
+  if (gpu == NULL) {
+    return obj;
+  }
 
   cJSON_AddStringToObject(obj, "vendor", STR_OR_UNK(gpu->vendor));
   cJSON_AddStringToObject(obj, "model", STR_OR_UNK(gpu->model));
