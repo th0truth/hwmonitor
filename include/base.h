@@ -10,6 +10,6 @@
 
 #include <cJSON.h>
 
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 256
 
 #define STR_OR_UNK(s) ((s) ? (s) : "<unknown>")
