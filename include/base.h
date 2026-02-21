@@ -9,3 +9,5 @@
 #include <ctype.h>
 
 #define BUFFER_SIZE 1024
+
+#define STR_OR_UNK(s) ((s) ? (s) : "<unknown>")
