@@ -43,42 +43,42 @@ BATTERY* battery_get_info(void)
   }
 
   // Parse numeric values and convert from micro-units to standard units
-  char* val = NULL;
+  char* value = NULL;
   
-  val = str_find_value(uevent, "POWER_SUPPLY_CAPACITY", "\n");
-  if (val != NULL) {
-    battery->capacity = atoi(val);
-    free(val);
+  value                           = str_find_value(uevent, "POWER_SUPPLY_CAPACITY", "\n");
+  if (value != NULL) {
+    battery->capacity             = atoi(value);
+    free(value);
   }
 
-  val = str_find_value(uevent, "POWER_SUPPLY_VOLTAGE_MIN_DESIGN", "\n");
-  if (val != NULL) {
-    battery->voltage_min_design = atof(val) / SYSFS_UNIT_CONVERSION;
-    free(val);
+  value                           = str_find_value(uevent, "POWER_SUPPLY_VOLTAGE_MIN_DESIGN", "\n");
+  if (value != NULL) {
+    battery->voltage_min_design = atof(value) / SYSFS_UNIT_CONVERSION;
+    free(value);
   }
 
-  val = str_find_value(uevent, "POWER_SUPPLY_VOLTAGE_NOW", "\n");
-  if (val != NULL) {
-    battery->voltage_now = atof(val) / SYSFS_UNIT_CONVERSION;
-    free(val);
+  value                           = str_find_value(uevent, "POWER_SUPPLY_VOLTAGE_NOW", "\n");
+  if (value != NULL) {
+    battery->voltage_now          = atof(value) / SYSFS_UNIT_CONVERSION;
+    free(value);
   }
 
-  val = str_find_value(uevent, "POWER_SUPPLY_ENERGY_FULL_DESIGN", "\n");
-  if (val != NULL) {
-    battery->energy_full_design = atof(val) / SYSFS_UNIT_CONVERSION;
-    free(val);
+  value                          = str_find_value(uevent, "POWER_SUPPLY_ENERGY_FULL_DESIGN", "\n");
+  if (value != NULL) {
+    battery->energy_full_design  = atof(value) / SYSFS_UNIT_CONVERSION;
+    free(value);
   }
 
-  val = str_find_value(uevent, "POWER_SUPPLY_ENERGY_FULL", "\n");
-  if (val != NULL) {
-    battery->energy_full = atof(val) / SYSFS_UNIT_CONVERSION;
-    free(val);
+  value                         = str_find_value(uevent, "POWER_SUPPLY_ENERGY_FULL", "\n");
+  if (value != NULL) {
+    battery->energy_full        = atof(value) / SYSFS_UNIT_CONVERSION;
+    free(value);
   }
 
-  val = str_find_value(uevent, "POWER_SUPPLY_ENERGY_NOW", "\n");
-  if (val != NULL) {
-    battery->energy_now = atof(val) / SYSFS_UNIT_CONVERSION;
-    free(val);
+  value                         = str_find_value(uevent, "POWER_SUPPLY_ENERGY_NOW", "\n");
+  if (value != NULL) {
+    battery->energy_now         = atof(value) / SYSFS_UNIT_CONVERSION;
+    free(value);
   }
 
   // Parse string values for vendor and state

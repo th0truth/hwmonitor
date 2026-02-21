@@ -67,13 +67,13 @@ char* str_find_value(const char* source, const char* search, const char* delim)
  */
 double str_parse_value(const char* source, const char* search, const char* delim)
 {
-  char* val = str_find_value(source, search, delim);
-  if (val == NULL) {
+  char* value = str_find_value(source, search, delim);
+  if (value == NULL) {
     return 0.0;
   }
 
-  double result = atof(val);
-  free(val);
+  double result = atof(value);
+  free(value);
   
   return result;
 }

@@ -25,6 +25,7 @@ int16_t cpu_get_total_cores(void)
   }
 
   free(online);
+
   return count;
 }
 
@@ -44,14 +45,14 @@ int16_t cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
     return -1;
   }
 
-  int32_t khz = atoi(cpu_freq);
+  int16_t khz = atoi(cpu_freq);
   free(cpu_freq);
 
   if (khz <= 0) {
     return -1;
   }
   
-  return (int16_t)(khz / 1000);
+  return khz / 1000;
 } 
 
 /**
@@ -91,6 +92,8 @@ CPU* cpu_get_info(void)
     return NULL;
   }
 
+  char* value = NULL;
+
   cpu->vendor_id      = str_find_value(cpu_info, "vendor_id", "\n");
   cpu->model_name     = str_find_value(cpu_info, "model name", "\n");
   cpu->flags          = str_find_value(cpu_info, "flags", "\n");
@@ -100,13 +103,38 @@ CPU* cpu_get_info(void)
   cpu->max_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_max_freq");
   cpu->min_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_min_freq");
   
-  cpu->cpu_family     = atoi(str_find_value(cpu_info, "cpu family", "\n"));
-  cpu->model          = atoi(str_find_value(cpu_info, "model", "\n"));
-  cpu->stepping       = atoi(str_find_value(cpu_info, "stepping", "\n"));
-  cpu->total_cores    = atoi(str_find_value(cpu_info, "cpu cores", "\n"));
-  cpu->total_threads  = atoi(str_find_value(cpu_info, "siblings", "\n"));
+  value               = str_find_value(cpu_info, "cpu family", "\n");
+  if (value != NULL) {
+    cpu->cpu_family   = atoi(value);
+    free(value);
+  }
+  
+  value               = str_find_value(cpu_info, "model", "\n");
+  if (value != NULL) {
+    cpu->model        = atoi(value);
+    free(value);  
+  }
+
+  value               = str_find_value(cpu_info, "stepping", "\n");
+  if (value != NULL) {
+    cpu->stepping     = atoi(value);
+    free(value);
+  }
+
+  value               = str_find_value(cpu_info, "cpu cores", "\n");
+  if (value != NULL) {
+    cpu->total_cores  = atoi(value);
+    free(value);
+  }
+
+  value               = str_find_value(cpu_info, "siblings", "\n");
+  if (value != NULL) {
+    cpu->total_threads = atoi(value);
+    free(value);
+  }
 
   free(cpu_info);
+
   return cpu;
 }
 
