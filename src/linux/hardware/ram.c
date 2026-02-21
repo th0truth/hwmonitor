@@ -22,33 +22,6 @@ static uint64_t parse_mem_value(const char* info, const char* search)
 }
 
 /**
- * Converts a RAM structure to a cJSON object.
- * @param ram Pointer to the RAM structure.
- * @return Pointer to a cJSON object (caller must delete).
- */
-cJSON* ram_to_json_obj(const RAM* ram)
-{
-  cJSON* obj = cJSON_CreateObject();
-  if (ram == NULL) {
-    return obj;
-  }
-
-  cJSON_AddNumberToObject(obj, "total", ram->total);
-  cJSON_AddNumberToObject(obj, "free", ram->free);
-  cJSON_AddNumberToObject(obj, "available", ram->available);
-  cJSON_AddNumberToObject(obj, "buffers", ram->buffers);
-  cJSON_AddNumberToObject(obj, "cached", ram->cached);
-  cJSON_AddNumberToObject(obj, "swap_total", ram->swap_total);
-  cJSON_AddNumberToObject(obj, "swap_free", ram->swap_free);
-  cJSON_AddNumberToObject(obj, "zswap", ram->zswap);
-  cJSON_AddNumberToObject(obj, "zswapped", ram->zswapped);
-  cJSON_AddNumberToObject(obj, "dirty", ram->dirty);
-  cJSON_AddNumberToObject(obj, "per_cpu", ram->per_cpu);
-
-  return obj;
-}
-
-/**
  * Discovers and parses memory information from /proc/meminfo.
  * @return Pointer to a newly allocated RAM struct, or NULL on failure.
  */
@@ -91,4 +64,31 @@ void free_ram(RAM* ram)
   if (ram != NULL) {
     free(ram);
   }
+}
+
+/**
+ * Converts a RAM structure to a cJSON object.
+ * @param ram Pointer to the RAM structure.
+ * @return Pointer to a cJSON object (caller must delete).
+ */
+cJSON* ram_to_json_obj(const RAM* ram)
+{
+  cJSON* obj = cJSON_CreateObject();
+  if (ram == NULL) {
+    return obj;
+  }
+
+  cJSON_AddNumberToObject(obj, "total", ram->total);
+  cJSON_AddNumberToObject(obj, "free", ram->free);
+  cJSON_AddNumberToObject(obj, "available", ram->available);
+  cJSON_AddNumberToObject(obj, "buffers", ram->buffers);
+  cJSON_AddNumberToObject(obj, "cached", ram->cached);
+  cJSON_AddNumberToObject(obj, "swap_total", ram->swap_total);
+  cJSON_AddNumberToObject(obj, "swap_free", ram->swap_free);
+  cJSON_AddNumberToObject(obj, "zswap", ram->zswap);
+  cJSON_AddNumberToObject(obj, "zswapped", ram->zswapped);
+  cJSON_AddNumberToObject(obj, "dirty", ram->dirty);
+  cJSON_AddNumberToObject(obj, "per_cpu", ram->per_cpu);
+
+  return obj;
 }

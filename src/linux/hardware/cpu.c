@@ -75,35 +75,6 @@ char* cpu_get_arch(const char* flags)
 }
 
 /**
- * Converts a CPU structure to a cJSON object.
- * @param cpu Pointer to the CPU structure.
- * @return Pointer to a cJSON object (caller must delete).
- */
-cJSON* cpu_to_json_obj(const CPU* cpu)
-{
-  cJSON* obj = cJSON_CreateObject();
-  if (cpu == NULL) {
-    return obj;
-  }
-
-  cJSON_AddStringToObject(obj, "vendor", STR_OR_UNK(cpu->vendor_id));
-  cJSON_AddStringToObject(obj, "model_name", STR_OR_UNK(cpu->model_name));
-  cJSON_AddStringToObject(obj, "flags", STR_OR_UNK(cpu->flags));
-  cJSON_AddStringToObject(obj, "arch", STR_OR_UNK(cpu->arch));
-
-  cJSON_AddNumberToObject(obj, "max_freq_mhz", cpu->max_MHz);
-  cJSON_AddNumberToObject(obj, "min_freq_mhz", cpu->min_MHz);
-  cJSON_AddNumberToObject(obj, "online_cores", cpu->online_cores);
-  cJSON_AddNumberToObject(obj, "cpu_family", cpu->cpu_family);
-  cJSON_AddNumberToObject(obj, "model", cpu->model);
-  cJSON_AddNumberToObject(obj, "stepping", cpu->stepping);
-  cJSON_AddNumberToObject(obj, "total_cores", cpu->total_cores);
-  cJSON_AddNumberToObject(obj, "total_threads", cpu->total_threads);
-
-  return obj;
-}
-
-/**
  * Populates a CPU structure with data from /proc/cpuinfo and sysfs.
  * @return Pointer to a newly allocated CPU struct, or NULL on failure.
  */
@@ -153,3 +124,33 @@ void free_cpu(CPU* cpu)
   free(cpu->flags);
   free(cpu);
 }
+
+/**
+ * Converts a CPU structure to a cJSON object.
+ * @param cpu Pointer to the CPU structure.
+ * @return Pointer to a cJSON object (caller must delete).
+ */
+cJSON* cpu_to_json_obj(const CPU* cpu)
+{
+  cJSON* obj = cJSON_CreateObject();
+  if (cpu == NULL) {
+    return obj;
+  }
+
+  cJSON_AddStringToObject(obj, "vendor", STR_OR_UNK(cpu->vendor_id));
+  cJSON_AddStringToObject(obj, "model_name", STR_OR_UNK(cpu->model_name));
+  cJSON_AddStringToObject(obj, "flags", STR_OR_UNK(cpu->flags));
+  cJSON_AddStringToObject(obj, "arch", STR_OR_UNK(cpu->arch));
+
+  cJSON_AddNumberToObject(obj, "max_freq_mhz", cpu->max_MHz);
+  cJSON_AddNumberToObject(obj, "min_freq_mhz", cpu->min_MHz);
+  cJSON_AddNumberToObject(obj, "online_cores", cpu->online_cores);
+  cJSON_AddNumberToObject(obj, "cpu_family", cpu->cpu_family);
+  cJSON_AddNumberToObject(obj, "model", cpu->model);
+  cJSON_AddNumberToObject(obj, "stepping", cpu->stepping);
+  cJSON_AddNumberToObject(obj, "total_cores", cpu->total_cores);
+  cJSON_AddNumberToObject(obj, "total_threads", cpu->total_threads);
+
+  return obj;
+}
+
