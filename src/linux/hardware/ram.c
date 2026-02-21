@@ -4,24 +4,6 @@
 #include "ram.h"
 
 /**
- * Internal helper for parsing memory values in kB from meminfo.
- * @param info The raw string contents of /proc/meminfo.
- * @param search The key to search for (e.g., "MemTotal").
- * @return Value in kB as a 64-bit integer, or 0 on failure.
- */
-static uint64_t parse_mem_value(const char* info, const char* search)
-{
-  char* val = str_find_value(info, search, "kB");
-  if (val == NULL) {
-    return 0;
-  }
-  
-  uint64_t result = (uint64_t)atoll(val);
-  free(val);
-  return result;
-}
-
-/**
  * Discovers and parses memory information from /proc/meminfo.
  * @return Pointer to a newly allocated RAM struct, or NULL on failure.
  */
@@ -39,17 +21,17 @@ RAM* ram_get_info(void)
   }
 
   // Use the helper to populate the RAM fields in kB
-  ram->total      = parse_mem_value(info, "MemTotal");
-  ram->free       = parse_mem_value(info, "MemFree");
-  ram->available  = parse_mem_value(info, "MemAvailable");
-  ram->buffers    = parse_mem_value(info, "Buffers");
-  ram->cached     = parse_mem_value(info, "Cached");
-  ram->swap_total = parse_mem_value(info, "SwapTotal");
-  ram->swap_free  = parse_mem_value(info, "SwapFree");
-  ram->zswap      = parse_mem_value(info, "Zswap");
-  ram->zswapped   = parse_mem_value(info, "Zswapped");
-  ram->dirty      = parse_mem_value(info, "Dirty");
-  ram->per_cpu    = parse_mem_value(info, "Percpu");
+  ram->total      = str_parse_value(info, "MemTotal", "kB");
+  ram->free       = str_parse_value(info, "MemFree", "kB");
+  ram->available  = str_parse_value(info, "MemAvailable", "kB");
+  ram->buffers    = str_parse_value(info, "Buffers", "kB");
+  ram->cached     = str_parse_value(info, "Cached", "kB");
+  ram->swap_total = str_parse_value(info, "SwapTotal", "kB");
+  ram->swap_free  = str_parse_value(info, "SwapFree", "kB");
+  ram->zswap      = str_parse_value(info, "Zswap", "kB");
+  ram->zswapped   = str_parse_value(info, "Zswapped", "kB");
+  ram->dirty      = str_parse_value(info, "Dirty", "kB");
+  ram->per_cpu    = str_parse_value(info, "Percpu", "kB");
 
   free(info);
   return ram;
