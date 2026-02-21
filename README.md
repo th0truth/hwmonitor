@@ -1,116 +1,103 @@
-# <div align="center">🚀 **hwmonitor**</div>
-<p align="center"><strong>A High-Performance, JSON-Native Hardware Discovery Tool for Linux</strong></p>
+# hwmonitor
 
-<div align="center">
+A minimalist, high-performance hardware discovery engine for Linux systems.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![C Standard: C11](https://img.shields.io/badge/C-C11-blue.svg)](https://en.wikipedia.org/wiki/C11_(C_standard_revision))
-[![Platform: Linux](https://img.shields.io/badge/Platform-Linux-orange.svg)](https://www.linux.org/)
-
-</div>
+**hwmonitor** is designed for developers and system administrators who require structured, low-latency hardware data. Unlike traditional tools that rely on external shell calls (like `lspci` or `dmidecode`), **hwmonitor** interfaces directly with the Linux kernel via `sysfs` and `procfs`, providing a JSON-native output ready for modern automation and monitoring stacks.
 
 ---
 
-## **🌟 Why hwmonitor?**
+## Core Features
 
-**hwmonitor** is built for developers who need fast, structured hardware data. Unlike traditional tools that output plain text, **hwmonitor** is designed from the ground up to provide **clean, API-ready JSON** directly from the system kernel.
-
-- ⚡ **Near-Instant Performance:** No slow external calls to `lspci` or `dmidecode`. We read directly from `/proc` and `/sys`.
-- 📊 **JSON-First Architecture:** Built-in `cJSON` integration for seamless data export and automation.
-- 🛠️ **Professional C Design:** Strict C11 compliance, deep-discovery GPU logic, and memory-safe architecture.
-- 📦 **Zero Dependency Bloat:** All dependencies are managed via Git submodules. Just clone and build.
+*   **Native Performance:** Directly parses kernel filesystems for near-instant execution.
+*   **JSON-First Architecture:** Built-in serialization for seamless integration with APIs and web dashboards.
+*   **Deep Hardware Discovery:** Advanced logic for multi-GPU identification (NVIDIA, AMD, Intel) and battery metrics.
+*   **Modern C Design:** Strict C11 compliance with a focus on memory safety and modularity.
+*   **Zero Dependencies:** Managed via Git submodules for a lightweight, "clone-and-build" workflow.
 
 ---
 
-## **🚀 Quick Start**
+## Installation
 
-### **1. Installation**
-Since **hwmonitor** uses high-performance submodules, ensure you clone it recursively:
+The project uses Git submodules for its core libraries. Ensure you perform a recursive clone to include all necessary dependencies.
 
 ```bash
-# Clone the repository with all dependencies
-git clone --recursive https://github.com/th0truth/hwmonitor.git 
-
-# Enter the directory and build
+git clone --recursive https://github.com/th0truth/hwmonitor.git
 cd hwmonitor
 make
 ```
 
-### **2. Examples**
+---
+
+## Usage
+
+**hwmonitor** supports a flexible command-line interface with both short and long-form arguments.
+
+### Examples
+
 ```bash
-# Get a full, structured system report in JSON
+# Generate a full system report in structured JSON
 ./build/hwmonitor.o --json
 
 # Export specific CPU and GPU metrics to a file
 ./build/hwmonitor.o --cpu --gpu --json --output report.json
 
-# Standard human-readable summary
-./build/hwmonitor.o --cpu --ram
+# Display a standard human-readable summary
+./build/hwmonitor.o --cpu --ram --battery
 ```
 
----
+### Options
 
-## **🛠️ Advanced Features**
-
-### **Dynamic GPU Discovery**
-Unlike static tools, **hwmonitor** dynamically scans your hardware bus (`/sys/class/drm`) to identify all installed GPUs. It includes vendor-specific deep-parsing for **NVIDIA**, **AMD**, and **Intel**.
-
-### **Professional CLI Interface**
-Built with `getopt_long`, providing both short and long-form flags (e.g., `-c` or `--cpu`).
-
-| Short | Long Flag | Description |
-|:---:|:---|:---|
-| `-j` | `--json` | Return data in serialized JSON format |
-| `-o` | `--output <f>`| Save the JSON report to a file |
-| `-c` | `--cpu` | Full CPU architecture and frequency analysis |
-| `-g` | `--gpu` | Advanced multi-GPU discovery and driver info |
-| `-r` | `--ram` | Detailed memory and swap utilization metrics |
+| Flag | Argument | Description |
+| :--- | :--- | :--- |
+| `-j, --json` | None | Serializes hardware data into a JSON object. |
+| `-o, --output` | `<file>` | Redirects the JSON output to a specified file. |
+| `-c, --cpu` | None | Collects architecture, model, and real-time frequency data. |
+| `-g, --gpu` | None | Performs dynamic bus scanning for all installed GPUs. |
+| `-r, --ram` | None | Reports detailed memory utilization and swap metrics. |
+| `-b, --battery` | None | Monitors capacity, voltage, and health of system batteries. |
 
 ---
 
-## **📊 JSON Output Preview**
+## Data Schema
 
-The primary goal of **hwmonitor** is to produce clean, usable data. Here is what your report will look like:
+The tool produces a highly structured schema. Below is a representative output of a full system analysis:
 
 ```json
 {
   "cpu": {
     "vendor": "AuthenticAMD",
-    "model_name": "AMD Ryzen 9 7950X3D",
+    "model_name": "AMD Ryzen 9 7950X",
     "arch": "x86_64",
     "online_cores": 16,
-    "max_freq_mhz": 5700,
-    "curr_temp": 42.5
+    "max_freq_mhz": 5700
   },
   "gpus": [
     {
       "vendor": "NVIDIA Corporation",
-      "model": "GeForce RTX 4090",
+      "model": "GeForce RTX 4080",
       "driver": "nvidia",
       "uuid": "GPU-8f92a1..."
     }
-  ]
+  ],
+  "battery": {
+    "status": "Discharging",
+    "capacity_percent": 84,
+    "model_name": "Standard-L1",
+    "manufacturer": "SAMSUNG"
+  }
 }
 ```
 
 ---
 
-## **🏗️ Architecture & Best Practices**
+## Technical Architecture
 
-This project is maintained with a focus on senior-level engineering standards:
-- **Encapsulated Modules:** Each component (CPU, RAM, GPU) is isolated for maximum maintainability.
-- **Doxygen Documentation:** Every function is fully documented with technical context.
-- **Explicit NULL Safety:** Standardized `ptr == NULL` checks and braces for ultra-reliable performance.
-- **Atomic File Writing:** Professional error handling and `stderr` reporting for automated workflows.
+The codebase is engineered with a focus on modularity and transparency.
 
----
+*   **Discovery Engine:** Implements a dynamic directory-scanning pattern to identify hardware nodes without hardcoded limits.
+*   **Memory Management:** Strictly follows an "inside-out" deep-freeing pattern to ensure a zero-leak footprint.
+*   **Explicit Safety:** Employs explicit NULL checks and Doxygen-style documentation across all modules to ensure reliability in production environments.
 
-## **🤝 Contributing**
+## License
 
-We love contributions! Whether it's adding support for new hardware (like Battery or Network) or improving the JSON schema, feel free to open a Pull Request.
-
----
-
-## **⚖️ License**
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
