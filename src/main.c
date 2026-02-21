@@ -4,8 +4,9 @@
 
 int main(int argc, char** argv)
 {
-  CPU* cpu;
-  cpu = cpu_get_info();
+  CPU* cpu = cpu_get_info();
+
+  printf("%s", cpu->arch);
 
   free(cpu);
   

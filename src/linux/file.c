@@ -1,6 +1,6 @@
 #include "base.h"
 
-#define BUFFER_SIZE 1024
+#define FILE_READ_BUFFER 4096
 
 char* file_read_stripped(const char* filename, const char* exclude, bool verbose)
 {
@@ -12,7 +12,7 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
     return NULL;
   }
 
-  char* buffer = malloc(BUFFER_SIZE);
+  char* buffer = malloc(FILE_READ_BUFFER);
   if (!buffer) {
     if (verbose) {
       fprintf(stderr, "error: failed to allocate memory: %s", strerror(errno));
@@ -22,7 +22,7 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
 
   int c;
   int n = 0;
-  uint64_t capacity = BUFFER_SIZE;
+  uint64_t capacity = FILE_READ_BUFFER;
   while ((c = fgetc(fp)) != EOF) {
     if (n + 1 >= capacity) {
       capacity *= 2;

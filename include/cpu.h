@@ -1,8 +1,5 @@
 #pragma once
 
-#include <inttypes.h>
-#include <stdbool.h>
-
 typedef struct
 {
   char* vendor_id;

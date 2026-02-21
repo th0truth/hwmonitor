@@ -1,19 +1,13 @@
 #include "base.h"
-#include <ctype.h>
 
 char* str_find_value(const char* source, const char* search, const char* delim)
 {
-	const char* start;
-	const char* end;
-	char* value;
-	size_t len;
-
 	if (!source || !search || !delim) {
 		return NULL;
   }
 
 	/* Locate the key */
-	start = strstr(source, search);
+	const char* start = strstr(source, search);
 	if (!start) {
 		return NULL;
   }
@@ -27,7 +21,7 @@ char* str_find_value(const char* source, const char* search, const char* delim)
   }
 
 	/* Find the end of the value */
-	end = start;
+	const char* end = start;
 	while (*end && !strchr(delim, *end)) {
 		end++;
   }
@@ -37,13 +31,13 @@ char* str_find_value(const char* source, const char* search, const char* delim)
 		end--;
   }
 
-	len = (size_t)(end - start);
+	uint64_t len = end - start;
 	if (!len) {
 		return NULL;
   }
 
 	/* Allocate and copy */
-	value = malloc(len + 1);
+	char* value = malloc(len + 1);
 	if (!value) {
 		return NULL;
   }

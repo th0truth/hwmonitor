@@ -6,8 +6,7 @@
 
 char* cpu_get_arch(const char* flags)
 {
-  char* flag;
-  flag = str_find_value(flags, "lm", NULL);
+  char* flag = str_find_value(flags, "lm", NULL);
   if (!flag) {
     return "x86";
   } else {
