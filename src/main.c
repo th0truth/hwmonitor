@@ -6,6 +6,7 @@
 #include "cpu.h"
 #include "ram.h"
 #include "gpu.h"
+#include "battery.h"
 
 /**
  * Command-line options defined for getopt_long.
@@ -14,6 +15,7 @@ static struct option options[] = {
   {"output",      required_argument,  NULL, 'o'},
   {"json",        no_argument,        NULL, 'j'},
   {"cpu",         no_argument,        NULL, 'c'},
+  {"battery",     no_argument,        NULL, 'b'},
   {"ram",         no_argument,        NULL, 'r'},
   {"gpu",         no_argument,        NULL, 'g'},
   {"help",        no_argument,        NULL, 'h'},
@@ -26,10 +28,11 @@ static struct option options[] = {
 typedef struct
 {
   char* output_file;
+  bool use_json;
+  bool show_battery;
   bool show_cpu;
   bool show_ram;
   bool show_gpu;
-  bool use_json;
 } Config;
 
 /**
@@ -59,13 +62,16 @@ int main(int argc, char** argv)
   int opt_idx = 0;
 
   // 1. Parse command-line arguments
-  while ((opt = getopt_long(argc, argv, "hcgjro:", options, &opt_idx)) != -1) {
+  while ((opt = getopt_long(argc, argv, "hrbcgjro:", options, &opt_idx)) != -1) {
     switch (opt) {
       case 'j':
         config.use_json = true;
         break;
       case 'o':
         if (optarg) config.output_file = strdup(optarg);
+        break;
+      case 'b':
+        config.show_battery = false;
         break;
       case 'c':
         config.show_cpu = true;
@@ -85,10 +91,11 @@ int main(int argc, char** argv)
   }
   
   // 2. Default behavior: if --json is set without filters, show all hardware
-  if (config.use_json && !config.show_cpu && !config.show_ram && !config.show_gpu) {
+  if (config.use_json && !config.show_cpu && !config.show_ram && !config.show_gpu && !config.show_battery) {
     config.show_cpu = true;
     config.show_ram = true;
     config.show_gpu = true;
+    config.show_battery = true;
   }
 
   // 3. Output logic: JSON or Plain Text
@@ -121,6 +128,14 @@ int main(int argc, char** argv)
         }
         cJSON_AddItemToObject(json, "gpus", gpu_list);
         free_gpus(gpus, count);
+      }
+    }
+
+    if (config.show_battery) {
+      BATTERY* battery = battery_get_info();
+      if (battery) {
+        cJSON_AddItemToObject(json, "battery", battery_to_json_obj(battery));
+        free_battery(battery);
       }
     }
 
