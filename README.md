@@ -1,18 +1,31 @@
-# **hwmonitor**
+# <div align="center">🚀 **hwmonitor**</div>
+<p align="center"><strong>A High-Performance, JSON-Native Hardware Discovery Tool for Linux</strong></p>
 
-A high-performance C library and CLI tool for retrieving detailed hardware information on Linux systems. **hwmonitor** provides a clean, modular way to access component data (CPU, GPU, RAM, etc.) and export it in professional JSON format.
+<div align="center">
 
-## **Key Features**
-- **JSON Support:** Built-in `cJSON` integration for easy data serialization.
-- **Modern CLI:** Professional argument parsing with `getopt_long` support.
-- **Zero External Dependencies:** Uses Git submodules for a "clone and build" experience.
-- **Linux Native:** Directly interfaces with `/proc` and `/sys` for maximum speed.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![C Standard: C11](https://img.shields.io/badge/C-C11-blue.svg)](https://en.wikipedia.org/wiki/C11_(C_standard_revision))
+[![Platform: Linux](https://img.shields.io/badge/Platform-Linux-orange.svg)](https://www.linux.org/)
+
+</div>
 
 ---
 
-## **Installation**
+## **🌟 Why hwmonitor?**
 
-Since **hwmonitor** uses Git submodules for its dependencies, ensure you clone it recursively:
+**hwmonitor** is built for developers who need fast, structured hardware data. Unlike traditional tools that output plain text, **hwmonitor** is designed from the ground up to provide **clean, API-ready JSON** directly from the system kernel.
+
+- ⚡ **Near-Instant Performance:** No slow external calls to `lspci` or `dmidecode`. We read directly from `/proc` and `/sys`.
+- 📊 **JSON-First Architecture:** Built-in `cJSON` integration for seamless data export and automation.
+- 🛠️ **Professional C Design:** Strict C11 compliance, deep-discovery GPU logic, and memory-safe architecture.
+- 📦 **Zero Dependency Bloat:** All dependencies are managed via Git submodules. Just clone and build.
+
+---
+
+## **🚀 Quick Start**
+
+### **1. Installation**
+Since **hwmonitor** uses high-performance submodules, ensure you clone it recursively:
 
 ```bash
 # Clone the repository with all dependencies
@@ -23,87 +36,81 @@ cd hwmonitor
 make
 ```
 
----
-
-## **Usage**
-
-**hwmonitor** supports both short and long-form flags for flexible system monitoring.
-
-### **Basic Examples**
+### **2. Examples**
 ```bash
-# Show CPU information in plain text
-./build/hwmonitor.o --cpu
-
-# Generate a full system report in formatted JSON
+# Get a full, structured system report in JSON
 ./build/hwmonitor.o --json
 
-# Export specific hardware data to a file
+# Export specific CPU and GPU metrics to a file
 ./build/hwmonitor.o --cpu --gpu --json --output report.json
-```
 
-### **Available Options**
-| Short | Long | Description |
-|:---:|:---|:---|
-| `-h` | `--help` | Show this help message |
-| `-c` | `--cpu` | Display CPU architecture, model, and frequency |
-| `-g` | `--gpu` | Display GPU vendor and model information |
-| `-j` | `--json` | Output data in JSON format |
-| `-o` | `--output <file>` | Save the JSON report to a specific file |
+# Standard human-readable summary
+./build/hwmonitor.o --cpu --ram
+```
 
 ---
 
-## **JSON Output Example**
-When using the `--json` flag, **hwmonitor** produces a structured report. Here is an example of a full system analysis:
+## **🛠️ Advanced Features**
+
+### **Dynamic GPU Discovery**
+Unlike static tools, **hwmonitor** dynamically scans your hardware bus (`/sys/class/drm`) to identify all installed GPUs. It includes vendor-specific deep-parsing for **NVIDIA**, **AMD**, and **Intel**.
+
+### **Professional CLI Interface**
+Built with `getopt_long`, providing both short and long-form flags (e.g., `-c` or `--cpu`).
+
+| Short | Long Flag | Description |
+|:---:|:---|:---|
+| `-j` | `--json` | Return data in serialized JSON format |
+| `-o` | `--output <f>`| Save the JSON report to a file |
+| `-c` | `--cpu` | Full CPU architecture and frequency analysis |
+| `-g` | `--gpu` | Advanced multi-GPU discovery and driver info |
+| `-r` | `--ram` | Detailed memory and swap utilization metrics |
+
+---
+
+## **📊 JSON Output Preview**
+
+The primary goal of **hwmonitor** is to produce clean, usable data. Here is what your report will look like:
 
 ```json
 {
   "cpu": {
     "vendor": "AuthenticAMD",
-    "model_name": "AMD Ryzen 9 7950X3D 16-Core Processor",
+    "model_name": "AMD Ryzen 9 7950X3D",
     "arch": "x86_64",
+    "online_cores": 16,
     "max_freq_mhz": 5700,
-    "total_cores": 16,
-    "total_threads": 32,
-    "curr_temp": 54.2
+    "curr_temp": 42.5
   },
-  "gpu": {
-    "vendor": "NVIDIA Corporation",
-    "model": "GeForce RTX 4080",
-    "driver": "535.113.01",
-    "vram_mb": 16384
-  },
-  "memory": {
-    "total_gb": 64,
-    "used_gb": 12.4,
-    "type": "DDR5"
-  }
+  "gpus": [
+    {
+      "vendor": "NVIDIA Corporation",
+      "model": "GeForce RTX 4090",
+      "driver": "nvidia",
+      "uuid": "GPU-8f92a1..."
+    }
+  ]
 }
 ```
 
 ---
 
-## **Supported Components**
+## **🏗️ Architecture & Best Practices**
 
-| Component | Information | Linux | Windows |
-|:---|:---:|:---:|:---:|
-| **CPU** | Architecture, Vendor, Model, Cores, Frequency, Temp | ✔️ | ❌ |
-| **GPU** | Vendor, Device, Driver, PCI ID | ✔️ | ❌ |
-| **ram** | Total, Free, Available, Cached, Swap | ✔️ | ❌ |
-| **BAT** | Capacity, Voltage, Health, Manufacturer | ✔️ | ❌ |
-| **OS** | Distro, Version, Desktop Environment | ✔️ | ❌ |
-| **BIOS** | Vendor, Version, Release Date | ✔️ | ❌ |
+This project is maintained with a focus on senior-level engineering standards:
+- **Encapsulated Modules:** Each component (CPU, RAM, GPU) is isolated for maximum maintainability.
+- **Doxygen Documentation:** Every function is fully documented with technical context.
+- **Explicit NULL Safety:** Standardized `ptr == NULL` checks and braces for ultra-reliable performance.
+- **Atomic File Writing:** Professional error handling and `stderr` reporting for automated workflows.
 
 ---
 
-## **Development**
+## **🤝 Contributing**
 
-### **Architecture**
-- **`include/`**: Clean header files with `#pragma once` guards.
-- **`src/`**: Modular implementation (one `.c` file per component).
-- **`deps/`**: External libraries managed via Git Submodules.
+We love contributions! Whether it's adding support for new hardware (like Battery or Network) or improving the JSON schema, feel free to open a Pull Request.
 
-### **Coding Standards**
-This project follows modern C standards (C11+). Variables are declared near first use to reduce cognitive load and improve performance.
+---
 
-## **License**
-This project is licensed under the [MIT License](LICENSE).
+## **⚖️ License**
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
