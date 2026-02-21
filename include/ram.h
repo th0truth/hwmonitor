@@ -1,21 +1,23 @@
 #pragma once
 
-#include "platform.h"
+#include <stdint.h>
+#include <cJSON.h>
 
-#if defined(HWMONITOR_UNIX)
-typedef struct {
-  size_t total;
-  size_t free;
-  size_t available;
-  size_t buffers;
-  size_t cached;
-  size_t swap_total;
-  size_t swap_free;
-  size_t Zswap;
-  size_t Zswapped;
-  size_t dirty;
-  size_t perCpu;
-} MEM;
+typedef struct
+{
+  uint64_t total;
+  uint64_t free;
+  uint64_t available;
+  uint64_t buffers;
+  uint64_t cached;
+  uint64_t swap_total;
+  uint64_t swap_free;
+  uint64_t zswap;
+  uint64_t zswapped;
+  uint64_t dirty;
+  uint64_t per_cpu;
+} RAM;
 
-MEM *getRAMinfo();
-#endif
+cJSON* ram_to_json_obj(const RAM* ram);
+RAM* ram_get_info();
+void free_ram(RAM* ram);
