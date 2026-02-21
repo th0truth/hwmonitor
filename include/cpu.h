@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdint.h>
+#include <cJSON.h>
+
 typedef struct
 {
   char* vendor_id;
@@ -17,6 +20,6 @@ typedef struct
   uint16_t online_cores;
 } CPU;
 
-CPU* cpu_get_info();
 cJSON* cpu_to_json_obj(const CPU* cpu);
+CPU* cpu_get_info();
 void free_cpu(CPU* cpu);

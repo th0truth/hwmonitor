@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <ctype.h>
 
+#include <cJSON.h>
+
 #define BUFFER_SIZE 128
 
 #define STR_OR_UNK(s) ((s) ? (s) : "<unknown>")

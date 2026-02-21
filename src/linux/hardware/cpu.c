@@ -2,7 +2,6 @@
 #include "file.h"
 #include "io.h"
 
-#include <cJSON.h>
 #include "cpu.h"
 
 int16_t cpu_get_total_cores()

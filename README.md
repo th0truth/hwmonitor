@@ -88,7 +88,7 @@ When using the `--json` flag, **hwmonitor** produces a structured report. Here i
 |:---|:---:|:---:|:---:|
 | **CPU** | Architecture, Vendor, Model, Cores, Frequency, Temp | ✔️ | ❌ |
 | **GPU** | Vendor, Device, Driver, PCI ID | ✔️ | ❌ |
-| **MEM** | Total, Free, Available, Cached, Swap | ✔️ | ❌ |
+| **ram** | Total, Free, Available, Cached, Swap | ✔️ | ❌ |
 | **BAT** | Capacity, Voltage, Health, Manufacturer | ✔️ | ❌ |
 | **OS** | Distro, Version, Desktop Environment | ✔️ | ❌ |
 | **BIOS** | Vendor, Version, Release Date | ✔️ | ❌ |
