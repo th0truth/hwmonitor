@@ -8,7 +8,7 @@
  * Linux reports this as a range (e.g., "0-7") or a single number.
  * @return Number of online cores, or -1 on failure.
  */
-int16_t cpu_get_total_cores(void)
+static int16_t cpu_get_total_cores(void)
 {
   char* online = file_read_stripped("/sys/devices/system/cpu/online", "\n", false);
   if (online == NULL) {
@@ -35,7 +35,7 @@ int16_t cpu_get_total_cores(void)
  * @param filename The sysfs file to read (e.g., "scaling_max_freq").
  * @return Frequency in MHz, or -1 on failure.
  */
-int16_t cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
+static int16_t cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
 {
   char buffer[BUFFER_SIZE];
   snprintf(buffer, sizeof(buffer), "/sys/devices/system/cpu/cpu%u/cpufreq/%s", core_id, filename);
@@ -60,7 +60,7 @@ int16_t cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
  * @param flags The CPU flags string from /proc/cpuinfo.
  * @return Static string "x86" or "x86_64".
  */
-char* cpu_get_arch(const char* flags)
+static char* cpu_get_arch(const char* flags)
 {
   if (flags == NULL) {
     return "x86";
@@ -103,31 +103,31 @@ CPU* cpu_get_info(void)
   cpu->max_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_max_freq");
   cpu->min_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_min_freq");
   
-  value               = str_find_value(cpu_info, "cpu family", "\n");
+  value = str_find_value(cpu_info, "cpu family", "\n");
   if (value != NULL) {
     cpu->cpu_family   = atoi(value);
     free(value);
   }
   
-  value               = str_find_value(cpu_info, "model", "\n");
+  value = str_find_value(cpu_info, "model", "\n");
   if (value != NULL) {
-    cpu->model        = atoi(value);
-    free(value);  
-  }
-
-  value               = str_find_value(cpu_info, "stepping", "\n");
-  if (value != NULL) {
-    cpu->stepping     = atoi(value);
+    cpu->model = atoi(value);
     free(value);
   }
 
-  value               = str_find_value(cpu_info, "cpu cores", "\n");
+  value = str_find_value(cpu_info, "stepping", "\n");
   if (value != NULL) {
-    cpu->total_cores  = atoi(value);
+    cpu->stepping = atoi(value);
     free(value);
   }
 
-  value               = str_find_value(cpu_info, "siblings", "\n");
+  value = str_find_value(cpu_info, "cpu cores", "\n");
+  if (value != NULL) {
+    cpu->total_cores = atoi(value);
+    free(value);
+  }
+
+  value = str_find_value(cpu_info, "siblings", "\n");
   if (value != NULL) {
     cpu->total_threads = atoi(value);
     free(value);
