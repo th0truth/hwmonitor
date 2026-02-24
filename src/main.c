@@ -1,8 +1,9 @@
 #include "base.h"
 #include <getopt.h>
-#include <cJSON.h>
 
 #include "file.h"
+#include "display.h"
+
 #include "cpu.h"
 #include "ram.h"
 #include "gpu.h"
@@ -157,7 +158,7 @@ int main(int argc, char** argv)
     if (config.show_cpu) {
       CPU* cpu = cpu_get_info();
       if (cpu) {
-        printf("CPU Model: %s\n", STR_OR_UNK(cpu->model_name));
+        display_cpu(cpu);
         free_cpu(cpu);
       }
     }
