@@ -8,9 +8,8 @@ void display_cpu(const CPU* cpu)
     return;
   }
 
-  printf("Vendor: %s (%s)\n", STR_OR_UNK(cpu->vendor_id), STR_OR_UNK(cpu->arch));
-  printf("Model: %s\n", STR_OR_UNK(cpu->model_name));
-  printf("Topology: Family %u, Model %u, Stepping %u\n", cpu->cpu_family, cpu->model, cpu->stepping);
+  printf("%-10s %s (%s)\n", "Vendor:", STR_OR_UNK(cpu->vendor_id), STR_OR_UNK(cpu->arch));
+  printf("%-10s %s %s\n", "Model:", STR_OR_UNK(cpu->model_name));
   printf("Physical Cores: %u\n", cpu->total_cores);
   printf("Logical cores: %u\n", cpu->total_threads);
   printf("Max freq: %.2f MHz\n", cpu->max_MHz);
