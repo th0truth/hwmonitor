@@ -16,8 +16,10 @@
 #include "battery.h"
 #include "mainboard.h"
 #include "storage.h"
+#include "api/groq.h"
+#include <curl/curl.h>
 
-#define SHORT_OPTS "hrbsOcgjom"
+#define SHORT_OPTS "hrbsOcgjomo:A:a"
 
 /**
  * @brief Command-line options defined for getopt_long.
@@ -32,7 +34,9 @@ static struct option long_options[] = {
   {"storage",     no_argument,        NULL, 's'},
   {"ram",         no_argument,        NULL, 'r'},
   {"gpu",         no_argument,        NULL, 'g'},
+  {"all",         no_argument,        NULL, 'a'},
   {"help",        no_argument,        NULL, 'h'},
+  {"ai",          required_argument,  NULL, 'A'},
   {NULL,          0,                  NULL,  0}
 };
 
@@ -49,6 +53,8 @@ typedef struct {
   bool show_battery;
   bool show_mainboard;
   bool show_storage;
+  bool use_ai;
+  char* ai_prompt;
 } Config;
 
 /**
@@ -82,8 +88,10 @@ void print_usage(const char* prog_name)
   printf("  -b, --battery    Show Battery information\n");
   printf("  -m, --mainboard  Show Mainboard/System information\n");
   printf("  -s, --storage    Show Storage/Disk information\n");
+  printf("  -a, --all        Show ALL hardware information\n");
   printf("  -j, --json       Output in formatted JSON\n");
   printf("  -o, --output <f> Save output to a JSON file\n");
+  printf("  -A, --ai <text>  Analyze hardware using Groq AI with a prompt\n");
 }
 
 /**
@@ -116,6 +124,15 @@ void parse_arguments(int argc, char** argv, Config* config)
       case 'g':
         config->show_gpu = true;
         break;
+      case 'a':
+        config->show_os = true;
+        config->show_cpu = true;
+        config->show_ram = true;
+        config->show_gpu = true;
+        config->show_battery = true;
+        config->show_mainboard = true;
+        config->show_storage = true;
+        break;
       case 'b':
         config->show_battery = true;
         break;
@@ -124,6 +141,10 @@ void parse_arguments(int argc, char** argv, Config* config)
         break;
       case 's':
         config->show_storage = true;
+        break;
+      case 'A':
+        config->use_ai = true;
+        if (optarg) config->ai_prompt = strdup(optarg);
         break;
       case 'h':
         print_usage(argv[0]);
@@ -135,7 +156,7 @@ void parse_arguments(int argc, char** argv, Config* config)
   }
 
   // Default behavior: if no specific hardware filters are set, show all
-  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery && !config->show_mainboard && !config->show_storage) {
+  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery && !config->show_mainboard && !config->show_storage && !config->use_ai) {
     config->show_os = true;
     config->show_cpu = true;
     config->show_ram = true;
@@ -268,13 +289,51 @@ int main(int argc, char** argv)
   Config config = {0};
   SystemHardware hw = {0};
 
+  // Must initialize curl globally before using it
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+
   parse_arguments(argc, argv, &config);
   fetch_hardware(&config, &hw);
 
-  if (config.use_json) {
+  if (config.use_ai && config.ai_prompt) {
+    // Only output AI analysis when --ai is used
+  } else if (config.use_json) {
     output_json(&config, &hw);
   } else {
     output_plaintext(&hw);
+  }
+
+  if (config.use_ai && config.ai_prompt) {
+    cJSON* json_context = cJSON_CreateObject();
+    if (hw.os) cJSON_AddItemToObject(json_context, "os", os_to_json_obj(hw.os));
+    if (hw.cpu) cJSON_AddItemToObject(json_context, "cpu", cpu_to_json_obj(hw.cpu));
+    if (hw.ram) cJSON_AddItemToObject(json_context, "ram", ram_to_json_obj(hw.ram));
+    if (hw.battery) cJSON_AddItemToObject(json_context, "battery", battery_to_json_obj(hw.battery));
+    if (hw.mainboard) cJSON_AddItemToObject(json_context, "mainboard", mainboard_to_json_obj(hw.mainboard));
+    
+    if (hw.gpus && hw.gpu_count > 0) {
+      cJSON* gpu_list = cJSON_CreateArray();
+      for (int i = 0; i < hw.gpu_count; i++) {
+        cJSON_AddItemToArray(gpu_list, gpu_to_json_obj(hw.gpus[i]));
+      }
+      cJSON_AddItemToObject(json_context, "gpus", gpu_list);
+    }
+    
+    if (hw.storages && hw.storage_count > 0) {
+      cJSON* storage_list = cJSON_CreateArray();
+      for (int i = 0; i < hw.storage_count; i++) {
+        cJSON_AddItemToArray(storage_list, storage_to_json_obj(hw.storages[i]));
+      }
+      cJSON_AddItemToObject(json_context, "storages", storage_list);
+    }
+
+    char* context_str = cJSON_PrintUnformatted(json_context);
+    
+    groq_analyze_hardware(context_str, config.ai_prompt);
+    
+    free(context_str);
+    cJSON_Delete(json_context);
+    free(config.ai_prompt);
   }
 
   free_hardware(&hw);
@@ -283,5 +342,6 @@ int main(int argc, char** argv)
     free(config.output_file);
   }
 
+  curl_global_cleanup();
   return 0;
 }

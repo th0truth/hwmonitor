@@ -15,7 +15,7 @@ CFLAGS = $(INC_FLAGS)
 
 $(BUILD_DIR)/$(TARGET).o: $(SRCS) $(INCS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(SRCS) -o $@ $(CFLAGS)
+	$(CC) $(SRCS) -o $@ $(CFLAGS) -lcurl
 
 .PHONY: clean
 clean:
