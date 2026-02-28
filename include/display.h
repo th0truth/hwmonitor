@@ -12,6 +12,7 @@
 #include "battery.h"
 #include "mainboard.h"
 #include "storage.h"
+#include "network.h"
 
 /**
  * @brief Displays OS information to the console.
@@ -51,3 +52,10 @@ void display_mainboard(const MAINBOARD* mainboard);
  * @param count Number of storages in the array.
  */
 void display_storages(STORAGE** storages, int count);
+
+/**
+ * @brief Displays information for all Network interfaces to the console.
+ * @param networks Array of pointers to Network structures.
+ * @param count Number of networks in the array.
+ */
+void display_networks(Network** networks, int count);

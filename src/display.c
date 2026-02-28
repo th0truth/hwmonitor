@@ -15,6 +15,7 @@
 #include "os.h"
 #include "mainboard.h"
 #include "storage.h"
+#include "network.h"
 
 /**
  * @brief Displays OS information.
@@ -55,6 +56,35 @@ void display_cpu(const CPU* cpu)
 
   print_footer();
 }
+
+/**
+ * @brief Displays Network interfaces information.
+ */
+void display_networks(Network** networks, int count)
+{
+  if (!networks || count == 0)
+    return;
+
+  for (int i = 0; i < count; i++) {
+    char h_title[64];
+    snprintf(h_title, sizeof(h_title), "Network Interface [%d] (%s)", i, networks[i]->interface);    
+    print_header(h_title);
+
+    print_field("Driver", "%s", STR_OR_UNK(networks[i]->driver));
+    
+    if (networks[i]->pci_id)
+      print_field("PCI ID", "%s", networks[i]->pci_id);
+    
+    if (networks[i]->pci_slot_name)
+      print_field("PCI Slot", "%s", networks[i]->pci_slot_name);
+      
+    if (networks[i]->pci_subsys_id)
+      print_field("PCI Subsys ID", "%s", networks[i]->pci_subsys_id);
+
+    print_footer();
+  }
+}
+
 
 /**
  * @brief Displays RAM information.

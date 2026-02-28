@@ -16,10 +16,11 @@
 #include "battery.h"
 #include "mainboard.h"
 #include "storage.h"
+#include "network.h"
 #include "api/groq.h"
 #include <curl/curl.h>
 
-#define SHORT_OPTS "hrbsOcgjomo:A:a"
+#define SHORT_OPTS "hrbsOcgjomo:A:an"
 
 /**
  * @brief Command-line options defined for getopt_long.
@@ -32,6 +33,7 @@ static struct option long_options[] = {
   {"battery",     no_argument,        NULL, 'b'},
   {"mainboard",   no_argument,        NULL, 'm'},
   {"storage",     no_argument,        NULL, 's'},
+  {"network",     no_argument,        NULL, 'n'},
   {"ram",         no_argument,        NULL, 'r'},
   {"gpu",         no_argument,        NULL, 'g'},
   {"all",         no_argument,        NULL, 'a'},
@@ -53,6 +55,7 @@ typedef struct {
   bool show_battery;
   bool show_mainboard;
   bool show_storage;
+  bool show_network;
   bool use_ai;
   char* ai_prompt;
 } Config;
@@ -70,6 +73,8 @@ typedef struct {
   MAINBOARD* mainboard;
   STORAGE** storages;
   int storage_count;
+  Network** networks;
+  int network_count;
 } SystemHardware;
 
 /**
@@ -88,6 +93,7 @@ void print_usage(const char* prog_name)
   printf("  -b, --battery    Show Battery information\n");
   printf("  -m, --mainboard  Show Mainboard/System information\n");
   printf("  -s, --storage    Show Storage/Disk information\n");
+  printf("  -n, --network    Show Network interfaces information\n");
   printf("  -a, --all        Show ALL hardware information\n");
   printf("  -j, --json       Output in formatted JSON\n");
   printf("  -o, --output <f> Save output to a JSON file\n");
@@ -132,6 +138,7 @@ void parse_arguments(int argc, char** argv, Config* config)
         config->show_battery = true;
         config->show_mainboard = true;
         config->show_storage = true;
+        config->show_network = true;
         break;
       case 'b':
         config->show_battery = true;
@@ -141,6 +148,9 @@ void parse_arguments(int argc, char** argv, Config* config)
         break;
       case 's':
         config->show_storage = true;
+        break;
+      case 'n':
+        config->show_network = true;
         break;
       case 'A':
         config->use_ai = true;
@@ -156,7 +166,7 @@ void parse_arguments(int argc, char** argv, Config* config)
   }
 
   // Default behavior: if no specific hardware filters are set, show all
-  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery && !config->show_mainboard && !config->show_storage && !config->use_ai) {
+  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery && !config->show_mainboard && !config->show_storage && !config->show_network && !config->use_ai) {
     config->show_os = true;
     config->show_cpu = true;
     config->show_ram = true;
@@ -164,6 +174,7 @@ void parse_arguments(int argc, char** argv, Config* config)
     config->show_battery = true;
     config->show_mainboard = true;
     config->show_storage = true;
+    config->show_network = true;
   }
 }
 
@@ -186,6 +197,8 @@ void fetch_hardware(const Config* config, SystemHardware* hw)
     hw->mainboard = mainboard_get_info();
   if (config->show_storage)
     hw->storages = storage_get_all(&hw->storage_count);
+  if (config->show_network)
+    hw->networks = network_get_all(&hw->network_count);
 }
 
 /**
@@ -207,6 +220,8 @@ void free_hardware(SystemHardware* hw)
     free_mainboard(hw->mainboard);
   if (hw->storages)
     free_storages(hw->storages, hw->storage_count);
+  if (hw->networks)
+    free_networks(hw->networks, hw->network_count);
 }
 
 /**
@@ -246,6 +261,14 @@ void output_json(const Config* config, const SystemHardware* hw)
     cJSON_AddItemToObject(json, "storages", storage_list);
   }
 
+  if (hw->networks && hw->network_count > 0) {
+    cJSON* network_list = cJSON_CreateArray();
+    for (int i = 0; i < hw->network_count; i++) {
+      cJSON_AddItemToArray(network_list, network_to_json_obj(hw->networks[i]));
+    }
+    cJSON_AddItemToObject(json, "networks", network_list);
+  }
+
   char* json_str = cJSON_Print(json);
   if (config->output_file) {
     if (file_write_string(config->output_file, json_str)) {
@@ -278,6 +301,8 @@ void output_plaintext(const SystemHardware* hw)
     display_mainboard(hw->mainboard);
   if (hw->storages && hw->storage_count > 0)
     display_storages(hw->storages, hw->storage_count);
+  if (hw->networks && hw->network_count > 0)
+    display_networks(hw->networks, hw->network_count);
 }
 
 /**
@@ -325,6 +350,14 @@ int main(int argc, char** argv)
         cJSON_AddItemToArray(storage_list, storage_to_json_obj(hw.storages[i]));
       }
       cJSON_AddItemToObject(json_context, "storages", storage_list);
+    }
+
+    if (hw.networks && hw.network_count > 0) {
+      cJSON* network_list = cJSON_CreateArray();
+      for (int i = 0; i < hw.network_count; i++) {
+        cJSON_AddItemToArray(network_list, network_to_json_obj(hw.networks[i]));
+      }
+      cJSON_AddItemToObject(json_context, "networks", network_list);
     }
 
     char* context_str = cJSON_PrintUnformatted(json_context);
