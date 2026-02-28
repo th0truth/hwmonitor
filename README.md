@@ -89,6 +89,7 @@ hwmonitor --cpu --storage --json --output report.json
 | `-s` | `--storage` | Discovers block devices (NVMe, SSD, HDD) and their capacities. |
 | `-g` | `--gpu` | Performs dynamic bus scanning for all installed GPUs. |
 | `-b` | `--battery` | Monitors capacity, voltage, and health of system batteries. |
+| `-n` | `--network` | Lists network interfaces, drivers, and PCI bus topology. |
 | `-a` | `--all` | Explicitly targets all hardware modules. |
 | `-j` | `--json` | Serializes hardware data into a JSON object. |
 | `-o` | `--output <file>`| Redirects the JSON output to a specified file. |
@@ -137,6 +138,13 @@ When running in standard mode, **hwmonitor** dynamically formats beautiful, colo
 │  Size            : 1907.73 GiB
 │  Removable       : No
 │  PCI Slot        : 0000:04:00.0
+╰─
+
+╭─ Network Interface [0] (eth0) 
+│  Driver          : igc
+│  PCI ID          : 8086:15f3
+│  PCI Slot        : 0000:05:00.0
+│  PCI Subsys ID   : 1043:87d2
 ╰─
 ```
 
@@ -194,6 +202,15 @@ Using the `--json` flag produces a highly structured schema ready for parsing.
       "removable": false,
       "model": "HyperDrive NVMe Pro",
       "pci_slot_name": "0000:04:00.0"
+    }
+  ],
+  "networks": [
+    {
+      "interface": "eth0",
+      "driver": "igc",
+      "pci_id": "8086:15f3",
+      "pci_slot_name": "0000:05:00.0",
+      "pci_subsys_id": "1043:87d2"
     }
   ]
 }
