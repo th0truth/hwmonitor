@@ -7,6 +7,26 @@
 #include "gpu.h"
 #include "battery.h"
 
+#include "os.h"
+
+void display_os(const OS* os)
+{
+  if (!os)
+    return;
+
+  print_header("Operating System (OS)");
+
+  print_field("Name", "%s", STR_OR_UNK(os->name));
+  print_field("Version ID", "%s", STR_OR_UNK(os->version_id));
+  print_field("Build ID", "%s", STR_OR_UNK(os->build_id));
+  print_field("Release Type", "%s", STR_OR_UNK(os->release_type));
+  print_field("ID", "%s", STR_OR_UNK(os->id));
+  print_field("DE Variant", "%s", STR_OR_UNK(os->de));
+  print_field("DE ID", "%s", STR_OR_UNK(os->de_id));
+
+  print_footer();
+}
+
 void display_cpu(const CPU* cpu)
 {
   if (!cpu)

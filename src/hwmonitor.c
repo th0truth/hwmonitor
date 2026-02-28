@@ -4,12 +4,13 @@
 #include "file.h"
 #include "display.h"
 
+#include "os.h"
 #include "cpu.h"
 #include "ram.h"
 #include "gpu.h"
 #include "battery.h"
 
-#define SHORT_OPTS "hrbcgjo:"
+#define SHORT_OPTS "hrbOcgjo:"
 
 /**
  * Command-line options defined for getopt_long.
@@ -17,6 +18,7 @@
 static struct option long_options[] = {
   {"output",      required_argument,  NULL, 'o'},
   {"json",        no_argument,        NULL, 'j'},
+  {"os",          no_argument,        NULL, 'O'},
   {"cpu",         no_argument,        NULL, 'c'},
   {"battery",     no_argument,        NULL, 'b'},
   {"ram",         no_argument,        NULL, 'r'},
@@ -31,16 +33,18 @@ static struct option long_options[] = {
 typedef struct {
   char* output_file;
   bool use_json;
-  bool show_battery;
+  bool show_os;
   bool show_cpu;
   bool show_ram;
   bool show_gpu;
+  bool show_battery;
 } Config;
 
 /**
  * Centralized struct to hold all fetched hardware data.
  */
 typedef struct {
+  OS* os;
   CPU* cpu;
   RAM* ram;
   GPU** gpus;
@@ -57,6 +61,7 @@ void print_usage(const char* prog_name)
   printf("Usage: %s [options]\n", prog_name);
   printf("Options:\n");
   printf("  -h, --help       Show this help message\n");
+  printf("  -O, --os         Show OS information\n");
   printf("  -c, --cpu        Show CPU information\n");
   printf("  -r, --ram        Show RAM information\n");
   printf("  -g, --gpu        Show GPU information\n");
@@ -82,17 +87,20 @@ void parse_arguments(int argc, char** argv, Config* config)
         if (optarg) config->output_file = strdup(optarg);
         config->use_json = true; // Implicitly enable JSON output when saving to file
         break;
-      case 'b':
-        config->show_battery = true;
-        break;
       case 'c':
         config->show_cpu = true;
+        break;
+      case 'O':
+        config->show_os = true;
         break;
       case 'r':
         config->show_ram = true;
         break;
       case 'g':
         config->show_gpu = true;
+        break;
+      case 'b':
+        config->show_battery = true;
         break;
       case 'h':
         print_usage(argv[0]);
@@ -104,7 +112,8 @@ void parse_arguments(int argc, char** argv, Config* config)
   }
 
   // Default behavior: if no specific hardware filters are set, show all
-  if (!config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery) {
+  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery) {
+    config->show_os = true;
     config->show_cpu = true;
     config->show_ram = true;
     config->show_gpu = true;
@@ -117,6 +126,8 @@ void parse_arguments(int argc, char** argv, Config* config)
  */
 void fetch_hardware(const Config* config, SystemHardware* hw)
 {
+  if (config->show_os)
+    hw->os = os_get_info();
   if (config->show_cpu) 
     hw->cpu = cpu_get_info();
   if (config->show_ram) 
@@ -132,6 +143,8 @@ void fetch_hardware(const Config* config, SystemHardware* hw)
  */
 void free_hardware(SystemHardware* hw)
 {
+  if (hw->os)
+    free(hw->os);
   if (hw->cpu)
     free_cpu(hw->cpu);
   if (hw->ram)
@@ -184,6 +197,8 @@ void output_json(const Config* config, const SystemHardware* hw)
  */
 void output_plaintext(const SystemHardware* hw)
 {
+  if (hw->os)
+    display_os(hw->os);
   if (hw->cpu)
     display_cpu(hw->cpu);
   if (hw->ram)
