@@ -42,29 +42,54 @@ void display_ram(const RAM* ram)
 
   // Format the numbers into strings
   char total_str[32];
+  char free_str[32];
   char used_str[32];
   char avail_str[32];
+  char buffers_str[32];
+  char cached_str[32];
   char cache_str[32];
 
   char swap_tot_str[32];
+  char swap_free_str[32];
   char swap_used_str[32];
+  char zswap_str[32];
+  char zswapped_str[32];
+  char dirty_str[32];
+  char per_cpu_str[32];
 
   format_size("GiB", ram->total * 1024ULL, total_str, sizeof(total_str));
+  format_size("GiB", ram->free * 1024ULL, free_str, sizeof(free_str));
   format_size("GiB", used * 1024ULL, used_str, sizeof(used_str));
   format_size("GiB", ram->available * 1024ULL, avail_str, sizeof(avail_str));
+  format_size("GiB", ram->buffers * 1024ULL, buffers_str, sizeof(buffers_str));
+  format_size("GiB", ram->cached * 1024ULL, cached_str, sizeof(cached_str));
   format_size("GiB", (ram->buffers + ram->cached) * 1024ULL, cache_str, sizeof(cache_str));
 
   format_size("GiB", ram->swap_total * 1024ULL, swap_tot_str, sizeof(swap_tot_str));
+  format_size("GiB", ram->swap_free * 1024ULL, swap_free_str, sizeof(swap_free_str));
   format_size("GiB", swap_used * 1024ULL, swap_used_str, sizeof(swap_used_str));
+  
+  format_size("MiB", ram->zswap * 1024ULL, zswap_str, sizeof(zswap_str));
+  format_size("MiB", ram->zswapped * 1024ULL, zswapped_str, sizeof(zswapped_str));
+  format_size("MiB", ram->dirty * 1024ULL, dirty_str, sizeof(dirty_str));
+  format_size("MiB", ram->per_cpu * 1024ULL, per_cpu_str, sizeof(per_cpu_str));
 
   print_header("Random Access Memory (RAM)");
 
   print_field("Total", "%s", total_str);
+  print_field("Free", "%s", free_str);
   print_field("Used", "%s (%.1f%%)", used_str, ram_pct);
   print_field("Available", "%s", avail_str);
+  print_field("Buffers", "%s", buffers_str);
+  print_field("Cached", "%s", cached_str);
   print_field("Buff/Cache", "%s", cache_str);
   print_field("Swap Total", "%s", swap_tot_str);
+  print_field("Swap Free", "%s", swap_free_str);
   print_field("Swap Used", "%s", swap_used_str);
+  print_field("ZSwap", "%s", zswap_str);
+  print_field("ZSwapped", "%s", zswapped_str);
+  print_field("Dirty", "%s", dirty_str);
+  print_field("Per-CPU", "%s", per_cpu_str);
 
   print_footer();
 }
