@@ -196,6 +196,9 @@ void free_hardware(SystemHardware* hw)
 void output_json(const Config* config, const SystemHardware* hw)
 {
   cJSON* json = cJSON_CreateObject();
+  if (hw->os)
+    cJSON_AddItemToObject(json, "os", os_to_json_obj(hw->os));
+
 
   if (hw->cpu)
     cJSON_AddItemToObject(json, "cpu", cpu_to_json_obj(hw->cpu));

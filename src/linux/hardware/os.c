@@ -57,3 +57,25 @@ void free_os(OS* os)
   free(os->de_id);
   free(os);
 }
+
+/**
+ * @brief Converts an OS structure to a cJSON object.
+ * @param os Pointer to the OS structure.
+ * @return Pointer to a cJSON object (caller must delete).
+ */
+cJSON* os_to_json_obj(const OS* os)
+{
+  cJSON* obj = cJSON_CreateObject();
+  if (!os)
+    return obj;
+
+  cJSON_AddStringToObject(obj, "name", STR_OR_UNK(os->name));
+  cJSON_AddStringToObject(obj, "version_id", STR_OR_UNK(os->version_id));
+  cJSON_AddStringToObject(obj, "build_id", STR_OR_UNK(os->build_id));
+  cJSON_AddStringToObject(obj, "release_type", STR_OR_UNK(os->release_type));
+  cJSON_AddStringToObject(obj, "id", STR_OR_UNK(os->id));
+  cJSON_AddStringToObject(obj, "de_variant", STR_OR_UNK(os->de));
+  cJSON_AddStringToObject(obj, "de_id", STR_OR_UNK(os->de_id));
+
+  return obj;
+}

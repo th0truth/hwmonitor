@@ -6,6 +6,7 @@
 #pragma once
 
 #include "os.h"
+#include <cJSON.h>
 
 /**
  * @struct OS
@@ -32,3 +33,9 @@ OS* os_get_info(void);
  * @param os Pointer to the OS structure to free.
  */
 void free_os(OS* os);
+/**
+ * @brief Converts an OS structure to a cJSON object.
+ * @param os Pointer to the OS structure.
+ * @return Pointer to a cJSON object (caller must delete).
+ */
+cJSON* os_to_json_obj(const OS* os);
