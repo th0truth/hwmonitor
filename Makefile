@@ -20,3 +20,13 @@ $(BUILD_DIR)/$(TARGET).o: $(SRCS) $(INCS)
 .PHONY: clean
 clean:
 	rm -r $(BUILD_DIR)
+
+PREFIX ?= /usr/local
+
+.PHONY: install uninstall
+install: $(BUILD_DIR)/$(TARGET).o
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m 755 $(BUILD_DIR)/$(TARGET).o $(DESTDIR)$(PREFIX)/bin/$(TARGET)
+
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/bin/$(TARGET)

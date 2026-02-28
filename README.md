@@ -26,7 +26,10 @@ The project uses Git submodules for its core libraries. Ensure you perform a rec
 git clone --recursive https://github.com/th0truth/hwmonitor.git
 cd hwmonitor
 make
+sudo make install
 ```
+
+Once installed, you can run `hwmonitor` from anywhere in your terminal!
 
 ---
 
@@ -38,13 +41,13 @@ make
 
 ```bash
 # Display full system report in the terminal
-./build/hwmonitor.o
+hwmonitor
 
 # Generate a full system report in structured JSON
-./build/hwmonitor.o --json
+hwmonitor --json
 
 # Export specific CPU and Storage metrics to a file
-./build/hwmonitor.o --cpu --storage --json --output report.json
+hwmonitor --cpu --storage --json --output report.json
 ```
 
 ### Available Flags
