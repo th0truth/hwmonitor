@@ -13,6 +13,7 @@
 #include "battery.h"
 
 #include "os.h"
+#include "mainboard.h"
 
 /**
  * @brief Displays OS information.
@@ -190,3 +191,24 @@ void display_battery(BATTERY* battery)
 
   print_footer();
 } 
+
+/**
+ * @brief Displays MAINBOARD information.
+ */
+void display_mainboard(const MAINBOARD* mainboard)
+{
+  if (!mainboard)
+    return;
+
+  print_header("Mainboard / System");
+
+  print_field("Sys Vendor", "%s", STR_OR_UNK(mainboard->sys_vendor));
+  print_field("Product Name", "%s", STR_OR_UNK(mainboard->product_name));
+  print_field("Product Family", "%s", STR_OR_UNK(mainboard->product_family));
+  print_field("Product SKU", "%s", STR_OR_UNK(mainboard->product_sku));
+  print_field("Board Vendor", "%s", STR_OR_UNK(mainboard->board_vendor));
+  print_field("Board Name", "%s", STR_OR_UNK(mainboard->board_name));
+  print_field("Serial", "%s", STR_OR_UNK(mainboard->serial));
+
+  print_footer();
+}

@@ -10,6 +10,7 @@
 #include "ram.h"
 #include "gpu.h"
 #include "battery.h"
+#include "mainboard.h"
 
 /**
  * @brief Displays OS information to the console.
@@ -37,3 +38,8 @@ void display_gpus(GPU** gpus, int count);
  * @param battery Pointer to the BATTERY structure.
  */
 void display_battery(const BATTERY* battery);
+/**
+ * @brief Displays Mainboard information to the console.
+ * @param mainboard Pointer to the MAINBOARD structure.
+ */
+void display_mainboard(const MAINBOARD* mainboard);

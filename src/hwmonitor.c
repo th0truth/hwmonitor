@@ -14,8 +14,9 @@
 #include "ram.h"
 #include "gpu.h"
 #include "battery.h"
+#include "mainboard.h"
 
-#define SHORT_OPTS "hrbOcgjo:"
+#define SHORT_OPTS "hrbOcgjom:"
 
 /**
  * @brief Command-line options defined for getopt_long.
@@ -26,6 +27,7 @@ static struct option long_options[] = {
   {"os",          no_argument,        NULL, 'O'},
   {"cpu",         no_argument,        NULL, 'c'},
   {"battery",     no_argument,        NULL, 'b'},
+  {"mainboard",   no_argument,        NULL, 'm'},
   {"ram",         no_argument,        NULL, 'r'},
   {"gpu",         no_argument,        NULL, 'g'},
   {"help",        no_argument,        NULL, 'h'},
@@ -43,6 +45,7 @@ typedef struct {
   bool show_ram;
   bool show_gpu;
   bool show_battery;
+  bool show_mainboard;
 } Config;
 
 /**
@@ -55,6 +58,7 @@ typedef struct {
   GPU** gpus;
   int gpu_count;
   BATTERY* battery;
+  MAINBOARD* mainboard;
 } SystemHardware;
 
 /**
@@ -71,6 +75,7 @@ void print_usage(const char* prog_name)
   printf("  -r, --ram        Show RAM information\n");
   printf("  -g, --gpu        Show GPU information\n");
   printf("  -b, --battery    Show Battery information\n");
+  printf("  -m, --mainboard  Show Mainboard/System information\n");
   printf("  -j, --json       Output in formatted JSON\n");
   printf("  -o, --output <f> Save output to a JSON file\n");
 }
@@ -106,6 +111,10 @@ void parse_arguments(int argc, char** argv, Config* config)
         break;
       case 'b':
         config->show_battery = true;
+    config->show_mainboard = true;
+        break;
+      case 'm':
+        config->show_mainboard = true;
         break;
       case 'h':
         print_usage(argv[0]);
@@ -117,12 +126,13 @@ void parse_arguments(int argc, char** argv, Config* config)
   }
 
   // Default behavior: if no specific hardware filters are set, show all
-  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery) {
+  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery && !config->show_mainboard) {
     config->show_os = true;
     config->show_cpu = true;
     config->show_ram = true;
     config->show_gpu = true;
     config->show_battery = true;
+    config->show_mainboard = true;
   }
 }
 
@@ -141,6 +151,8 @@ void fetch_hardware(const Config* config, SystemHardware* hw)
     hw->gpus = gpu_get_all(&hw->gpu_count);
   if (config->show_battery)
     hw->battery = battery_get_info();
+  if (config->show_mainboard)
+    hw->mainboard = mainboard_get_info();
 }
 
 /**
@@ -158,6 +170,8 @@ void free_hardware(SystemHardware* hw)
     free_gpus(hw->gpus, hw->gpu_count);
   if (hw->battery)
     free_battery(hw->battery);
+  if (hw->mainboard)
+    free_mainboard(hw->mainboard);
 }
 
 /**
@@ -183,6 +197,8 @@ void output_json(const Config* config, const SystemHardware* hw)
 
   if (hw->battery)
     cJSON_AddItemToObject(json, "battery", battery_to_json_obj(hw->battery));
+  if (hw->mainboard)
+    cJSON_AddItemToObject(json, "mainboard", mainboard_to_json_obj(hw->mainboard));
 
   char* json_str = cJSON_Print(json);
   if (config->output_file) {
@@ -212,6 +228,8 @@ void output_plaintext(const SystemHardware* hw)
     display_gpus(hw->gpus, hw->gpu_count);
   if (hw->battery)
     display_battery(hw->battery);
+  if (hw->mainboard)
+    display_mainboard(hw->mainboard);
 }
 
 /**
