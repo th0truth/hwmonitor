@@ -35,7 +35,8 @@ By participating in this project, you agree to maintain a respectful, inclusive,
 ### Architecture
 *   **No Shell Commands:** Do not use `system()`, `popen()`, or execute external binaries (like `lspci` or `dmidecode`). All hardware discovery must be done by parsing standard Linux interfaces (`/sys/`, `/proc/`, etc.).
 *   **Modularity:** Keep hardware logic separated. If you add a new hardware type (e.g., `disk.c`), ensure it has its own header and doesn't tightly couple with other hardware modules.
-*   **Zero Dependencies:** We aim to keep dependencies to an absolute minimum. If a third-party library is strictly necessary, it should be integrated via a Git submodule, not as a system-wide dependency.
+*   **Minimal Dependencies:** We aim to keep dependencies to an absolute minimum to maintain a tiny footprint. We currently use `cJSON` (via git submodule) for serialization, and `libcurl` for AI network requests. Please discuss before adding any new system-wide dependencies.
+*   **Separation of Concerns:** Keep hardware discovery logic in `src/linux/` separate from external API integrations in `src/api/`.
 
 ### Code Style (Linux Kernel Style)
 This project strongly adheres to the Linux kernel coding style conventions:
@@ -62,9 +63,11 @@ This project strongly adheres to the Linux kernel coding style conventions:
 ## 4. Submitting Changes
 
 1.  **Test your changes:** Run `make clean && make` and ensure the binary builds without errors or warnings.
-2.  **Verify memory:** Use tools like `valgrind` to ensure your new features do not introduce memory leaks.
+2.  **Verify memory:** Use tools like `valgrind` to ensure your new features do not introduce memory leaks (test both standard and API paths).
     ```bash
-    valgrind ./build/hwmonitor.o --json
+    valgrind ./build/hwmonitor.o --all
+    # and if testing AI features:
+    valgrind ./build/hwmonitor.o --cpu --ai "Test prompt"
     ```
 3.  **Commit:** Write clear, concise commit messages.
 4.  **Push:** Push your branch to your fork.

@@ -2,7 +2,7 @@
 
 > A minimalist, high-performance hardware discovery engine for Linux systems.
 
-**hwmonitor** is a lightweight, zero-dependency (C11) command-line utility designed for developers and system administrators who require structured, low-latency hardware telemetry. Rather than relying on expensive external shell calls (`lspci`, `dmidecode`, or `lshw`), **hwmonitor** interfaces directly with the Linux kernel via `/sys` and `/proc` filesystems.
+**hwmonitor** is a lightweight, low-dependency (C11) command-line utility designed for developers and system administrators who require structured, low-latency hardware telemetry. Rather than relying on expensive external shell calls (`lspci`, `dmidecode`, or `lshw`), **hwmonitor** interfaces directly with the Linux kernel via `/sys` and `/proc` filesystems.
 
 It provides both beautiful, human-readable terminal output and highly structured JSON for modern monitoring stacks and API integrations.
 
@@ -11,16 +11,25 @@ It provides both beautiful, human-readable terminal output and highly structured
 ## ✨ Key Features
 
 * **Native Performance:** Written in pure C. Direct kernel filesystem parsing ensures near-instant execution times.
+* **🤖 AI Hardware Consultant:** Built-in integration with the Groq API allows you to ask natural language questions about your hardware (e.g., bottlenecks, linux driver compatibility) directly from the terminal.
 * **JSON-First Architecture:** Built-in serialization for seamless integration into dashboards, observability pipelines, or scripts.
 * **Comprehensive Hardware Discovery:** Advanced logic for CPU, RAM, Multi-GPU configurations, Storage (block devices), Mainboard (DMI/SMBIOS), Battery, and OS environments.
-* **Zero Bloat:** No Python, no `dbus`, no heavy external libraries. Uses a single submodule ([cJSON](https://github.com/DaveGamble/cJSON)) for reliable JSON generation.
+* **Zero Bloat:** No Python, no `dbus`. Uses `libcurl` for AI network requests and a single submodule ([cJSON](https://github.com/DaveGamble/cJSON)) for reliable JSON generation.
 * **Memory Safe:** Engineered with an "inside-out" deep-freeing pattern to ensure a zero-leak footprint.
 
 ---
 
 ## 🚀 Installation
 
-The project uses Git submodules for its core libraries. Ensure you perform a recursive clone to include all necessary dependencies.
+The project uses Git submodules and requires `libcurl` for AI integrations.
+
+### 1. Install Dependencies
+* **Debian / Ubuntu:** `sudo apt install build-essential libcurl4-openssl-dev`
+* **Arch Linux:** `sudo pacman -S base-devel curl`
+* **Fedora / RHEL:** `sudo dnf install gcc make libcurl-devel`
+
+### 2. Build and Install
+Ensure you perform a recursive clone to include all necessary dependencies.
 
 ```bash
 git clone --recursive https://github.com/th0truth/hwmonitor.git
@@ -37,7 +46,22 @@ Once installed, you can run `hwmonitor` from anywhere in your terminal!
 
 **hwmonitor** supports a flexible command-line interface. By default, running it without flags will display all available hardware modules.
 
-### Common Commands
+### 🤖 AI Hardware Consultant
+
+You can ask an LLM (powered by Groq's API) specific questions about your hardware. Simply set your API key and append the `-A` flag!
+
+```bash
+# Set your API token
+export GROQ_API_KEY="gsk_your_api_token"
+
+# Analyze specific hardware
+hwmonitor --gpu -A "What is the best open-source driver branch for this GPU on Wayland?"
+
+# Analyze the entire system
+hwmonitor --all -A "I want to run a local Kubernetes cluster. Are there any bottlenecks here?"
+```
+
+*(Optional): You can override the default AI model (`llama-3.1-8b-instant`) by exporting `GROQ_MODEL="llama-3.3-70b-versatile"`.*
 
 ```bash
 # Display full system report in the terminal
@@ -61,8 +85,10 @@ hwmonitor --cpu --storage --json --output report.json
 | `-s` | `--storage` | Discovers block devices (NVMe, SSD, HDD) and their capacities. |
 | `-g` | `--gpu` | Performs dynamic bus scanning for all installed GPUs. |
 | `-b` | `--battery` | Monitors capacity, voltage, and health of system batteries. |
+| `-a` | `--all` | Explicitly targets all hardware modules. |
 | `-j` | `--json` | Serializes hardware data into a JSON object. |
 | `-o` | `--output <file>`| Redirects the JSON output to a specified file. |
+| `-A` | `--ai <prompt>`| Sends hardware data to Groq AI to answer your prompt. |
 | `-h` | `--help` | Displays the help menu. |
 
 ---
@@ -107,6 +133,22 @@ When running in standard mode, **hwmonitor** dynamically formats beautiful, colo
 │  Size            : 1907.73 GiB
 │  Removable       : No
 │  PCI Slot        : 0000:04:00.0
+╰─
+```
+
+### AI Hardware Analysis
+
+When using the `--ai` flag alongside hardware targets (e.g., `--gpu`), the tool sends a structured payload to Groq and parses the response directly into your terminal.
+
+```text
+$ hwmonitor --gpu -A "Is this GPU good for local AI inference?"
+
+╭─ AI Hardware Analysis (Groq) 
+│ Yes, the TitanFlow Compute Accelerator is an excellent GPU for local AI inference.
+│ Based on its PCIe bus type and the proprietary 'titan' driver, it has full
+│ support for hardware acceleration on Nebula Linux. However, depending on the
+│ VRAM capacity, you may be limited to models under 13B parameters unless you 
+│ apply quantization (INT4 or INT8).
 ╰─
 ```
 
