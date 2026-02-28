@@ -3,8 +3,7 @@
 #include <stdint.h>
 #include <cJSON.h>
 
-typedef struct
-{
+typedef struct {
   char* vendor_id;
   char* model_name;
   char* flags;

@@ -87,8 +87,6 @@ CPU* cpu_get_info(void)
     return NULL;
   }
 
-  char* value = NULL;
-
   cpu->vendor_id      = str_find_value(cpu_info, "vendor_id", "\n");
   cpu->model_name     = str_find_value(cpu_info, "model name", "\n");
   cpu->flags          = str_find_value(cpu_info, "flags", "\n");
@@ -98,35 +96,12 @@ CPU* cpu_get_info(void)
   cpu->max_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_max_freq");
   cpu->min_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_min_freq");
   
-  value = str_find_value(cpu_info, "cpu family", "\n");
-  if (value) {
-    cpu->cpu_family   = atoi(value);
-    free(value);
-  }
-  
-  value = str_find_value(cpu_info, "model", "\n");
-  if (value) {
-    cpu->model = atoi(value);
-    free(value);
-  }
+  cpu->cpu_family     = str_parse_value(cpu_info, "cpu family", "\n");
+  cpu->model          = str_parse_value(cpu_info, "model", "\n");
+  cpu->stepping       = str_parse_value(cpu_info, "stepping", "\n");
+  cpu->total_cores    = str_parse_value(cpu_info, "cpu cores", "\n");
+  cpu->total_threads  = str_parse_value(cpu_info, "siblings", "\n");
 
-  value = str_find_value(cpu_info, "stepping", "\n");
-  if (value) {
-    cpu->stepping = atoi(value);
-    free(value);
-  }
-
-  value = str_find_value(cpu_info, "cpu cores", "\n");
-  if (value) {
-    cpu->total_cores = atoi(value);
-    free(value);
-  }
-
-  value = str_find_value(cpu_info, "siblings", "\n");
-  if (value) {
-    cpu->total_threads = atoi(value);
-    free(value);
-  }
 
   free(cpu_info);
 

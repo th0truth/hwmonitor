@@ -5,6 +5,7 @@
 #include "cpu.h"
 #include "ram.h"
 #include "gpu.h"
+#include "battery.h"
 
 void display_cpu(const CPU* cpu)
 {
@@ -125,3 +126,27 @@ void display_gpus(GPU** gpus, int count)
     print_footer();
   }
 }
+
+void display_battery(BATTERY* battery)
+{
+  if (!battery)
+    return;
+
+  print_header("Battery");
+
+  print_field("Capacity", "%u%%", battery->capacity);
+  print_field("Status", "%s", STR_OR_UNK(battery->status));
+  print_field("Capacity Level", "%s", STR_OR_UNK(battery->capacity_level));
+  print_field("Technology", "%s", STR_OR_UNK(battery->technology));
+  print_field("Supply Name", "%s", STR_OR_UNK(battery->supply_name));
+  print_field("Supply Type", "%s", STR_OR_UNK(battery->supply_type));
+  print_field("Manufacturer", "%s", STR_OR_UNK(battery->manufacturer));
+  print_field("Model", "%s", STR_OR_UNK(battery->model_name));
+  print_field("Serial", "%s", STR_OR_UNK(battery->serial));
+  print_field("Voltage Min", "%.2f V", battery->voltage_min_design);
+  print_field("Voltage Now", "%.2f V", battery->voltage_now);
+  print_field("Energy Full", "%.2f Wh", battery->energy_full_design);
+  print_field("Energy Now", "%.2f Wh", battery->energy_now);
+
+  print_footer();
+} 

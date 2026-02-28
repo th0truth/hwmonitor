@@ -1,7 +1,6 @@
 #pragma once
 
-typedef enum
-{
+typedef enum {
   COLOR_PRIMARY,
   COLOR_LABEL,
   COLOR_VALUE,
@@ -11,8 +10,7 @@ typedef enum
   COLOR_RESET
 } ThemeColor;
 
-typedef struct
-{
+typedef struct {
   const char* primary;
   const char* label;
   const char* value;

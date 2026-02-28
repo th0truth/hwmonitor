@@ -3,8 +3,7 @@
 #include <stdint.h>
 #include <cJSON.h>
 
-typedef struct
-{
+typedef struct {
   uint64_t total;
   uint64_t free;
   uint64_t available;
