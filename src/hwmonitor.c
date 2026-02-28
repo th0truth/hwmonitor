@@ -94,6 +94,7 @@ void parse_arguments(int argc, char** argv, Config* config)
   int opt;
   int opt_idx = 0;
 
+
   while ((opt = getopt_long(argc, argv, SHORT_OPTS, long_options, &opt_idx)) != -1) {
     switch (opt) {
       case 'j':
@@ -117,12 +118,9 @@ void parse_arguments(int argc, char** argv, Config* config)
         break;
       case 'b':
         config->show_battery = true;
-    config->show_mainboard = true;
-    config->show_storage = true;
         break;
       case 'm':
         config->show_mainboard = true;
-    config->show_storage = true;
         break;
       case 's':
         config->show_storage = true;
