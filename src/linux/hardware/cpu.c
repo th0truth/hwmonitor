@@ -11,9 +11,8 @@
 static int16_t cpu_get_total_cores(void)
 {
   char* online = file_read_stripped("/sys/devices/system/cpu/online", "\n", false);
-  if (online == NULL) {
+  if (!online)
     return -1;
-  }
 
   int start, end;
   int16_t count = 0;
@@ -41,16 +40,14 @@ static int16_t cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
   snprintf(buffer, sizeof(buffer), "/sys/devices/system/cpu/cpu%u/cpufreq/%s", core_id, filename);
 
   char* cpu_freq = file_read_stripped(buffer, "\n", true);
-  if (cpu_freq == NULL) {
+  if (!cpu_freq)
     return -1;
-  }
 
   int16_t khz = atoi(cpu_freq);
   free(cpu_freq);
 
-  if (khz <= 0) {
+  if (khz <= 0)
     return -1;
-  }
   
   return khz / 1000;
 } 
@@ -62,12 +59,11 @@ static int16_t cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
  */
 static char* cpu_get_arch(const char* flags)
 {
-  if (flags == NULL) {
+  if (!flags)
     return "x86";
-  }
   
   char* flag = str_find_value(flags, "lm", NULL);
-  if (flag == NULL) {
+  if (!flag) {
     return "x86";
   } else {
     free(flag);
@@ -82,12 +78,11 @@ static char* cpu_get_arch(const char* flags)
 CPU* cpu_get_info(void)
 {
   CPU* cpu = calloc(1, sizeof(CPU));
-  if (cpu == NULL) {
+  if (!cpu)
     return NULL;
-  }
 
   char* cpu_info = file_read_stripped("/proc/cpuinfo", ":\t", false);
-  if (cpu_info == NULL) {
+  if (!cpu_info) {
     free(cpu);
     return NULL;
   }
@@ -104,31 +99,31 @@ CPU* cpu_get_info(void)
   cpu->min_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_min_freq");
   
   value = str_find_value(cpu_info, "cpu family", "\n");
-  if (value != NULL) {
+  if (value) {
     cpu->cpu_family   = atoi(value);
     free(value);
   }
   
   value = str_find_value(cpu_info, "model", "\n");
-  if (value != NULL) {
+  if (value) {
     cpu->model = atoi(value);
     free(value);
   }
 
   value = str_find_value(cpu_info, "stepping", "\n");
-  if (value != NULL) {
+  if (value) {
     cpu->stepping = atoi(value);
     free(value);
   }
 
   value = str_find_value(cpu_info, "cpu cores", "\n");
-  if (value != NULL) {
+  if (value) {
     cpu->total_cores = atoi(value);
     free(value);
   }
 
   value = str_find_value(cpu_info, "siblings", "\n");
-  if (value != NULL) {
+  if (value) {
     cpu->total_threads = atoi(value);
     free(value);
   }
@@ -144,9 +139,8 @@ CPU* cpu_get_info(void)
  */
 void free_cpu(CPU* cpu)
 {
-  if (cpu == NULL) {
+  if (!cpu)
     return;
-  }
   free(cpu->vendor_id);
   free(cpu->model_name);
   free(cpu->flags);
@@ -161,9 +155,8 @@ void free_cpu(CPU* cpu)
 cJSON* cpu_to_json_obj(const CPU* cpu)
 {
   cJSON* obj = cJSON_CreateObject();
-  if (cpu == NULL) {
+  if (!cpu)
     return obj;
-  }
 
   cJSON_AddStringToObject(obj, "vendor", STR_OR_UNK(cpu->vendor_id));
   cJSON_AddStringToObject(obj, "model_name", STR_OR_UNK(cpu->model_name));

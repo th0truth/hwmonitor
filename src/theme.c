@@ -23,9 +23,8 @@ void theme_init(bool force_no_color)
 
 const char* theme_get_color(ThemeColor color)
 {
-  if (!use_colors) {
+  if (!use_colors)
     return NULL;
-  }
 
   switch (color)
   {

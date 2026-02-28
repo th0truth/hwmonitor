@@ -26,18 +26,17 @@ BATTERY* battery_get_info(void)
     snprintf(buffer, sizeof(buffer), "/sys/class/power_supply/BAT%d/uevent", i);
     uevent = file_read_stripped(buffer, "=", false);
     
-    if (uevent != NULL) {
+    if (uevent) {
       found = true;
       break; 
     }
   }
 
-  if (found == false) {
+  if (found == false)
     return NULL;
-  }
 
   BATTERY* battery = calloc(1, sizeof(*battery));
-  if (battery == NULL) {
+  if (!battery) {
     free(uevent);
     return NULL;
   }
@@ -46,37 +45,37 @@ BATTERY* battery_get_info(void)
   char* value = NULL;
   
   value                           = str_find_value(uevent, "POWER_SUPPLY_CAPACITY", "\n");
-  if (value != NULL) {
+  if (value) {
     battery->capacity             = atoi(value);
     free(value);
   }
 
   value                           = str_find_value(uevent, "POWER_SUPPLY_VOLTAGE_MIN_DESIGN", "\n");
-  if (value != NULL) {
+  if (value) {
     battery->voltage_min_design = atof(value) / SYSFS_UNIT_CONVERSION;
     free(value);
   }
 
   value                           = str_find_value(uevent, "POWER_SUPPLY_VOLTAGE_NOW", "\n");
-  if (value != NULL) {
+  if (value) {
     battery->voltage_now          = atof(value) / SYSFS_UNIT_CONVERSION;
     free(value);
   }
 
   value                          = str_find_value(uevent, "POWER_SUPPLY_ENERGY_FULL_DESIGN", "\n");
-  if (value != NULL) {
+  if (value) {
     battery->energy_full_design  = atof(value) / SYSFS_UNIT_CONVERSION;
     free(value);
   }
 
   value                         = str_find_value(uevent, "POWER_SUPPLY_ENERGY_FULL", "\n");
-  if (value != NULL) {
+  if (value) {
     battery->energy_full        = atof(value) / SYSFS_UNIT_CONVERSION;
     free(value);
   }
 
   value                         = str_find_value(uevent, "POWER_SUPPLY_ENERGY_NOW", "\n");
-  if (value != NULL) {
+  if (value) {
     battery->energy_now         = atof(value) / SYSFS_UNIT_CONVERSION;
     free(value);
   }
@@ -101,9 +100,8 @@ BATTERY* battery_get_info(void)
  */
 void free_battery(BATTERY* battery)
 {
-  if (battery == NULL) {
+  if (!battery)
     return;
-  }
 
   free(battery->supply_name);
   free(battery->supply_type);
@@ -124,9 +122,8 @@ void free_battery(BATTERY* battery)
 cJSON* battery_to_json_obj(const BATTERY* battery)
 {
   cJSON* obj = cJSON_CreateObject();
-  if (battery == NULL) {
+  if (!battery)
     return obj;
-  }
 
   // Numeric Metrics
   cJSON_AddNumberToObject(obj, "capacity_percent", battery->capacity);

@@ -13,17 +13,15 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
 {
   FILE* fp = fopen(filename, "r");
   if (!fp) {
-    if (verbose) {
+    if (verbose)
       fprintf(stderr, "error: failed to open '%s': %s\n", filename, strerror(errno));
-    }
     return NULL;
   }
 
   char* buffer = malloc(FILE_READ_BUFFER);
   if (!buffer) {
-    if (verbose) {
+    if (verbose)
       fprintf(stderr, "error: failed to allocate memory: %s", strerror(errno));
-    }
     fclose(fp);
     return NULL;
   }
@@ -63,9 +61,8 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
  */
 bool file_write_string(const char* filename, const char* data)
 {
-  if (!filename || !data) {
+  if (!filename || !data)
     return false;
-  }
 
   FILE* fp = fopen(filename, "w");
   if (!fp) {

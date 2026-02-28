@@ -11,15 +11,13 @@
  */
 char* str_find_value(const char* source, const char* search, const char* delim)
 {
-  if (source == NULL || search == NULL || delim == NULL) {
+  if (!source || !search || !delim)
     return NULL;
-  }
 
   /* Locate the key in the source string */
   const char* start = strstr(source, search);
-  if (start == NULL) {
+  if (!start)
     return NULL;
-  }
 
   /* Skip past the length of the key itself */
   start += strlen(search);
@@ -41,15 +39,13 @@ char* str_find_value(const char* source, const char* search, const char* delim)
   }
 
   uint64_t len = end - start;
-  if (len == 0) {
+  if (len == 0)
     return NULL;
-  }
 
   /* Allocate memory and copy the resulting value */
   char* value = malloc(len + 1);
-  if (value == NULL) {
+  if (!value)
     return NULL;
-  }
 
   memcpy(value, start, len);
   value[len] = '\0';
@@ -68,9 +64,8 @@ char* str_find_value(const char* source, const char* search, const char* delim)
 double str_parse_value(const char* source, const char* search, const char* delim)
 {
   char* value = str_find_value(source, search, delim);
-  if (value == NULL) {
+  if (!value)
     return 0.0;
-  }
 
   double result = atof(value);
   free(value);

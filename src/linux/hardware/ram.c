@@ -10,12 +10,11 @@
 RAM* ram_get_info(void)
 {
   RAM* ram = calloc(1, sizeof(*ram));
-  if (ram == NULL) {
+  if (!ram)
     return NULL;
-  }
 
   char* info = file_read_stripped("/proc/meminfo", "\n", false);
-  if (info == NULL) {
+  if (!info) {
     free(ram);
     return NULL;
   }
@@ -43,9 +42,8 @@ RAM* ram_get_info(void)
  */
 void free_ram(RAM* ram)
 {
-  if (ram != NULL) {
+  if (ram)
     free(ram);
-  }
 }
 
 /**
@@ -56,9 +54,8 @@ void free_ram(RAM* ram)
 cJSON* ram_to_json_obj(const RAM* ram)
 {
   cJSON* obj = cJSON_CreateObject();
-  if (ram == NULL) {
+  if (!ram)
     return obj;
-  }
 
   cJSON_AddNumberToObject(obj, "total", ram->total);
   cJSON_AddNumberToObject(obj, "free", ram->free);

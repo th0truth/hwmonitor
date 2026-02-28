@@ -119,9 +119,8 @@ void display_gpus(GPU** gpus, int count)
     print_field("Bus Type", "%s", STR_OR_UNK(gpus[i]->bus_type));
     print_field("Driver", "%s", STR_OR_UNK(gpus[i]->driver));
   
-    if (gpus[i]->vbios && gpus[i]->vbios[0] != '\0') {
+    if (gpus[i]->vbios && gpus[i]->vbios[0] != '\0')
       print_field("VBIOS", "%s", gpus[i]->vbios);
-    }
 
     print_footer();
   }
