@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/assets/logo.png" alt="hwmonitor logo" width="200">
+</p>
+
 # hwmonitor
 
 > A minimalist, high-performance hardware discovery engine for Linux systems.
