@@ -14,6 +14,7 @@
 
 #include "os.h"
 #include "mainboard.h"
+#include "storage.h"
 
 /**
  * @brief Displays OS information.
@@ -211,4 +212,37 @@ void display_mainboard(const MAINBOARD* mainboard)
   print_field("Serial", "%s", STR_OR_UNK(mainboard->serial));
 
   print_footer();
+}
+
+/**
+ * @brief Displays STORAGE information.
+ */
+void display_storages(STORAGE** storages, int count)
+{
+  if (!storages || count == 0)
+    return;
+
+  for (int i = 0; i < count; i++) {
+    char h_title[64];
+    snprintf(h_title, sizeof(h_title), "Storage Device [%d] (%s)", i, storages[i]->device);    
+    print_header(h_title);
+
+    char size_str[32];
+    format_size("GiB", storages[i]->size_bytes, size_str, sizeof(size_str));
+    
+    print_field("Model", "%s", STR_OR_UNK(storages[i]->model));
+    print_field("Size", "%s", size_str);
+    print_field("Removable", "%s", storages[i]->removable ? "Yes" : "No");
+    
+    if (storages[i]->pci_slot_name && storages[i]->pci_slot_name[0] != '\0')
+      print_field("PCI Slot", "%s", storages[i]->pci_slot_name);
+      
+    if (storages[i]->serial && storages[i]->serial[0] != '\0')
+      print_field("Serial", "%s", storages[i]->serial);
+
+    if (storages[i]->uuid && storages[i]->uuid[0] != '\0')
+      print_field("UUID", "%s", storages[i]->uuid);
+
+    print_footer();
+  }
 }

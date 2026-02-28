@@ -11,6 +11,7 @@
 #include "gpu.h"
 #include "battery.h"
 #include "mainboard.h"
+#include "storage.h"
 
 /**
  * @brief Displays OS information to the console.
@@ -43,3 +44,10 @@ void display_battery(const BATTERY* battery);
  * @param mainboard Pointer to the MAINBOARD structure.
  */
 void display_mainboard(const MAINBOARD* mainboard);
+
+/**
+ * @brief Displays information for all Storage devices to the console.
+ * @param storages Array of pointers to STORAGE structures.
+ * @param count Number of storages in the array.
+ */
+void display_storages(STORAGE** storages, int count);

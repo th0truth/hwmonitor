@@ -15,8 +15,9 @@
 #include "gpu.h"
 #include "battery.h"
 #include "mainboard.h"
+#include "storage.h"
 
-#define SHORT_OPTS "hrbOcgjom"
+#define SHORT_OPTS "hrbsOcgjom"
 
 /**
  * @brief Command-line options defined for getopt_long.
@@ -28,6 +29,7 @@ static struct option long_options[] = {
   {"cpu",         no_argument,        NULL, 'c'},
   {"battery",     no_argument,        NULL, 'b'},
   {"mainboard",   no_argument,        NULL, 'm'},
+  {"storage",     no_argument,        NULL, 's'},
   {"ram",         no_argument,        NULL, 'r'},
   {"gpu",         no_argument,        NULL, 'g'},
   {"help",        no_argument,        NULL, 'h'},
@@ -46,6 +48,7 @@ typedef struct {
   bool show_gpu;
   bool show_battery;
   bool show_mainboard;
+  bool show_storage;
 } Config;
 
 /**
@@ -59,6 +62,8 @@ typedef struct {
   int gpu_count;
   BATTERY* battery;
   MAINBOARD* mainboard;
+  STORAGE** storages;
+  int storage_count;
 } SystemHardware;
 
 /**
@@ -76,6 +81,7 @@ void print_usage(const char* prog_name)
   printf("  -g, --gpu        Show GPU information\n");
   printf("  -b, --battery    Show Battery information\n");
   printf("  -m, --mainboard  Show Mainboard/System information\n");
+  printf("  -s, --storage    Show Storage/Disk information\n");
   printf("  -j, --json       Output in formatted JSON\n");
   printf("  -o, --output <f> Save output to a JSON file\n");
 }
@@ -112,9 +118,14 @@ void parse_arguments(int argc, char** argv, Config* config)
       case 'b':
         config->show_battery = true;
     config->show_mainboard = true;
+    config->show_storage = true;
         break;
       case 'm':
         config->show_mainboard = true;
+    config->show_storage = true;
+        break;
+      case 's':
+        config->show_storage = true;
         break;
       case 'h':
         print_usage(argv[0]);
@@ -126,13 +137,14 @@ void parse_arguments(int argc, char** argv, Config* config)
   }
 
   // Default behavior: if no specific hardware filters are set, show all
-  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery && !config->show_mainboard) {
+  if (!config->show_os && !config->show_cpu && !config->show_ram && !config->show_gpu && !config->show_battery && !config->show_mainboard && !config->show_storage) {
     config->show_os = true;
     config->show_cpu = true;
     config->show_ram = true;
     config->show_gpu = true;
     config->show_battery = true;
     config->show_mainboard = true;
+    config->show_storage = true;
   }
 }
 
@@ -153,6 +165,8 @@ void fetch_hardware(const Config* config, SystemHardware* hw)
     hw->battery = battery_get_info();
   if (config->show_mainboard)
     hw->mainboard = mainboard_get_info();
+  if (config->show_storage)
+    hw->storages = storage_get_all(&hw->storage_count);
 }
 
 /**
@@ -172,6 +186,8 @@ void free_hardware(SystemHardware* hw)
     free_battery(hw->battery);
   if (hw->mainboard)
     free_mainboard(hw->mainboard);
+  if (hw->storages)
+    free_storages(hw->storages, hw->storage_count);
 }
 
 /**
@@ -199,6 +215,14 @@ void output_json(const Config* config, const SystemHardware* hw)
     cJSON_AddItemToObject(json, "battery", battery_to_json_obj(hw->battery));
   if (hw->mainboard)
     cJSON_AddItemToObject(json, "mainboard", mainboard_to_json_obj(hw->mainboard));
+
+  if (hw->storages && hw->storage_count > 0) {
+    cJSON* storage_list = cJSON_CreateArray();
+    for (int i = 0; i < hw->storage_count; i++) {
+      cJSON_AddItemToArray(storage_list, storage_to_json_obj(hw->storages[i]));
+    }
+    cJSON_AddItemToObject(json, "storages", storage_list);
+  }
 
   char* json_str = cJSON_Print(json);
   if (config->output_file) {
@@ -230,6 +254,8 @@ void output_plaintext(const SystemHardware* hw)
     display_battery(hw->battery);
   if (hw->mainboard)
     display_mainboard(hw->mainboard);
+  if (hw->storages && hw->storage_count > 0)
+    display_storages(hw->storages, hw->storage_count);
 }
 
 /**
