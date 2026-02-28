@@ -1,3 +1,8 @@
+/**
+ * @file hwmonitor.c
+ * @brief Main entry point and orchestration logic for hwmonitor.
+ */
+
 #include "base.h"
 #include <getopt.h>
 
@@ -13,7 +18,7 @@
 #define SHORT_OPTS "hrbOcgjo:"
 
 /**
- * Command-line options defined for getopt_long.
+ * @brief Command-line options defined for getopt_long.
  */
 static struct option long_options[] = {
   {"output",      required_argument,  NULL, 'o'},
@@ -28,7 +33,7 @@ static struct option long_options[] = {
 };
 
 /**
- * Config structure to hold user preferences from flags.
+ * @brief Config structure to hold user preferences from flags.
  */
 typedef struct {
   char* output_file;
@@ -41,7 +46,7 @@ typedef struct {
 } Config;
 
 /**
- * Centralized struct to hold all fetched hardware data.
+ * @brief Centralized struct to hold all fetched hardware data.
  */
 typedef struct {
   OS* os;
@@ -71,7 +76,7 @@ void print_usage(const char* prog_name)
 }
 
 /**
- * Parses command-line arguments and populates the Config struct.
+ * @brief Parses command-line arguments and populates the Config struct.
  */
 void parse_arguments(int argc, char** argv, Config* config)
 {
@@ -122,7 +127,7 @@ void parse_arguments(int argc, char** argv, Config* config)
 }
 
 /**
- * Fetches required hardware data based on configuration.
+ * @brief Fetches required hardware data based on configuration.
  */
 void fetch_hardware(const Config* config, SystemHardware* hw)
 {
@@ -139,7 +144,7 @@ void fetch_hardware(const Config* config, SystemHardware* hw)
 }
 
 /**
- * Frees all allocated memory within the SystemHardware struct.
+ * @brief Frees all allocated memory within the SystemHardware struct.
  */
 void free_hardware(SystemHardware* hw)
 {
@@ -156,7 +161,7 @@ void free_hardware(SystemHardware* hw)
 }
 
 /**
- * Generates and prints (or saves) the JSON output.
+ * @brief Generates and prints (or saves) the JSON output.
  */
 void output_json(const Config* config, const SystemHardware* hw)
 {
@@ -193,7 +198,7 @@ void output_json(const Config* config, const SystemHardware* hw)
 }
 
 /**
- * Renders the hardware data in a formatted plain-text view.
+ * @brief Renders the hardware data in a formatted plain-text view.
  */
 void output_plaintext(const SystemHardware* hw)
 {

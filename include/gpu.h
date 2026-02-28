@@ -1,3 +1,8 @@
+/**
+ * @file gpu.h
+ * @brief Header file for gpu module.
+ */
+
 #pragma once
 
 #include <inttypes.h>

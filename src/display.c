@@ -1,3 +1,8 @@
+/**
+ * @file display.c
+ * @brief Formatting and printing logic for hardware information.
+ */
+
 #include "base.h"
 #include "theme.h"
 #include "util.h"
@@ -9,6 +14,9 @@
 
 #include "os.h"
 
+/**
+ * @brief Displays OS information.
+ */
 void display_os(const OS* os)
 {
   if (!os)
@@ -27,6 +35,9 @@ void display_os(const OS* os)
   print_footer();
 }
 
+/**
+ * @brief Displays CPU information.
+ */
 void display_cpu(const CPU* cpu)
 {
   if (!cpu)
@@ -41,8 +52,11 @@ void display_cpu(const CPU* cpu)
   print_field("Frequency", "%.2f MHz - %.2f MHz", cpu->min_MHz, cpu->max_MHz);
 
   print_footer();
-};
+}
 
+/**
+ * @brief Displays RAM information.
+ */
 void display_ram(const RAM* ram)
 {
   if (!ram)
@@ -115,6 +129,9 @@ void display_ram(const RAM* ram)
   print_footer();
 }
 
+/**
+ * @brief Displays GPUS information.
+ */
 void display_gpus(GPU** gpus, int count)
 {
   if (!gpus || count == 0)
@@ -147,6 +164,9 @@ void display_gpus(GPU** gpus, int count)
   }
 }
 
+/**
+ * @brief Displays BATTERY information.
+ */
 void display_battery(BATTERY* battery)
 {
   if (!battery)

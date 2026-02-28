@@ -1,7 +1,16 @@
+/**
+ * @file os.h
+ * @brief Header file for os module.
+ */
+
 #pragma once
 
 #include "os.h"
 
+/**
+ * @struct OS
+ * @brief Structure to hold operating system release information.
+ */
 typedef struct {
   char* name;
   char* version_id;
@@ -13,5 +22,13 @@ typedef struct {
 } OS;
 
 
+/**
+ * @brief Discovers and parses OS information (typically from /etc/os-release).
+ * @return Pointer to a newly allocated OS struct, or NULL on failure.
+ */
 OS* os_get_info(void);
+/**
+ * @brief Deep-frees an OS structure and its internal strings.
+ * @param os Pointer to the OS structure to free.
+ */
 void free_os(OS* os);

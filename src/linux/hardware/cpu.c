@@ -1,3 +1,8 @@
+/**
+ * @file cpu.c
+ * @brief Hardware discovery and parsing logic for CPUs.
+ */
+
 #include "base.h"
 #include "file.h"
 #include "io.h"
@@ -34,7 +39,7 @@ static int16_t cpu_get_total_cores(void)
  * @param filename The sysfs file to read (e.g., "scaling_max_freq").
  * @return Frequency in MHz, or -1 on failure.
  */
-static int16_t cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
+static float cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
 {
   char buffer[BUFFER_SIZE];
   snprintf(buffer, sizeof(buffer), "/sys/devices/system/cpu/cpu%u/cpufreq/%s", core_id, filename);
@@ -43,7 +48,7 @@ static int16_t cpu_get_total_freq_mhz(uint16_t core_id, const char* filename)
   if (!cpu_freq)
     return -1;
 
-  int16_t khz = atoi(cpu_freq);
+  int32_t khz = atoi(cpu_freq);
   free(cpu_freq);
 
   if (khz <= 0)
@@ -93,8 +98,15 @@ CPU* cpu_get_info(void)
   cpu->arch           = cpu_get_arch(cpu->flags);
   
   cpu->online_cores   = cpu_get_total_cores();
-  cpu->max_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_max_freq");
-  cpu->min_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_min_freq");
+  if (cpu->online_cores > 0) {
+    cpu->max_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_max_freq");
+    cpu->min_MHz        = cpu_get_total_freq_mhz((cpu->online_cores - 1), "scaling_min_freq");
+    
+  } else {
+    cpu->max_MHz        = 0;
+    cpu->min_MHz        = 0;
+  }
+  
   
   cpu->cpu_family     = str_parse_value(cpu_info, "cpu family", "\n");
   cpu->model          = str_parse_value(cpu_info, "model", "\n");

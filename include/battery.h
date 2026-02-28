@@ -1,3 +1,8 @@
+/**
+ * @file battery.h
+ * @brief Header file for battery module.
+ */
+
 #pragma once
 
 #include <inttypes.h>
