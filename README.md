@@ -6,11 +6,31 @@ A minimalist, high-performance hardware discovery engine for Linux systems.
 
 ---
 
+
+## Visual Output
+
+When running in standard mode (no JSON), **hwmonitor** dynamically adapts to your terminal, providing beautiful, colorized ASCII-boxed hardware reports.
+
+```text
+╭─ Operating System (OS)
+│  Name            : Ubuntu 24.04 LTS
+│  ID              : ubuntu
+╰─
+
+╭─ Central Processing Unit (CPU)
+│  Vendor          : AuthenticAMD
+│  Model           : AMD Ryzen 9 7950X 16-Core Processor
+│  Arch            : x86_64
+│  Cores           : 16 Physical / 32 Logical
+│  Frequency       : 4500.00 MHz - 5700.00 MHz
+╰─
+```
+
 ## Core Features
 
 *   **Native Performance:** Directly parses kernel filesystems for near-instant execution.
 *   **JSON-First Architecture:** Built-in serialization for seamless integration with APIs and web dashboards.
-*   **Deep Hardware Discovery:** Advanced logic for multi-GPU identification (NVIDIA, AMD, Intel) and battery metrics.
+*   **Deep Hardware Discovery:** Advanced logic for multi-GPU identification (NVIDIA, AMD, Intel), battery metrics, and OS environment details.
 *   **Modern C Design:** Strict C11 compliance with a focus on memory safety and modularity.
 *   **Zero Dependencies:** Managed via Git submodules for a lightweight, "clone-and-build" workflow.
 
@@ -52,9 +72,10 @@ make
 | `-j, --json` | None | Serializes hardware data into a JSON object. |
 | `-o, --output` | `<file>` | Redirects the JSON output to a specified file. |
 | `-c, --cpu` | None | Collects architecture, model, and real-time frequency data. |
-| `-g, --gpu` | None | Performs dynamic bus scanning for all installed GPUs. |
 | `-r, --ram` | None | Reports detailed memory utilization and swap metrics. |
+| `-g, --gpu` | None | Performs dynamic bus scanning for all installed GPUs. |
 | `-b, --battery` | None | Monitors capacity, voltage, and health of system batteries. |
+| `-O, --os` | None | Retrieves Operating System and Desktop Environment details. |
 
 ---
 
@@ -64,12 +85,21 @@ The tool produces a highly structured schema. Below is a representative output o
 
 ```json
 {
+  "os": {
+    "name": "Ubuntu 24.04 LTS",
+    "id": "ubuntu"
+  },
   "cpu": {
     "vendor": "AuthenticAMD",
     "model_name": "AMD Ryzen 9 7950X",
     "arch": "x86_64",
     "online_cores": 16,
     "max_freq_mhz": 5700
+  },
+  "ram": {
+    "total": 33554432,
+    "free": 16777216,
+    "available": 24000000
   },
   "gpus": [
     {
