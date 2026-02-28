@@ -16,7 +16,7 @@
 #include "battery.h"
 #include "mainboard.h"
 
-#define SHORT_OPTS "hrbOcgjom:"
+#define SHORT_OPTS "hrbOcgjom"
 
 /**
  * @brief Command-line options defined for getopt_long.
