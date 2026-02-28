@@ -1,7 +1,9 @@
 #include "base.h"
 #include "theme.h"
+#include "util.h"
 
 #include "cpu.h"
+#include "ram.h"
 #include "gpu.h"
 
 void display_cpu(const CPU* cpu)
@@ -19,6 +21,53 @@ void display_cpu(const CPU* cpu)
 
   print_footer();
 };
+
+void display_ram(const RAM* ram)
+{
+  if (!ram)
+    return;
+
+  // Calculation for actual "used" application memory
+  uint64_t used = ram->total - ram->free - ram->buffers - ram->cached;
+
+  // Prevent underflow just in case kernel reports weird numbers during race conditions
+  if (ram->total < (ram->free + ram->buffers + ram->cached))
+    used = 0;
+  
+  uint64_t swap_used = ram->swap_total > ram->swap_free ? (ram->swap_total - ram->swap_free) : 0;
+
+  // Calculate percentages
+  double ram_pct = ram->total > 0 ? ((double)used / ram->total) * 100.0 : 0.0;
+  double swap_pct = ram->swap_total > 0 ? ((double)swap_used / ram->swap_total) * 100.0 : 0.0;
+
+  // Format the numbers into strings
+  char total_str[32];
+  char used_str[32];
+  char avail_str[32];
+  char cache_str[32];
+
+  char swap_tot_str[32];
+  char swap_used_str[32];
+
+  format_size("GiB", ram->total * 1024ULL, total_str, sizeof(total_str));
+  format_size("GiB", used * 1024ULL, used_str, sizeof(used_str));
+  format_size("GiB", ram->available * 1024ULL, avail_str, sizeof(avail_str));
+  format_size("GiB", (ram->buffers + ram->cached) * 1024ULL, cache_str, sizeof(cache_str));
+
+  format_size("GiB", ram->swap_total * 1024ULL, swap_tot_str, sizeof(swap_tot_str));
+  format_size("GiB", swap_used * 1024ULL, swap_used_str, sizeof(swap_used_str));
+
+  print_header("Random Access Memory (RAM)");
+
+  print_field("Total", "%s", total_str);
+  print_field("Used", "%s (%.1f%%)", used_str, ram_pct);
+  print_field("Available", "%s", avail_str);
+  print_field("Buff/Cache", "%s", cache_str);
+  print_field("Swap Total", "%s", swap_tot_str);
+  print_field("Swap Used", "%s", swap_used_str);
+
+  print_footer();
+}
 
 void display_gpus(GPU** gpus, int count)
 {

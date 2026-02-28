@@ -165,7 +165,7 @@ int main(int argc, char** argv)
     if (config.show_ram) {
       RAM* ram = ram_get_info();
       if (ram) {
-        printf("RAM Total: %" PRIu64 " kB\n", ram->total);
+        display_ram(ram);
         free_ram(ram);
       }
     }
