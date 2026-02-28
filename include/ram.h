@@ -18,5 +18,5 @@ typedef struct {
 } RAM;
 
 cJSON* ram_to_json_obj(const RAM* ram);
-RAM* ram_get_info();
+RAM* ram_get_info(void);
 void free_ram(RAM* ram);

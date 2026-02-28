@@ -20,5 +20,5 @@ typedef struct {
 } CPU;
 
 cJSON* cpu_to_json_obj(const CPU* cpu);
-CPU* cpu_get_info();
+CPU* cpu_get_info(void);
 void free_cpu(CPU* cpu);
