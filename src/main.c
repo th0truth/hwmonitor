@@ -173,9 +173,7 @@ int main(int argc, char** argv)
       int count = 0;
       GPU** gpus = gpu_get_all(&count);
       if (gpus) {
-        for (int i = 0; i < count; i++) {
-          printf("GPU [%d]: %s (%s)\n", i, STR_OR_UNK(gpus[i]->model), STR_OR_UNK(gpus[i]->vendor));
-        }
+        display_gpus(gpus, count);
         free_gpus(gpus, count);
       }
     }
