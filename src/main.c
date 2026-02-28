@@ -72,7 +72,7 @@ int main(int argc, char** argv)
         if (optarg) config.output_file = strdup(optarg);
         break;
       case 'b':
-        config.show_battery = false;
+        config.show_battery = true;
         break;
       case 'c':
         config.show_cpu = true;
@@ -175,6 +175,14 @@ int main(int argc, char** argv)
       if (gpus) {
         display_gpus(gpus, count);
         free_gpus(gpus, count);
+      }
+    }
+
+    if (config.show_battery) {
+      BATTERY* battery = battery_get_info();
+      if (battery) {
+        display_battery(battery);
+        free_battery(battery);
       }
     }
   }

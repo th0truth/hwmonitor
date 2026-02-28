@@ -42,43 +42,12 @@ BATTERY* battery_get_info(void)
   }
 
   // Parse numeric values and convert from micro-units to standard units
-  char* value = NULL;
-  
-  value                           = str_find_value(uevent, "POWER_SUPPLY_CAPACITY", "\n");
-  if (value) {
-    battery->capacity             = atoi(value);
-    free(value);
-  }
-
-  value                           = str_find_value(uevent, "POWER_SUPPLY_VOLTAGE_MIN_DESIGN", "\n");
-  if (value) {
-    battery->voltage_min_design = atof(value) / SYSFS_UNIT_CONVERSION;
-    free(value);
-  }
-
-  value                           = str_find_value(uevent, "POWER_SUPPLY_VOLTAGE_NOW", "\n");
-  if (value) {
-    battery->voltage_now          = atof(value) / SYSFS_UNIT_CONVERSION;
-    free(value);
-  }
-
-  value                          = str_find_value(uevent, "POWER_SUPPLY_ENERGY_FULL_DESIGN", "\n");
-  if (value) {
-    battery->energy_full_design  = atof(value) / SYSFS_UNIT_CONVERSION;
-    free(value);
-  }
-
-  value                         = str_find_value(uevent, "POWER_SUPPLY_ENERGY_FULL", "\n");
-  if (value) {
-    battery->energy_full        = atof(value) / SYSFS_UNIT_CONVERSION;
-    free(value);
-  }
-
-  value                         = str_find_value(uevent, "POWER_SUPPLY_ENERGY_NOW", "\n");
-  if (value) {
-    battery->energy_now         = atof(value) / SYSFS_UNIT_CONVERSION;
-    free(value);
-  }
+  battery->capacity           = str_parse_value(uevent, "POWER_SUPPLY_CAPACITY", "\n");
+  battery->voltage_min_design = str_parse_value(uevent, "POWER_SUPPLY_VOLTAGE_MIN_DESIGN", "\n") / SYSFS_UNIT_CONVERSION;
+  battery->voltage_now        = str_parse_value(uevent, "POWER_SUPPLY_VOLTAGE_NOW", "\n") / SYSFS_UNIT_CONVERSION;
+  battery->energy_full_design = str_parse_value(uevent, "POWER_SUPPLY_ENERGY_FULL_DESIGN", "\n") / SYSFS_UNIT_CONVERSION;
+  battery->energy_full        = str_parse_value(uevent, "POWER_SUPPLY_ENERGY_FULL", "\n") / SYSFS_UNIT_CONVERSION;
+  battery->energy_now         = str_parse_value(uevent, "POWER_SUPPLY_ENERGY_NOW", "\n") / SYSFS_UNIT_CONVERSION;
 
   // Parse string values for vendor and state
   battery->supply_name    = str_find_value(uevent, "POWER_SUPPLY_NAME", "\n");
