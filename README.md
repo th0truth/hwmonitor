@@ -1,42 +1,24 @@
 # hwmonitor
 
-A minimalist, high-performance hardware discovery engine for Linux systems.
+> A minimalist, high-performance hardware discovery engine for Linux systems.
 
-**hwmonitor** is designed for developers and system administrators who require structured, low-latency hardware data. Unlike traditional tools that rely on external shell calls (like `lspci` or `dmidecode`), **hwmonitor** interfaces directly with the Linux kernel via `sysfs` and `procfs`, providing a JSON-native output ready for modern automation and monitoring stacks.
+**hwmonitor** is a lightweight, zero-dependency (C11) command-line utility designed for developers and system administrators who require structured, low-latency hardware telemetry. Rather than relying on expensive external shell calls (`lspci`, `dmidecode`, or `lshw`), **hwmonitor** interfaces directly with the Linux kernel via `/sys` and `/proc` filesystems.
 
----
-
-
-## Visual Output
-
-When running in standard mode (no JSON), **hwmonitor** dynamically adapts to your terminal, providing beautiful, colorized ASCII-boxed hardware reports.
-
-```text
-╭─ Operating System (OS)
-│  Name            : Ubuntu 24.04 LTS
-│  ID              : ubuntu
-╰─
-
-╭─ Central Processing Unit (CPU)
-│  Vendor          : AuthenticAMD
-│  Model           : AMD Ryzen 9 7950X 16-Core Processor
-│  Arch            : x86_64
-│  Cores           : 16 Physical / 32 Logical
-│  Frequency       : 4500.00 MHz - 5700.00 MHz
-╰─
-```
-
-## Core Features
-
-*   **Native Performance:** Directly parses kernel filesystems for near-instant execution.
-*   **JSON-First Architecture:** Built-in serialization for seamless integration with APIs and web dashboards.
-*   **Deep Hardware Discovery:** Advanced logic for multi-GPU identification (NVIDIA, AMD, Intel), battery metrics, and OS environment details.
-*   **Modern C Design:** Strict C11 compliance with a focus on memory safety and modularity.
-*   **Zero Dependencies:** Managed via Git submodules for a lightweight, "clone-and-build" workflow.
+It provides both beautiful, human-readable terminal output and highly structured JSON for modern monitoring stacks and API integrations.
 
 ---
 
-## Installation
+## ✨ Key Features
+
+* **Native Performance:** Written in pure C. Direct kernel filesystem parsing ensures near-instant execution times.
+* **JSON-First Architecture:** Built-in serialization for seamless integration into dashboards, observability pipelines, or scripts.
+* **Comprehensive Hardware Discovery:** Advanced logic for CPU, RAM, Multi-GPU configurations, Storage (block devices), Mainboard (DMI/SMBIOS), Battery, and OS environments.
+* **Zero Bloat:** No Python, no `dbus`, no heavy external libraries. Uses a single submodule ([cJSON](https://github.com/DaveGamble/cJSON)) for reliable JSON generation.
+* **Memory Safe:** Engineered with an "inside-out" deep-freeing pattern to ensure a zero-leak footprint.
+
+---
+
+## 🚀 Installation
 
 The project uses Git submodules for its core libraries. Ensure you perform a recursive clone to include all necessary dependencies.
 
@@ -48,86 +30,128 @@ make
 
 ---
 
-## Usage
+## 🛠️ Usage
 
-**hwmonitor** supports a flexible command-line interface with both short and long-form arguments.
+**hwmonitor** supports a flexible command-line interface. By default, running it without flags will display all available hardware modules.
 
-### Examples
+### Common Commands
 
 ```bash
+# Display full system report in the terminal
+./build/hwmonitor.o
+
 # Generate a full system report in structured JSON
 ./build/hwmonitor.o --json
 
-# Export specific CPU and GPU metrics to a file
-./build/hwmonitor.o --cpu --gpu --json --output report.json
-
-# Display a standard human-readable summary
-./build/hwmonitor.o --cpu --ram --battery
+# Export specific CPU and Storage metrics to a file
+./build/hwmonitor.o --cpu --storage --json --output report.json
 ```
 
-### Options
+### Available Flags
 
-| Flag | Argument | Description |
+| Flag | Long Flag | Description |
 | :--- | :--- | :--- |
-| `-j, --json` | None | Serializes hardware data into a JSON object. |
-| `-o, --output` | `<file>` | Redirects the JSON output to a specified file. |
-| `-c, --cpu` | None | Collects architecture, model, and real-time frequency data. |
-| `-r, --ram` | None | Reports detailed memory utilization and swap metrics. |
-| `-g, --gpu` | None | Performs dynamic bus scanning for all installed GPUs. |
-| `-b, --battery` | None | Monitors capacity, voltage, and health of system batteries. |
-| `-O, --os` | None | Retrieves Operating System and Desktop Environment details. |
+| `-O` | `--os` | Retrieves Operating System and Desktop Environment details. |
+| `-m` | `--mainboard` | Shows Mainboard/System DMI information (Run with `sudo` for Serial). |
+| `-c` | `--cpu` | Collects architecture, cores, and real-time frequency data. |
+| `-r` | `--ram` | Reports detailed memory utilization, cache, and swap metrics. |
+| `-s` | `--storage` | Discovers block devices (NVMe, SSD, HDD) and their capacities. |
+| `-g` | `--gpu` | Performs dynamic bus scanning for all installed GPUs. |
+| `-b` | `--battery` | Monitors capacity, voltage, and health of system batteries. |
+| `-j` | `--json` | Serializes hardware data into a JSON object. |
+| `-o` | `--output <file>`| Redirects the JSON output to a specified file. |
+| `-h` | `--help` | Displays the help menu. |
 
 ---
 
-## Data Schema
+## 📊 Sample Output
 
-The tool produces a highly structured schema. Below is a representative output of a full system analysis:
+### Terminal (Human-Readable)
+
+When running in standard mode, **hwmonitor** dynamically formats beautiful, colorized ASCII-boxed hardware reports.
+
+```text
+╭─ Operating System (OS) 
+│  Name            : Nebula Linux LTS
+│  ID              : nebula
+╰─
+
+╭─ Mainboard / System 
+│  Sys Vendor      : TechCorp Systems
+│  Product Name    : ComputeServer X900
+│  Board Vendor    : TechCorp Motherboards Inc.
+│  Board Name      : ServerBoard Z99
+╰─
+
+╭─ Central Processing Unit (CPU) 
+│  Vendor          : QuantumSilicon
+│  Model           : QuantumCore Processor X9
+│  Arch            : x86_64
+│  Cores           : 16 Physical / 32 Logical
+│  Frequency       : 800.00 MHz - 4200.00 MHz
+╰─
+
+╭─ Graphics Processing Unit [0] 
+│  Vendor          : 0x10de (0x39a0)
+│  Model           : TitanFlow Compute Accelerator
+│  PCI Slot        : 0000:01:00.0
+│  Bus Type        : PCIe
+│  Driver          : titan
+╰─
+
+╭─ Storage Device [0] (nvme0n1) 
+│  Model           : HyperDrive NVMe Pro
+│  Size            : 1907.73 GiB
+│  Removable       : No
+│  PCI Slot        : 0000:04:00.0
+╰─
+```
+
+### JSON (Machine-Readable)
+
+Using the `--json` flag produces a highly structured schema ready for parsing.
 
 ```json
 {
   "os": {
-    "name": "Ubuntu 24.04 LTS",
-    "id": "ubuntu"
+    "name": "Nebula Linux LTS",
+    "id": "nebula"
+  },
+  "mainboard": {
+    "sys_vendor": "TechCorp Systems",
+    "product_name": "ComputeServer X900",
+    "board_vendor": "TechCorp Motherboards Inc.",
+    "board_name": "ServerBoard Z99"
   },
   "cpu": {
-    "vendor": "AuthenticAMD",
-    "model_name": "AMD Ryzen 9 7950X",
+    "vendor": "QuantumSilicon",
+    "model_name": "QuantumCore Processor X9",
     "arch": "x86_64",
-    "online_cores": 16,
-    "max_freq_mhz": 5700
-  },
-  "ram": {
-    "total": 33554432,
-    "free": 16777216,
-    "available": 24000000
+    "online_cores": 32,
+    "max_freq_mhz": 4200
   },
   "gpus": [
     {
-      "vendor": "NVIDIA Corporation",
-      "model": "GeForce RTX 4080",
-      "driver": "nvidia",
-      "uuid": "GPU-8f92a1..."
+      "vendor": "0x10de",
+      "model": "TitanFlow Compute Accelerator",
+      "driver": "titan",
+      "pci_id": "0000:01:00.0"
     }
   ],
-  "battery": {
-    "status": "Discharging",
-    "capacity_percent": 84,
-    "model_name": "Standard-L1",
-    "manufacturer": "SAMSUNG"
-  }
+  "storages": [
+    {
+      "device": "nvme0n1",
+      "size_bytes": 2048408248320,
+      "removable": false,
+      "model": "HyperDrive NVMe Pro",
+      "pci_slot_name": "0000:04:00.0"
+    }
+  ]
 }
 ```
 
 ---
 
-## Technical Architecture
-
-The codebase is engineered with a focus on modularity and transparency.
-
-*   **Discovery Engine:** Implements a dynamic directory-scanning pattern to identify hardware nodes without hardcoded limits.
-*   **Memory Management:** Strictly follows an "inside-out" deep-freeing pattern to ensure a zero-leak footprint.
-*   **Explicit Safety:** Employs explicit NULL checks and Doxygen-style documentation across all modules to ensure reliability in production environments.
-
-## License
+## 📄 License
 
 This project is licensed under the **MIT License**. See the `LICENSE` file for details.
