@@ -22,7 +22,6 @@ static volatile bool keep_running = true;
  */
 static void handle_sigint(int sig)
 {
-  (void)sig;
   keep_running = false;
 }
 
@@ -40,9 +39,8 @@ int main(int argc, char** argv)
   // Parsed from util.c
   parse_arguments(argc, argv, &config);
 
-  if (config.watch_mode) {
+  if (config.watch_mode)
     signal(SIGINT, handle_sigint);
-  }
 
   do {
     SystemHardware hw = {0};
@@ -56,22 +54,35 @@ int main(int argc, char** argv)
     if (config.use_ai && config.ai_prompt) {
       // Create context for AI analysis
       cJSON* ctx = cJSON_CreateObject();
-      if (hw.battery) cJSON_AddItemToObject(ctx, "battery", battery_to_json_obj(hw.battery));
-      if (hw.cpu) cJSON_AddItemToObject(ctx, "cpu", cpu_to_json_obj(hw.cpu));
-      if (hw.mainboard) cJSON_AddItemToObject(ctx, "mainboard", mainboard_to_json_obj(hw.mainboard));
-      if (hw.os) cJSON_AddItemToObject(ctx, "os", os_to_json_obj(hw.os));
-      if (hw.ram) cJSON_AddItemToObject(ctx, "ram", ram_to_json_obj(hw.ram));
+      
+      // Show hardware components
+      if (hw.battery)
+        cJSON_AddItemToObject(ctx, "battery", battery_to_json_obj(hw.battery));
+      
+      if (hw.cpu)
+        cJSON_AddItemToObject(ctx, "cpu", cpu_to_json_obj(hw.cpu));
+      
+      if (hw.mainboard)
+        cJSON_AddItemToObject(ctx, "mainboard", mainboard_to_json_obj(hw.mainboard));
+
+      if (hw.os)
+        cJSON_AddItemToObject(ctx, "os", os_to_json_obj(hw.os));
+
+      if (hw.ram)
+        cJSON_AddItemToObject(ctx, "ram", ram_to_json_obj(hw.ram));
       
       if (hw.gpus && hw.gpu_count > 0) {
         cJSON* list = cJSON_CreateArray();
         for (int i = 0; i < hw.gpu_count; i++) cJSON_AddItemToArray(list, gpu_to_json_obj(hw.gpus[i]));
         cJSON_AddItemToObject(ctx, "gpus", list);
       }
+      
       if (hw.networks && hw.network_count > 0) {
         cJSON* list = cJSON_CreateArray();
         for (int i = 0; i < hw.network_count; i++) cJSON_AddItemToArray(list, network_to_json_obj(hw.networks[i]));
         cJSON_AddItemToObject(ctx, "networks", list);
       }
+
       if (hw.storages && hw.storage_count > 0) {
         cJSON* list = cJSON_CreateArray();
         for (int i = 0; i < hw.storage_count; i++) cJSON_AddItemToArray(list, storage_to_json_obj(hw.storages[i]));
@@ -95,14 +106,16 @@ int main(int argc, char** argv)
 
     free_hardware(&hw);
 
-    if (config.watch_mode && keep_running) {
+    if (config.watch_mode && keep_running)
       sleep(1);
-    }
 
   } while (config.watch_mode && keep_running);
 
-  if (config.output_file) free(config.output_file);
-  if (config.ai_prompt) free(config.ai_prompt);
+  if (config.output_file)
+    free(config.output_file);
+  
+  if (config.ai_prompt)
+    free(config.ai_prompt);
 
   curl_global_cleanup();
   return 0;

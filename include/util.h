@@ -85,13 +85,3 @@ void parse_arguments(int argc, char** argv, Config* config);
  * @brief Prints usage and help documentation for the tool.
  */
 void print_usage(const char* prog_name);
-
-/**
- * @brief Returns the system load averages (1, 5, 15 min).
- */
-void util_get_loadavg(double load[3]);
-
-/**
- * @brief Returns the current system uptime in seconds.
- */
-double util_get_uptime(void);

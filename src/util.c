@@ -41,18 +41,25 @@ void fetch_hardware(const Config* config, SystemHardware* hw)
 {
   if (config->show_battery)
     hw->battery = battery_get_info();
+
   if (config->show_cpu) 
     hw->cpu = cpu_get_info();
+
   if (config->show_gpu)
     hw->gpus = gpu_get_all(&hw->gpu_count);
+
   if (config->show_mainboard)
     hw->mainboard = mainboard_get_info();
+
   if (config->show_network)
     hw->networks = network_get_all(&hw->network_count);
+
   if (config->show_os)
     hw->os = os_get_info();
+
   if (config->show_ram) 
     hw->ram = ram_get_info();
+
   if (config->show_storage)
     hw->storages = storage_get_all(&hw->storage_count);
 }
@@ -88,18 +95,25 @@ void free_hardware(SystemHardware* hw)
 {
   if (hw->battery)
     free_battery(hw->battery);
+
   if (hw->cpu)
     free_cpu(hw->cpu);
+    
   if (hw->gpus)
     free_gpus(hw->gpus, hw->gpu_count);
+
   if (hw->mainboard)
     free_mainboard(hw->mainboard);
+
   if (hw->networks)
     free_networks(hw->networks, hw->network_count);
+
   if (hw->os)
     free(hw->os);
+
   if (hw->ram)
     free_ram(hw->ram);
+
   if (hw->storages)
     free_storages(hw->storages, hw->storage_count);
 }
@@ -113,8 +127,10 @@ void output_json(const Config* config, const SystemHardware* hw)
   
   if (hw->battery)
     cJSON_AddItemToObject(json, "battery", battery_to_json_obj(hw->battery));
+
   if (hw->cpu)
     cJSON_AddItemToObject(json, "cpu", cpu_to_json_obj(hw->cpu));
+
   if (hw->gpus && hw->gpu_count > 0) {
     cJSON* gpu_list = cJSON_CreateArray();
     for (int i = 0; i < hw->gpu_count; i++) {
@@ -122,8 +138,10 @@ void output_json(const Config* config, const SystemHardware* hw)
     }
     cJSON_AddItemToObject(json, "gpus", gpu_list);
   }
+  
   if (hw->mainboard)
     cJSON_AddItemToObject(json, "mainboard", mainboard_to_json_obj(hw->mainboard));
+  
   if (hw->networks && hw->network_count > 0) {
     cJSON* network_list = cJSON_CreateArray();
     for (int i = 0; i < hw->network_count; i++) {
@@ -131,10 +149,13 @@ void output_json(const Config* config, const SystemHardware* hw)
     }
     cJSON_AddItemToObject(json, "networks", network_list);
   }
+
   if (hw->os)
     cJSON_AddItemToObject(json, "os", os_to_json_obj(hw->os));
+
   if (hw->ram)
     cJSON_AddItemToObject(json, "ram", ram_to_json_obj(hw->ram));
+
   if (hw->storages && hw->storage_count > 0) {
     cJSON* storage_list = cJSON_CreateArray();
     for (int i = 0; i < hw->storage_count; i++) {
@@ -163,18 +184,25 @@ void output_plaintext(const SystemHardware* hw)
 {
   if (hw->battery)
     display_battery(hw->battery);
+
   if (hw->cpu)
     display_cpu(hw->cpu);
+
   if (hw->gpus && hw->gpu_count > 0)
     display_gpus(hw->gpus, hw->gpu_count);
+
   if (hw->mainboard)
     display_mainboard(hw->mainboard);
+
   if (hw->networks && hw->network_count > 0)
     display_networks(hw->networks, hw->network_count);
+
   if (hw->os)
     display_os(hw->os);
+
   if (hw->ram)
     display_ram(hw->ram);
+
   if (hw->storages && hw->storage_count > 0)
     display_storages(hw->storages, hw->storage_count);
 }
@@ -283,25 +311,3 @@ void print_usage(const char* prog_name)
   printf("  -w, --watch      Live refresh hardware data every second\n");
 }
 
-/**
- * @brief Returns the system load averages (1, 5, 15 min).
- */
-void util_get_loadavg(double load[3])
-{
-  if (getloadavg(load, 3) != 3) {
-    load[0] = load[1] = load[2] = 0.0;
-  }
-}
-
-/**
- * @brief Returns the current system uptime in seconds.
- */
-double util_get_uptime(void)
-{
-  FILE* fp = fopen("/proc/uptime", "r");
-  if (!fp) return 0.0;
-  double uptime;
-  if (fscanf(fp, "%lf", &uptime) != 1) uptime = 0.0;
-  fclose(fp);
-  return uptime;
-}
