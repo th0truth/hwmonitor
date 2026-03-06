@@ -59,3 +59,11 @@ void display_storages(STORAGE** storages, int count);
  * @param count Number of networks in the array.
  */
 void display_networks(Network** networks, int count);
+
+/**
+ * @brief Clears the terminal screen and resets cursor position using ANSI codes.
+ */
+void display_clear(void);
+
+
+void display_clear(void);

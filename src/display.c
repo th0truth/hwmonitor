@@ -276,3 +276,13 @@ void display_storages(STORAGE** storages, int count)
     print_footer();
   }
 }
+
+/**
+ * @brief Clears the terminal screen and resets cursor position.
+ * Uses ANSI Escape Codes: \033[2J (Clear Screen) and \033[H (Move to Home).
+ */
+void display_clear(void)
+{
+  printf("\033[2J\033[H");
+  fflush(stdout);
+}
