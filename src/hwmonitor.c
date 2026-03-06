@@ -73,19 +73,22 @@ int main(int argc, char** argv)
       
       if (hw.gpus && hw.gpu_count > 0) {
         cJSON* list = cJSON_CreateArray();
-        for (int i = 0; i < hw.gpu_count; i++) cJSON_AddItemToArray(list, gpu_to_json_obj(hw.gpus[i]));
+        for (int i = 0; i < hw.gpu_count; i++)
+          cJSON_AddItemToArray(list, gpu_to_json_obj(hw.gpus[i]));
         cJSON_AddItemToObject(ctx, "gpus", list);
       }
       
       if (hw.networks && hw.network_count > 0) {
         cJSON* list = cJSON_CreateArray();
-        for (int i = 0; i < hw.network_count; i++) cJSON_AddItemToArray(list, network_to_json_obj(hw.networks[i]));
+        for (int i = 0; i < hw.network_count; i++)
+          cJSON_AddItemToArray(list, network_to_json_obj(hw.networks[i]));
         cJSON_AddItemToObject(ctx, "networks", list);
       }
 
       if (hw.storages && hw.storage_count > 0) {
         cJSON* list = cJSON_CreateArray();
-        for (int i = 0; i < hw.storage_count; i++) cJSON_AddItemToArray(list, storage_to_json_obj(hw.storages[i]));
+        for (int i = 0; i < hw.storage_count; i++)
+          cJSON_AddItemToArray(list, storage_to_json_obj(hw.storages[i]));
         cJSON_AddItemToObject(ctx, "storages", list);
       }
 

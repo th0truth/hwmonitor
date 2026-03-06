@@ -47,14 +47,22 @@ const char* theme_get_color(ThemeColor color)
 
   switch (color)
   {
-    case COLOR_PRIMARY: return DarkTheme.primary;
-    case COLOR_LABEL:   return DarkTheme.label;
-    case COLOR_VALUE:   return DarkTheme.value;
-    case COLOR_SUCCESS: return DarkTheme.success;
-    case COLOR_WARNING: return DarkTheme.warning;
-    case COLOR_DANGER:  return DarkTheme.danger;
-    case COLOR_RESET:   return RESET_CODE;
-    default:            return "";
+    case COLOR_PRIMARY:
+      return DarkTheme.primary;
+    case COLOR_LABEL:
+      return DarkTheme.label;
+    case COLOR_VALUE:
+      return DarkTheme.value;
+    case COLOR_SUCCESS:
+      return DarkTheme.success;
+    case COLOR_WARNING:
+      return DarkTheme.warning;
+    case COLOR_DANGER:
+      return DarkTheme.danger;
+    case COLOR_RESET: 
+      return RESET_CODE;
+    default:
+      return "";
   }
 }
 
