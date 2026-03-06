@@ -16,7 +16,6 @@ It provides both beautiful, human-readable terminal output and highly structured
 
 * **Native Performance:** Written in pure C. Direct kernel filesystem parsing ensures near-instant execution times.
 * **🕒 Live Watch Mode:** Real-time hardware monitoring with sub-second refreshes using `--watch`.
-* **🎨 TrueColor Themes:** Rich 24-bit color support with multiple presets (`cyberpunk`, `forest`, `sunset`, etc.).
 * **🤖 AI Hardware Consultant:** Built-in integration with the Groq API allows you to ask natural language questions about your hardware (e.g., bottlenecks, linux driver compatibility) directly from the terminal.
 * **JSON-First Architecture:** Built-in serialization for seamless integration into dashboards, observability pipelines, or scripts.
 * **Comprehensive Hardware Discovery:** Advanced logic for CPU, RAM, Multi-GPU configurations, Storage (block devices), Mainboard (DMI/SMBIOS), Battery, and OS environments.
@@ -50,8 +49,7 @@ sudo make install
 
 ### 🕒 Real-Time Monitoring
 ```bash
-# Watch your CPU and RAM usage live with the Cyberpunk theme
-hwmonitor --cpu --ram --watch --theme cyberpunk
+hwmonitor --cpu --ram --watch
 ```
 
 ### 🤖 AI Hardware Consultant
@@ -79,7 +77,6 @@ hwmonitor --gpu -A "What is the best open-source driver branch for this GPU on W
 | `-o` | `--output <file>`| Redirects the JSON output to a specified file. |
 | `-r` | `--ram` | Reports detailed memory utilization, cache, and swap metrics. |
 | `-s` | `--storage` | Discovers block devices (NVMe, SSD, HDD) and their capacities. |
-| `-T` | `--theme <name>`| Sets the UI theme (`cyberpunk`, `forest`, `ocean`, `sunset`, `monochrome`). |
 | `-w` | `--watch` | Enables live watch mode with 1-second refreshes. |
 | `-A` | `--ai <prompt>`| Sends hardware data to Groq AI to answer your prompt. |
 
