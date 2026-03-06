@@ -64,6 +64,3 @@ void display_networks(Network** networks, int count);
  * @brief Clears the terminal screen and resets cursor position using ANSI codes.
  */
 void display_clear(void);
-
-
-void display_clear(void);

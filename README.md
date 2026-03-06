@@ -15,6 +15,8 @@ It provides both beautiful, human-readable terminal output and highly structured
 ## ✨ Key Features
 
 * **Native Performance:** Written in pure C. Direct kernel filesystem parsing ensures near-instant execution times.
+* **🕒 Live Watch Mode:** Real-time hardware monitoring with sub-second refreshes using `--watch`.
+* **🎨 TrueColor Themes:** Rich 24-bit color support with multiple presets (`cyberpunk`, `forest`, `sunset`, etc.).
 * **🤖 AI Hardware Consultant:** Built-in integration with the Groq API allows you to ask natural language questions about your hardware (e.g., bottlenecks, linux driver compatibility) directly from the terminal.
 * **JSON-First Architecture:** Built-in serialization for seamless integration into dashboards, observability pipelines, or scripts.
 * **Comprehensive Hardware Discovery:** Advanced logic for CPU, RAM, Multi-GPU configurations, Storage (block devices), Mainboard (DMI/SMBIOS), Battery, and OS environments.
@@ -46,36 +48,40 @@ sudo make install
 
 ## 🛠️ Usage
 
-### 🤖 AI Hardware Consultant
+### 🕒 Real-Time Monitoring
+```bash
+# Watch your CPU and RAM usage live with the Cyberpunk theme
+hwmonitor --cpu --ram --watch --theme cyberpunk
+```
 
+### 🤖 AI Hardware Consultant
 ```bash
 # Set your API token
 export GROQ_API_KEY="gsk_your_api_token"
 
 # Analyze specific hardware
 hwmonitor --gpu -A "What is the best open-source driver branch for this GPU on Wayland?"
-
-# Analyze the entire system
-hwmonitor --all -A "I want to run a local Kubernetes cluster. Are there any bottlenecks here?"
 ```
 
 ### Available Flags
 
 | Flag | Long Flag | Description |
 | :--- | :--- | :--- |
-| `-O` | `--os` | Retrieves Operating System and Desktop Environment details. |
-| `-m` | `--mainboard` | Shows Mainboard/System DMI information (Run with `sudo` for Serial). |
+| `-a` | `--all` | Explicitly targets all hardware modules. |
+| `-b` | `--battery` | Monitors capacity, voltage, and health of system batteries. |
 | `-c` | `--cpu` | Collects architecture, cores, and real-time frequency data. |
+| `-g` | `--gpu` | Performs dynamic bus scanning for all installed GPUs. |
+| `-h` | `--help` | Displays the help menu. |
+| `-j` | `--json` | Serializes hardware data into a JSON object. |
+| `-m` | `--mainboard` | Shows Mainboard/System DMI information (Run with `sudo` for Serial). |
+| `-n` | `--network` | Lists network interfaces, drivers, and PCI bus topology. |
+| `-O` | `--os` | Retrieves Operating System and Desktop Environment details. |
+| `-o` | `--output <file>`| Redirects the JSON output to a specified file. |
 | `-r` | `--ram` | Reports detailed memory utilization, cache, and swap metrics. |
 | `-s` | `--storage` | Discovers block devices (NVMe, SSD, HDD) and their capacities. |
-| `-g` | `--gpu` | Performs dynamic bus scanning for all installed GPUs. |
-| `-b` | `--battery` | Monitors capacity, voltage, and health of system batteries. |
-| `-n` | `--network` | Lists network interfaces, drivers, and PCI bus topology. |
-| `-a` | `--all` | Explicitly targets all hardware modules. |
-| `-j` | `--json` | Serializes hardware data into a JSON object. |
-| `-o` | `--output <file>`| Redirects the JSON output to a specified file. |
+| `-T` | `--theme <name>`| Sets the UI theme (`cyberpunk`, `forest`, `ocean`, `sunset`, `monochrome`). |
+| `-w` | `--watch` | Enables live watch mode with 1-second refreshes. |
 | `-A` | `--ai <prompt>`| Sends hardware data to Groq AI to answer your prompt. |
-| `-h` | `--help` | Displays the help menu. |
 
 ---
 
@@ -103,27 +109,6 @@ hwmonitor --all -A "I want to run a local Kubernetes cluster. Are there any bott
 │  Cores           : 16 Physical / 32 Logical
 │  Frequency       : 4200.00 MHz - 5700.00 MHz
 ╰─
-
-╭─ Graphics Processing Unit [0] 
-│  Vendor          : NVIDIA Corporation (0x10de)
-│  Model           : AD102 [GeForce RTX 4090]
-│  PCI Slot        : 0000:01:00.0
-│  Bus Type        : PCIe
-│  Driver          : nvidia
-╰─
-
-╭─ Storage Device [0] (nvme0n1) 
-│  Model           : Samsung SSD 990 PRO 2TB
-│  Size            : 1863.01 GiB
-│  Removable       : No
-│  PCI Slot        : 0000:04:00.0
-╰─
-
-╭─ Network Interface [0] (enp5s0) 
-│  Driver          : igc
-│  PCI ID          : 8086:125c (Intel Corporation)
-│  PCI Slot        : 0000:05:00.0
-╰─
 ```
 
 ### AI Hardware Analysis
@@ -137,43 +122,6 @@ $ hwmonitor --gpu -A "Is this GPU good for local AI inference?"
 │ run large models like Llama-3-70B using 4-bit quantization, or smaller 7B/8B
 │ models with extremely high throughput.
 ╰─
-```
-
-### JSON (Machine-Readable)
-
-```json
-{
-  "os": {
-    "name": "Ubuntu 24.04 LTS",
-    "id": "ubuntu"
-  },
-  "mainboard": {
-    "sys_vendor": "ASUSTeK COMPUTER INC.",
-    "product_name": "ROG STRIX Z790-E GAMING WIFI"
-  },
-  "cpu": {
-    "vendor": "AuthenticAMD",
-    "model_name": "AMD Ryzen 9 7950X3D 16-Core Processor",
-    "arch": "x86_64",
-    "online_cores": 32,
-    "max_freq_mhz": 5700
-  },
-  "gpus": [
-    {
-      "vendor": "0x10de",
-      "model": "GeForce RTX 4090",
-      "driver": "nvidia",
-      "pci_id": "0000:01:00.0"
-    }
-  ],
-  "storages": [
-    {
-      "device": "nvme0n1",
-      "size_bytes": 2000398934016,
-      "model": "Samsung SSD 990 PRO 2TB"
-    }
-  ]
-}
 ```
 
 ---

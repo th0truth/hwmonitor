@@ -35,4 +35,3 @@ bool http_post(const char* url, struct curl_slist* headers, const char* payload,
  * @param response Pointer to the HttpResponse to clean up.
  */
 void http_free_response(HttpResponse* response);
-

@@ -15,12 +15,12 @@
  */
 typedef struct {
   char* device;
-  uint64_t size_bytes;
   bool removable;
   char* uuid;
   char* model;
   char* serial;
   char* pci_slot_name;
+  uint64_t size_bytes;
 } STORAGE;
 
 /**
