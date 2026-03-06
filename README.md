@@ -42,17 +42,11 @@ make
 sudo make install
 ```
 
-Once installed, you can run `hwmonitor` from anywhere in your terminal!
-
 ---
 
 ## 🛠️ Usage
 
-**hwmonitor** supports a flexible command-line interface. By default, running it without flags will display all available hardware modules.
-
 ### 🤖 AI Hardware Consultant
-
-You can ask an LLM (powered by Groq's API) specific questions about your hardware. Simply set your API key and append the `-A` flag!
 
 ```bash
 # Set your API token
@@ -63,19 +57,6 @@ hwmonitor --gpu -A "What is the best open-source driver branch for this GPU on W
 
 # Analyze the entire system
 hwmonitor --all -A "I want to run a local Kubernetes cluster. Are there any bottlenecks here?"
-```
-
-*(Optional): You can override the default AI model (`llama-3.1-8b-instant`) by exporting `GROQ_MODEL="llama-3.3-70b-versatile"`.*
-
-```bash
-# Display full system report in the terminal
-hwmonitor
-
-# Generate a full system report in structured JSON
-hwmonitor --json
-
-# Export specific CPU and Storage metrics to a file
-hwmonitor --cpu --storage --json --output report.json
 ```
 
 ### Available Flags
@@ -102,115 +83,94 @@ hwmonitor --cpu --storage --json --output report.json
 
 ### Terminal (Human-Readable)
 
-When running in standard mode, **hwmonitor** dynamically formats beautiful, colorized ASCII-boxed hardware reports.
-
 ```text
 ╭─ Operating System (OS) 
-│  Name            : Nebula Linux LTS
-│  ID              : nebula
+│  Name            : Ubuntu 24.04 LTS
+│  ID              : ubuntu
 ╰─
 
 ╭─ Mainboard / System 
-│  Sys Vendor      : TechCorp Systems
-│  Product Name    : ComputeServer X900
-│  Board Vendor    : TechCorp Motherboards Inc.
-│  Board Name      : ServerBoard Z99
+│  Sys Vendor      : ASUSTeK COMPUTER INC.
+│  Product Name    : ROG STRIX Z790-E GAMING WIFI
+│  Board Vendor    : ASUSTeK COMPUTER INC.
+│  Board Name      : ROG STRIX Z790-E GAMING WIFI
 ╰─
 
 ╭─ Central Processing Unit (CPU) 
-│  Vendor          : QuantumSilicon
-│  Model           : QuantumCore Processor X9
+│  Vendor          : AuthenticAMD
+│  Model           : AMD Ryzen 9 7950X3D 16-Core Processor
 │  Arch            : x86_64
 │  Cores           : 16 Physical / 32 Logical
-│  Frequency       : 800.00 MHz - 4200.00 MHz
+│  Frequency       : 4200.00 MHz - 5700.00 MHz
 ╰─
 
 ╭─ Graphics Processing Unit [0] 
-│  Vendor          : 0x10de (0x39a0)
-│  Model           : TitanFlow Compute Accelerator
+│  Vendor          : NVIDIA Corporation (0x10de)
+│  Model           : AD102 [GeForce RTX 4090]
 │  PCI Slot        : 0000:01:00.0
 │  Bus Type        : PCIe
-│  Driver          : titan
+│  Driver          : nvidia
 ╰─
 
 ╭─ Storage Device [0] (nvme0n1) 
-│  Model           : HyperDrive NVMe Pro
-│  Size            : 1907.73 GiB
+│  Model           : Samsung SSD 990 PRO 2TB
+│  Size            : 1863.01 GiB
 │  Removable       : No
 │  PCI Slot        : 0000:04:00.0
 ╰─
 
-╭─ Network Interface [0] (eth0) 
+╭─ Network Interface [0] (enp5s0) 
 │  Driver          : igc
-│  PCI ID          : 8086:15f3
+│  PCI ID          : 8086:125c (Intel Corporation)
 │  PCI Slot        : 0000:05:00.0
-│  PCI Subsys ID   : 1043:87d2
 ╰─
 ```
 
 ### AI Hardware Analysis
 
-When using the `--ai` flag alongside hardware targets (e.g., `--gpu`), the tool sends a structured payload to Groq and parses the response directly into your terminal.
-
 ```text
 $ hwmonitor --gpu -A "Is this GPU good for local AI inference?"
 
 ╭─ AI Hardware Analysis (Groq) 
-│ Yes, the TitanFlow Compute Accelerator is an excellent GPU for local AI inference.
-│ Based on its PCIe bus type and the proprietary 'titan' driver, it has full
-│ support for hardware acceleration on Nebula Linux. However, depending on the
-│ VRAM capacity, you may be limited to models under 13B parameters unless you 
-│ apply quantization (INT4 or INT8).
+│ The NVIDIA GeForce RTX 4090 is currently the premier consumer GPU for local 
+│ AI inference. With 24GB of VRAM and high memory bandwidth, it can comfortably
+│ run large models like Llama-3-70B using 4-bit quantization, or smaller 7B/8B
+│ models with extremely high throughput.
 ╰─
 ```
 
 ### JSON (Machine-Readable)
 
-Using the `--json` flag produces a highly structured schema ready for parsing.
-
 ```json
 {
   "os": {
-    "name": "Nebula Linux LTS",
-    "id": "nebula"
+    "name": "Ubuntu 24.04 LTS",
+    "id": "ubuntu"
   },
   "mainboard": {
-    "sys_vendor": "TechCorp Systems",
-    "product_name": "ComputeServer X900",
-    "board_vendor": "TechCorp Motherboards Inc.",
-    "board_name": "ServerBoard Z99"
+    "sys_vendor": "ASUSTeK COMPUTER INC.",
+    "product_name": "ROG STRIX Z790-E GAMING WIFI"
   },
   "cpu": {
-    "vendor": "QuantumSilicon",
-    "model_name": "QuantumCore Processor X9",
+    "vendor": "AuthenticAMD",
+    "model_name": "AMD Ryzen 9 7950X3D 16-Core Processor",
     "arch": "x86_64",
     "online_cores": 32,
-    "max_freq_mhz": 4200
+    "max_freq_mhz": 5700
   },
   "gpus": [
     {
       "vendor": "0x10de",
-      "model": "TitanFlow Compute Accelerator",
-      "driver": "titan",
+      "model": "GeForce RTX 4090",
+      "driver": "nvidia",
       "pci_id": "0000:01:00.0"
     }
   ],
   "storages": [
     {
       "device": "nvme0n1",
-      "size_bytes": 2048408248320,
-      "removable": false,
-      "model": "HyperDrive NVMe Pro",
-      "pci_slot_name": "0000:04:00.0"
-    }
-  ],
-  "networks": [
-    {
-      "interface": "eth0",
-      "driver": "igc",
-      "pci_id": "8086:15f3",
-      "pci_slot_name": "0000:05:00.0",
-      "pci_subsys_id": "1043:87d2"
+      "size_bytes": 2000398934016,
+      "model": "Samsung SSD 990 PRO 2TB"
     }
   ]
 }
