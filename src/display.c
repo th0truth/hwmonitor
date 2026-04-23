@@ -105,7 +105,6 @@ void display_ram(const RAM* ram)
 
   // Calculate percentages
   double ram_pct = ram->total > 0 ? ((double)used / ram->total) * 100.0 : 0.0;
-  double swap_pct = ram->swap_total > 0 ? ((double)swap_used / ram->swap_total) * 100.0 : 0.0;
 
   // Format the numbers into strings
   char total_str[32];

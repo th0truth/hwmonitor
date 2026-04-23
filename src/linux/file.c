@@ -1,4 +1,5 @@
 #include "base.h"
+#include <stdint.h>
 
 #define FILE_READ_BUFFER 4096
 
@@ -27,8 +28,8 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
   }
 
   int c;
-  int n = 0;
-  uint64_t capacity = FILE_READ_BUFFER;
+  size_t n = 0;
+  size_t capacity = FILE_READ_BUFFER;
 
   // Read the file character by character and strip excluded ones
   while ((c = fgetc(fp)) != EOF) {

@@ -8,6 +8,7 @@
 #include "io.h"
 #include "storage.h"
 #include <dirent.h>
+#include <limits.h>
 
 #define MAX_STORAGES 64
 
@@ -28,7 +29,7 @@ static void trim_trailing_spaces(char* str) {
 
 static STORAGE* storage_parse_sysfs(const char* block_name)
 {
-  char buffer[BUFFER_SIZE];
+  char buffer[PATH_MAX];
   STORAGE* storage = calloc(1, sizeof(*storage));
   if (!storage)
     return NULL;

@@ -22,6 +22,7 @@ static volatile bool keep_running = true;
  */
 static void handle_sigint(int sig)
 {
+  (void)sig;
   keep_running = false;
 }
 
