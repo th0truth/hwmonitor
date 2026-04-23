@@ -22,15 +22,20 @@ static char* build_groq_payload(const char* hardware_json, const char* user_prom
     
   // Determine model (allow user override for power users)
   const char* model = getenv("GROQ_MODEL");
+
   if (!model)
     model = GROQ_DEFAULT_MODEL;
+  
   cJSON_AddStringToObject(root, "model", model);
+  
   cJSON* messages = cJSON_CreateArray();
   if (!messages) {
     cJSON_Delete(root);
     return NULL;
   }
+  
   cJSON_AddItemToObject(root, "messages", messages);
+  
   // System Role: Context for the AI
   cJSON* sys_msg = cJSON_CreateObject();
   cJSON_AddStringToObject(sys_msg, "role", "system");
@@ -41,6 +46,7 @@ static char* build_groq_payload(const char* hardware_json, const char* user_prom
     "3) Format your answer as a plain conversational paragraph or simple bullet points without markdown formatting. "
     "4) Do not repeat the raw hardware stats back to the user unless absolutely necessary.");
   cJSON_AddItemToArray(messages, sys_msg);
+  
   // User Role: The data and the question
   size_t combined_len = strlen(hardware_json) + strlen(user_prompt) + 128;
   char* combined_content = malloc(combined_len);
@@ -55,6 +61,7 @@ static char* build_groq_payload(const char* hardware_json, const char* user_prom
     cJSON_AddItemToArray(messages, usr_msg);
     free(combined_content);
   }
+  
   char* payload_str = cJSON_PrintUnformatted(root);
   cJSON_Delete(root);
   return payload_str;

@@ -124,6 +124,8 @@ void free_hardware(SystemHardware* hw)
 void output_json(const Config* config, const SystemHardware* hw)
 {
   cJSON* json = cJSON_CreateObject();
+  cJSON_AddNumberToObject(json, "schema_version", 1);
+  cJSON_AddStringToObject(json, "tool", "hwmonitor");
   
   if (hw->battery)
     cJSON_AddItemToObject(json, "battery", battery_to_json_obj(hw->battery));

@@ -80,6 +80,53 @@ hwmonitor --gpu -A "What is the best open-source driver branch for this GPU on W
 | `-w` | `--watch` | Enables live watch mode with 1-second refreshes. |
 | `-A` | `--ai <prompt>`| Sends hardware data to Groq AI to answer your prompt. |
 
+### Exact Mode Behavior
+
+- With no hardware selection flags, `hwmonitor` defaults to collecting and displaying all supported hardware modules.
+- `--watch` with `--json` refreshes once per second and prints JSON on each iteration. In watch mode, the screen is cleared before each refresh.
+- `--ai` does not imply hardware selection. If you run `--ai` without flags like `--cpu`, `--gpu`, or `--all`, the AI request is sent with little or no hardware context.
+- Some fields may require `sudo`, especially DMI/SMBIOS-derived values such as mainboard serial information.
+- Values can legitimately appear as `<unknown>` when the kernel does not expose them, the device does not report them, the host lacks the relevant sysfs/procfs entry, or permissions restrict access.
+
+### Why This Is Better Than Shelling Out
+
+```bash
+# Traditional approach
+lspci
+cat /proc/cpuinfo
+lsblk -J
+free -h
+
+# hwmonitor approach
+hwmonitor --cpu --gpu --storage --ram --json
+```
+
+### Additional Examples
+
+```bash
+# Full snapshot as JSON
+hwmonitor --all --json
+
+# Write JSON report to disk
+hwmonitor --all --output report.json
+
+# Watch only live-changing resources
+hwmonitor --cpu --ram --watch
+
+# AI analysis of detected GPU
+export GROQ_API_KEY="gsk_..."
+hwmonitor --gpu -A "Is this GPU suitable for 1440p gaming on Linux?"
+
+# Use in a script
+if hwmonitor --cpu --json > /tmp/cpu.json; then
+  echo "CPU report collected"
+fi
+```
+
+### Maintenance Note
+
+`src/util.c` currently handles CLI parsing, hardware orchestration, JSON emission, and plaintext emission support. It is still manageable at the current size, but it is the most likely maintenance hotspot if the project grows.
+
 ---
 
 ## 📊 Sample Output

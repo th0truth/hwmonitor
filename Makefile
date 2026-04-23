@@ -11,7 +11,7 @@ INCS = $(shell find $(INC_DIRS) -name "*.h")
 
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CFLAGS = $(INC_FLAGS)
+CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -O2 $(INC_FLAGS) 
 
 $(BUILD_DIR)/$(TARGET).o: $(SRCS) $(INCS)
 	mkdir -p $(BUILD_DIR)
