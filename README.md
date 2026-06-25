@@ -37,7 +37,7 @@ The project uses Git submodules and requires `libcurl` for AI integrations.
 Ensure you perform a recursive clone to include all necessary dependencies.
 
 ```bash
-git clone --recursive https://github.com/th0truth/hwmonitor.git
+git clone https://github.com/th0truth/hwmonitor.git
 cd hwmonitor
 make
 sudo make install
