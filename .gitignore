@@ -56,5 +56,7 @@ dkms.conf
 
 # etc.
 
+compile_commands.json
 .vscode
 /build
+
