@@ -4,8 +4,63 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 #define GROQ_API_URL "https://api.groq.com/openai/v1/chat/completions"
+
+/**
+ * \brief Prints text with word-wrapping to fit terminal width.
+ * \param[in] text      The text to print.
+ * \param[in] max_width The terminal width in columns.
+ */
+static void
+print_wrapped(const char *text, int max_width)
+{
+    const char *color = "\033[1;37m";
+    const char *reset = "\033[0m";
+
+    int wrap_at = max_width;
+    if (wrap_at < 20) {
+        wrap_at = 20;
+    }
+
+    while (*text != '\0') {
+        /* Handle embedded newlines */
+        if (*text == '\n') {
+            printf("\n");
+            text++;
+            continue;
+        }
+
+        /* Determine length of current segment up to next newline or end */
+        const char *new_line = strchr(text, '\n');
+        int segment_len = new_line ? (int)(new_line - text) : (int)strlen(text);
+
+        if (segment_len <= wrap_at) {
+            printf("%s%.*s%s\n", color, segment_len, text, reset);
+            text += segment_len;
+            if (new_line) {
+                text++;
+            }
+        } else {
+            int brk = wrap_at;
+            while (brk > 0 && text[brk] != ' ') {
+                brk--;
+            }
+            if (brk == 0) {
+                brk = wrap_at;
+            }
+
+            printf("%s%.*s%s\n", color, brk, text, reset);
+            text += brk;
+
+            while (*text == ' ' || *text == '\t') {
+                text++;
+            }
+        }
+    }
+}
 
 static char *
 build_groq_payload(const char *hardware_json, const char *user_prompt)
@@ -117,23 +172,16 @@ groq_analyze_hardware(const char *hardware_json, const char *user_prompt)
                 cJSON *content = cJSON_GetObjectItem(message, "content");
 
                 if (cJSON_IsString(content) && content->valuestring != NULL) {
-                    /* Print matching the aesthetic of src/display.c */
-                    printf("\n\033[1;36m╭─ AI Hardware Analysis (Groq) \033[0m\n");
-                    
-                    char *text_copy = strdup(content->valuestring);
-                    if (text_copy != NULL) {
-                        char *saveptr = NULL;
-                        char *line = strtok_r(text_copy, "\n", &saveptr);
-                        
-                        while (line != NULL) {
-                            printf("\033[1;36m|\033[0m \033[1;37m%s\033[0m\n", line);
-                            line = strtok(NULL, "\n");
-                        }
-     
-                        free(text_copy);
+                    /* Get terminal width dynamically, defaulting to 80 */
+                    struct winsize ws;
+                    int terminal_width = 80;
+                    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0 && ws.ws_col > 0) {
+                        terminal_width = ws.ws_col;
                     }
-                   
-                    printf("\033[1;36m╰─\033[0m\n");
+
+                    printf("\n\033[1;36m── AI Hardware Analysis (Groq) ──\033[0m\n\n");
+                    print_wrapped(content->valuestring, terminal_width);
+                    printf("\n\033[1;36m────\033[0m\n");
                     success = true;
                 }
             } else {

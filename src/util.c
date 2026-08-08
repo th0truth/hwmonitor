@@ -243,8 +243,8 @@ parse_arguments(int argc, char **argv, Config *config)
                 break;
             case 'A':
                 config->use_ai = true;
-                if (config->ai_prompt != NULL) {
-                    free(config->ai_prompt); 
+                if (optarg != NULL) {
+                    free(config->ai_prompt);
                     config->ai_prompt = strdup(optarg);
                 }
                 break;
