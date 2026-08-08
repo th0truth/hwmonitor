@@ -2,8 +2,6 @@
 #include "file.h"
 #include "io.h"
 #include "storage.h"
-#include <dirent.h>
-#include <limits.h>
 
 #define MAX_STORAGES 64
 
@@ -24,7 +22,7 @@ trim_trailing_spaces(char *str)
 static STORAGE *
 storage_parse_sysfs(const char *block_name)
 {
-    char buffer[PATH_MAX];
+    char buffer[BUFFER_SIZE];
     STORAGE *storage = calloc(1, sizeof(*storage));
     if (storage == NULL) {
         return NULL;
@@ -68,46 +66,23 @@ storage_parse_sysfs(const char *block_name)
     return storage;
 }
 
+static void *
+storage_parse_entry(const char *name)
+{
+    /* Filter virtual devices */
+    if (strncmp(name, "loop", 4) == 0 ||
+        strncmp(name, "ram", 3) == 0 ||
+        strncmp(name, "zram", 4) == 0) {
+        return NULL;
+    }
+    
+    return (void *)storage_parse_sysfs(name);
+}
+
 STORAGE **
 storage_get_all(int *count)
 {
-    *count = 0;
-    DIR *dir = opendir("/sys/class/block");
-    if (dir == NULL) {
-        return NULL;
-    }
-
-    STORAGE **list = calloc(MAX_STORAGES, sizeof(STORAGE *));
-    if (list == NULL) {
-        closedir(dir);
-        return NULL;
-    }
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL && *count < MAX_STORAGES) {
-        if (entry->d_name[0] == '.') {
-            continue;
-        }
-
-        /* Ignore loop, ram, and zram virtual block devices */
-        if (strncmp(entry->d_name, "loop", 4) == 0) {
-            continue;
-        }
-        if (strncmp(entry->d_name, "ram", 3) == 0) {
-            continue;
-        }
-        if (strncmp(entry->d_name, "zram", 4) == 0) {
-            continue;
-        }
-
-        STORAGE *s = storage_parse_sysfs(entry->d_name);
-        if (s != NULL) {
-            list[(*count)++] = s;
-        }
-    }
-
-    closedir(dir);
-    return list;
+    return (STORAGE **)sysfs_enumerate("/sys/class/block", storage_parse_entry, MAX_STORAGES, count);
 }
 
 void

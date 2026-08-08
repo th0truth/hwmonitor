@@ -9,6 +9,9 @@ extern "C" {
 char *file_read_stripped(const char *filename, const char *exclude, bool verbose);
 bool file_write_string(const char *filename, const char *data);
 
+typedef void *(*sysfs_parse_fn)(const char *entry_name);
+void **sysfs_enumerate(const char *dir_path, sysfs_parse_fn parse_fn, int max_items, int *out_count); 
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

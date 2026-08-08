@@ -2,7 +2,6 @@
 #include "file.h"
 #include "io.h"
 #include "network.h"
-#include <dirent.h>
 
 Network *
 network_get_info(const char *interface)
@@ -39,32 +38,7 @@ network_get_info(const char *interface)
 Network **
 network_get_all(int *count)
 {
-    *count = 0;
-    DIR *dir = opendir("/sys/class/net");
-    if (dir == NULL) {
-        return NULL;
-    }
-
-    Network **list = calloc(MAX_NETWORKS, sizeof(Network *));
-    if (list == NULL) {
-        closedir(dir);
-        return NULL;
-    }
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL && *count < MAX_NETWORKS) {
-        if (entry->d_name[0] == '.') {
-            continue;
-        }
-
-        Network *net = network_get_info(entry->d_name);
-        if (net != NULL) {
-            list[(*count)++] = net;
-        }
-    }
-
-    closedir(dir);
-    return list;
+    return (Network **)sysfs_enumerate("/sys/class/net", (sysfs_parse_fn)network_get_info, MAX_NETWORKS, count);
 }
 
 void

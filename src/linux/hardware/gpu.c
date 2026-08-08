@@ -2,7 +2,6 @@
 #include "file.h"
 #include "io.h"
 #include "gpu.h"
-#include <dirent.h>
 
 static void
 gpu_handle_nvidia(GPU *gpu)
@@ -78,34 +77,20 @@ gpu_parse_sysfs(const char *card_name)
     return gpu;
 }
 
+static void *
+gpu_parse_entry(const char *name)
+{
+    if (strncmp(name, "card", 4) == 0 && isdigit((unsigned char)name[4])) {
+        return (void *)gpu_parse_sysfs(name);
+    }
+
+    return NULL;
+}
+
 GPU **
 gpu_get_all(int *count)
 {
-    *count = 0;
-    DIR *dir = opendir("/sys/class/drm");
-    if (dir == NULL) {
-        return NULL;
-    }
-
-    GPU **list = calloc(MAX_GPUS, sizeof(GPU *));
-    if (list == NULL) {
-        closedir(dir);
-        return NULL;
-    }
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL && *count < MAX_GPUS) {
-        /* Only process directories named "cardX" where X is a digit (ignore renderD nodes) */
-        if (strncmp(entry->d_name, "card", 4) == 0 && isdigit((unsigned char)entry->d_name[4])) {
-            GPU *gpu = gpu_parse_sysfs(entry->d_name);
-            if (gpu != NULL) {
-                list[(*count)++] = gpu;
-            }
-        }
-    }
-
-    closedir(dir);
-    return list;
+    return (GPU **)sysfs_enumerate("/sys/class/drm", gpu_parse_entry, MAX_GPUS, count);
 }
 
 void

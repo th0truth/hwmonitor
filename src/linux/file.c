@@ -1,5 +1,8 @@
+#include "file.h"
 #include "base.h"
+#include "cJSON.h"
 #include <stdint.h>
+#include <dirent.h>
 
 #define FILE_READ_BUFFER 4096
 
@@ -72,3 +75,44 @@ file_write_string(const char *filename, const char *data)
     fclose(fp);
     return true;
 }
+
+void **
+sysfs_enumerate(const char *dir_path, sysfs_parse_fn parse_fn, int max_items, int *out_count)
+{
+    if (out_count == NULL) {
+        return NULL;
+    } 
+    *out_count = 0;
+
+    if (dir_path == NULL || parse_fn == NULL || max_items <= 0) {
+        return NULL;
+    }
+
+    DIR *dir = opendir(dir_path);
+    if (dir == NULL) {
+        return NULL; 
+    }
+
+    void **list = calloc(max_items, sizeof(void *));
+    if (list == NULL) {
+        closedir(dir);
+        return NULL;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL && *out_count < max_items) {
+        if (entry->d_name[0] == '.') {
+            continue;
+        }
+
+        void *item = parse_fn(entry->d_name);
+        if (item != NULL) {
+            list[(*out_count)++] = item;
+        }
+    }   
+    
+    closedir(dir);
+        
+    return list;
+}
+
