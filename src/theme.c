@@ -8,89 +8,89 @@ static bool use_colors = true;
 static const char *RESET_CODE = "\033[0m";
 
 static const Theme DarkTheme = {
-  .primary  = "\033[1;36m", /* Cyan */
-  .label    = "\033[0;37m", /* Light Gray */
-  .value    = "\033[1;37m", /* White */
-  .success  = "\033[0;32m", /* Green */
-  .warning  = "\033[0;33m", /* Yellow */
-  .danger   = "\033[0;31m", /* Red */
+    .primary  = "\033[1;36m", /* Cyan */
+    .label    = "\033[0;37m", /* Light Gray */
+    .value    = "\033[1;37m", /* White */
+    .success  = "\033[0;32m", /* Green */
+    .warning  = "\033[0;33m", /* Yellow */
+    .danger   = "\033[0;31m", /* Red */
 };
 
 void
 theme_init(bool force_no_color)
 {
-  /* Crucial Low-Level Check: Is stdout a terminal or a file/pipe? */
-  if (force_no_color || !isatty(STDOUT_FILENO)) {
-    use_colors = false;
-  }
+    /* Crucial Low-Level Check: Is stdout a terminal or a file/pipe? */
+    if (force_no_color || !isatty(STDOUT_FILENO)) {
+        use_colors = false;
+    }
 }
 
 const char *
 theme_get_color(ThemeColor color)
 {
-  if (!use_colors) {
-    return "";
-  }
+    if (!use_colors) {
+        return "";
+    }
 
-  switch (color) {
-    case COLOR_PRIMARY:
-      return DarkTheme.primary;
-    case COLOR_LABEL:
-      return DarkTheme.label;
-    case COLOR_VALUE:
-      return DarkTheme.value;
-    case COLOR_SUCCESS:
-      return DarkTheme.success;
-    case COLOR_WARNING:
-      return DarkTheme.warning;
-    case COLOR_DANGER:
-      return DarkTheme.danger;
-    case COLOR_RESET: 
-      return RESET_CODE;
-    default:
-      return "";
-  }
+    switch (color) {
+        case COLOR_PRIMARY:
+            return DarkTheme.primary;
+        case COLOR_LABEL:
+            return DarkTheme.label;
+        case COLOR_VALUE:
+            return DarkTheme.value;
+        case COLOR_SUCCESS:
+            return DarkTheme.success;
+        case COLOR_WARNING:
+            return DarkTheme.warning;
+        case COLOR_DANGER:
+            return DarkTheme.danger;
+        case COLOR_RESET: 
+            return RESET_CODE;
+        default:
+            return "";
+    }
 }
 
 char *
 theme_get_reset(void)
 {
-  return (char *)(use_colors ? RESET_CODE : "");
+    return (char *)(use_colors ? RESET_CODE : "");
 }
 
 void
 print_header(const char *text)
 {
-  const char *c_prim = theme_get_color(COLOR_PRIMARY);
-  const char *c_res  = theme_get_reset();
+    const char *c_prim = theme_get_color(COLOR_PRIMARY);
+    const char *c_res  = theme_get_reset();
 
-  printf("\n%s╭─ %s %s\n", c_prim, text, c_res);
+    printf("\n%s╭─ %s %s\n", c_prim, text, c_res);
 }
 
 void
 print_field(const char *label, const char *format, ...)
 {
-  const char *c_prim = theme_get_color(COLOR_PRIMARY);
-  const char *c_lab  = theme_get_color(COLOR_LABEL);
-  const char *c_val  = theme_get_color(COLOR_VALUE);
-  const char *c_res  = theme_get_reset();
-  va_list args;
+    const char *c_prim = theme_get_color(COLOR_PRIMARY);
+    const char *c_lab  = theme_get_color(COLOR_LABEL);
+    const char *c_val  = theme_get_color(COLOR_VALUE);
+    const char *c_res  = theme_get_reset();
+    va_list args;
 
-  /* The %-15s guarantees all colons align perfectly vertically */
-  printf("%s| %s%-15s%s : %s", c_prim, c_lab, label, c_res, c_val);
+    /* The %-15s guarantees all colons align perfectly vertically */
+    printf("%s| %s%-15s%s : %s", c_prim, c_lab, label, c_res, c_val);
 
-  va_start(args, format);
-  vprintf(format, args);
-  va_end(args);
+    va_start(args, format);
+    vprintf(format, args);
+    va_end(args);
 
-  printf("%s\n", c_res);
+    printf("%s\n", c_res);
 }
 
 void
 print_footer(void)
 {
-  const char *c_prim = theme_get_color(COLOR_PRIMARY);
-  const char *c_res  = theme_get_reset();
+    const char *c_prim = theme_get_color(COLOR_PRIMARY);
+    const char *c_res  = theme_get_reset();
 
-  printf("%s╰─%s\n", c_prim, c_res);
+    printf("%s╰─%s\n", c_prim, c_res);
 }

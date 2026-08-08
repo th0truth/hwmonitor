@@ -24,19 +24,19 @@ extern "C" {
  * \brief Config structure to hold user preferences from flags.
  */
 typedef struct {
-  char *ai_prompt;
-  char *output_file;
-  bool show_battery;
-  bool show_cpu;
-  bool show_gpu;
-  bool show_mainboard;
-  bool show_network;
-  bool show_os;
-  bool show_ram;
-  bool show_storage;
-  bool use_ai;
-  bool use_json;
-  bool watch_mode;
+    char *ai_prompt;
+    char *output_file;
+    bool show_battery;
+    bool show_cpu;
+    bool show_gpu;
+    bool show_mainboard;
+    bool show_network;
+    bool show_os;
+    bool show_ram;
+    bool show_storage;
+    bool use_ai;
+    bool use_json;
+    bool watch_mode;
 } Config;
 
 /**
@@ -44,17 +44,17 @@ typedef struct {
  * \brief Centralized struct to hold all fetched hardware data.
  */
 typedef struct {
-  BATTERY *battery;
-  CPU *cpu;
-  GPU **gpus;
-  int gpu_count;
-  MAINBOARD *mainboard;
-  Network **networks;
-  int network_count;
-  OS *os;
-  RAM *ram;
-  STORAGE **storages;
-  int storage_count;
+    BATTERY *battery;
+    CPU *cpu;
+    GPU **gpus;
+    int gpu_count;
+    MAINBOARD *mainboard;
+    Network **networks;
+    int network_count;
+    OS *os;
+    RAM *ram;
+    STORAGE **storages;
+    int storage_count;
 } SystemHardware;
 
 /**

@@ -17,19 +17,19 @@ extern "C" {
  * \brief Structure to hold CPU metrics and vendor information.
  */
 typedef struct {
-  char *vendor_id;
-  char *model_name;
-  char *flags;
-  char *arch;
-  float max_MHz;
-  float min_MHz;
-  float curr_temp;
-  uint16_t cpu_family;
-  uint16_t model;
-  uint16_t stepping;
-  uint16_t total_cores;
-  uint16_t total_threads;
-  uint16_t online_cores;
+    char *vendor_id;
+    char *model_name;
+    char *flags;
+    char *arch;
+    float max_MHz;
+    float min_MHz;
+    float curr_temp;
+    uint16_t cpu_family;
+    uint16_t model;
+    uint16_t stepping;
+    uint16_t total_cores;
+    uint16_t total_threads;
+    uint16_t online_cores;
 } CPU;
 
 cJSON *cpu_to_json_obj(const CPU *cpu);

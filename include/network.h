@@ -19,11 +19,11 @@ extern "C" {
  * \brief Structure to hold network interface information.
  */
 typedef struct {
-  char *interface;
-  char *driver;
-  char *pci_id;
-  char *pci_slot_name;
-  char *pci_subsys_id;
+    char *interface;
+    char *driver;
+    char *pci_id;
+    char *pci_slot_name;
+    char *pci_subsys_id;
 } Network;
 
 cJSON *network_to_json_obj(const Network *net);

@@ -16,13 +16,13 @@ extern "C" {
  * \brief Structure to hold system and motherboard DMI information.
  */
 typedef struct {
-  char *sys_vendor;
-  char *product_name;
-  char *product_family;
-  char *product_sku;
-  char *board_vendor;
-  char *board_name;
-  char *serial;
+    char *sys_vendor;
+    char *product_name;
+    char *product_family;
+    char *product_sku;
+    char *board_vendor;
+    char *board_name;
+    char *serial;
 } MAINBOARD;
 
 /**

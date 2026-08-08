@@ -16,13 +16,13 @@ extern "C" {
  * \brief Available theme color categories.
  */
 typedef enum {
-  COLOR_PRIMARY,
-  COLOR_LABEL,
-  COLOR_VALUE,
-  COLOR_SUCCESS,
-  COLOR_WARNING,
-  COLOR_DANGER,
-  COLOR_RESET
+    COLOR_PRIMARY,
+    COLOR_LABEL,
+    COLOR_VALUE,
+    COLOR_SUCCESS,
+    COLOR_WARNING,
+    COLOR_DANGER,
+    COLOR_RESET
 } ThemeColor;
 
 /**
@@ -30,12 +30,12 @@ typedef enum {
  * \brief Holds ANSI escape codes for styling console output.
  */
 typedef struct {
-  const char *primary;
-  const char *label;
-  const char *value;
-  const char *success;
-  const char *warning;
-  const char *danger;
+    const char *primary;
+    const char *label;
+    const char *value;
+    const char *success;
+    const char *warning;
+    const char *danger;
 } Theme;
 
 void theme_init(bool force_no_color);

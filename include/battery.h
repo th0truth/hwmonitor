@@ -17,20 +17,20 @@ extern "C" {
  * \brief Structure to hold battery metrics and vendor information.
  */
 typedef struct {
-  uint16_t capacity;
-  float voltage_min_design;
-  float voltage_now;
-  float energy_full_design;
-  float energy_full;
-  float energy_now;
-  char *supply_name;
-  char *supply_type;
-  char *capacity_level;
-  char *status;
-  char *technology;
-  char *model_name;
-  char *manufacturer;
-  char *serial;
+    uint16_t capacity;
+    float voltage_min_design;
+    float voltage_now;
+    float energy_full_design;
+    float energy_full;
+    float energy_now;
+    char *supply_name;
+    char *supply_type;
+    char *capacity_level;
+    char *status;
+    char *technology;
+    char *model_name;
+    char *manufacturer;
+    char *serial;
 } BATTERY;
 
 /**

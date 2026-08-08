@@ -18,8 +18,8 @@ extern "C" {
  * \brief Buffer to store the dynamically allocated raw string response from an HTTP request.
  */
 typedef struct {
-  char *data;   /**< Null-terminated string containing the HTTP response body */
-  size_t size;  /**< Size of the response data in bytes (excluding null terminator) */
+    char *data;   /**< Null-terminated string containing the HTTP response body */
+    size_t size;  /**< Size of the response data in bytes (excluding null terminator) */
 } HttpResponse;
 
 /**

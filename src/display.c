@@ -12,269 +12,268 @@
 #include "storage.h"
 #include "network.h"
 
-
 void
 display_os(const OS *os)
 {
-  if (os == NULL) {
-    return;
-  }
+    if (os == NULL) {
+        return;
+    }
 
-  print_header("Operating System (OS)");
+    print_header("Operating System (OS)");
 
-  print_field("Name",         "%s", STR_OR_UNK(os->name));
-  print_field("Version ID",   "%s", STR_OR_UNK(os->version_id));
-  print_field("Build ID",     "%s", STR_OR_UNK(os->build_id));
-  print_field("Release Type", "%s", STR_OR_UNK(os->release_type));
-  print_field("ID",           "%s", STR_OR_UNK(os->id));
-  print_field("DE Variant",   "%s", STR_OR_UNK(os->de));
-  print_field("DE ID",        "%s", STR_OR_UNK(os->de_id));
+    print_field("Name",         "%s", STR_OR_UNK(os->name));
+    print_field("Version ID",   "%s", STR_OR_UNK(os->version_id));
+    print_field("Build ID",     "%s", STR_OR_UNK(os->build_id));
+    print_field("Release Type", "%s", STR_OR_UNK(os->release_type));
+    print_field("ID",           "%s", STR_OR_UNK(os->id));
+    print_field("DE Variant",   "%s", STR_OR_UNK(os->de));
+    print_field("DE ID",        "%s", STR_OR_UNK(os->de_id));
 
-  print_footer();
+    print_footer();
 }
 
 void
 display_cpu(const CPU *cpu)
 {
-  if (cpu == NULL) {
-    return;
-  }
+    if (cpu == NULL) {
+        return;
+    }
 
-  print_header("Central Processing Unit (CPU)");
+    print_header("Central Processing Unit (CPU)");
 
-  print_field("Vendor",    "%s", STR_OR_UNK(cpu->vendor_id));
-  print_field("Model",     "%s", STR_OR_UNK(cpu->model_name));
-  print_field("Arch",      "%s", STR_OR_UNK(cpu->arch));
-  print_field("Cores",     "%u Physical / %u Logical", cpu->total_cores, cpu->total_threads);
-  print_field("Frequency", "%.2f MHz - %.2f MHz", cpu->min_MHz, cpu->max_MHz);
+    print_field("Vendor",    "%s", STR_OR_UNK(cpu->vendor_id));
+    print_field("Model",     "%s", STR_OR_UNK(cpu->model_name));
+    print_field("Arch",      "%s", STR_OR_UNK(cpu->arch));
+    print_field("Cores",     "%u Physical / %u Logical", cpu->total_cores, cpu->total_threads);
+    print_field("Frequency", "%.2f MHz - %.2f MHz", cpu->min_MHz, cpu->max_MHz);
 
-  print_footer();
+    print_footer();
 }
 
 void
 display_networks(Network **networks, int count)
 {
-  if (networks == NULL || count == 0) {
-    return;
-  }
-
-  for (int i = 0; i < count; ++i) {
-    char h_title[64];
-
-    snprintf(h_title, sizeof(h_title), "Network Interface [%d] (%s)", i, networks[i]->interface);
-    print_header(h_title);
-
-    print_field("Driver", "%s", STR_OR_UNK(networks[i]->driver));
-
-    if (networks[i]->pci_id != NULL) {
-      print_field("PCI ID", "%s", networks[i]->pci_id);
+    if (networks == NULL || count == 0) {
+        return;
     }
 
-    if (networks[i]->pci_slot_name != NULL) {
-      print_field("PCI Slot", "%s", networks[i]->pci_slot_name);
-    }
+    for (int i = 0; i < count; ++i) {
+        char h_title[64];
 
-    if (networks[i]->pci_subsys_id != NULL) {
-      print_field("PCI Subsys ID", "%s", networks[i]->pci_subsys_id);
-    }
+        snprintf(h_title, sizeof(h_title), "Network Interface [%d] (%s)", i, networks[i]->interface);
+        print_header(h_title);
 
-    print_footer();
-  }
+        print_field("Driver", "%s", STR_OR_UNK(networks[i]->driver));
+
+        if (networks[i]->pci_id != NULL) {
+            print_field("PCI ID", "%s", networks[i]->pci_id);
+        }
+
+        if (networks[i]->pci_slot_name != NULL) {
+            print_field("PCI Slot", "%s", networks[i]->pci_slot_name);
+        }
+
+        if (networks[i]->pci_subsys_id != NULL) {
+            print_field("PCI Subsys ID", "%s", networks[i]->pci_subsys_id);
+        }
+
+        print_footer();
+    }
 }
 
 void
 display_ram(const RAM *ram)
 {
-  if (ram == NULL) {
-    return;
-  }
+    if (ram == NULL) {
+        return;
+    }
 
-  /* Calculation for actual "used" application memory */
-  uint64_t used = ram->total - ram->free - ram->buffers - ram->cached;
+    /* Calculation for actual "used" application memory */
+    uint64_t used = ram->total - ram->free - ram->buffers - ram->cached;
 
-  /* Prevent underflow just in case kernel reports weird numbers during race conditions */
-  if (ram->total < (ram->free + ram->buffers + ram->cached)) {
-    used = 0;
-  }
+    /* Prevent underflow just in case kernel reports weird numbers during race conditions */
+    if (ram->total < (ram->free + ram->buffers + ram->cached)) {
+        used = 0;
+    }
 
-  uint64_t swap_used = ram->swap_total > ram->swap_free ? (ram->swap_total - ram->swap_free) : 0;
+    uint64_t swap_used = ram->swap_total > ram->swap_free ? (ram->swap_total - ram->swap_free) : 0;
 
-  /* Calculate percentages */
-  double ram_pct = ram->total > 0 ? ((double)used / ram->total) * 100.0 : 0.0;
+    /* Calculate percentages */
+    double ram_pct = ram->total > 0 ? ((double)used / ram->total) * 100.0 : 0.0;
 
-  /* Format the numbers into strings */
-  char total_str[32];
-  char free_str[32];
-  char used_str[32];
-  char avail_str[32];
-  char buffers_str[32];
-  char cached_str[32];
-  char cache_str[32];
+    /* Format the numbers into strings */
+    char total_str[32];
+    char free_str[32];
+    char used_str[32];
+    char avail_str[32];
+    char buffers_str[32];
+    char cached_str[32];
+    char cache_str[32];
 
-  char swap_tot_str[32];
-  char swap_free_str[32];
-  char swap_used_str[32];
-  char zswap_str[32];
-  char zswapped_str[32];
-  char dirty_str[32];
-  char per_cpu_str[32];
+    char swap_tot_str[32];
+    char swap_free_str[32];
+    char swap_used_str[32];
+    char zswap_str[32];
+    char zswapped_str[32];
+    char dirty_str[32];
+    char per_cpu_str[32];
 
-  format_size("GiB", ram->total * 1024ULL, total_str, sizeof(total_str));
-  format_size("GiB", ram->free * 1024ULL, free_str, sizeof(free_str));
-  format_size("GiB", used * 1024ULL, used_str, sizeof(used_str));
-  format_size("GiB", ram->available * 1024ULL, avail_str, sizeof(avail_str));
-  format_size("GiB", ram->buffers * 1024ULL, buffers_str, sizeof(buffers_str));
-  format_size("GiB", ram->cached * 1024ULL, cached_str, sizeof(cached_str));
-  format_size("GiB", (ram->buffers + ram->cached) * 1024ULL, cache_str, sizeof(cache_str));
+    format_size("GiB", ram->total * 1024ULL, total_str, sizeof(total_str));
+    format_size("GiB", ram->free * 1024ULL, free_str, sizeof(free_str));
+    format_size("GiB", used * 1024ULL, used_str, sizeof(used_str));
+    format_size("GiB", ram->available * 1024ULL, avail_str, sizeof(avail_str));
+    format_size("GiB", ram->buffers * 1024ULL, buffers_str, sizeof(buffers_str));
+    format_size("GiB", ram->cached * 1024ULL, cached_str, sizeof(cached_str));
+    format_size("GiB", (ram->buffers + ram->cached) * 1024ULL, cache_str, sizeof(cache_str));
 
-  format_size("GiB", ram->swap_total * 1024ULL, swap_tot_str, sizeof(swap_tot_str));
-  format_size("GiB", ram->swap_free * 1024ULL, swap_free_str, sizeof(swap_free_str));
-  format_size("GiB", swap_used * 1024ULL, swap_used_str, sizeof(swap_used_str));
+    format_size("GiB", ram->swap_total * 1024ULL, swap_tot_str, sizeof(swap_tot_str));
+    format_size("GiB", ram->swap_free * 1024ULL, swap_free_str, sizeof(swap_free_str));
+    format_size("GiB", swap_used * 1024ULL, swap_used_str, sizeof(swap_used_str));
 
-  format_size("MiB", ram->zswap * 1024ULL, zswap_str, sizeof(zswap_str));
-  format_size("MiB", ram->zswapped * 1024ULL, zswapped_str, sizeof(zswapped_str));
-  format_size("MiB", ram->dirty * 1024ULL, dirty_str, sizeof(dirty_str));
-  format_size("MiB", ram->per_cpu * 1024ULL, per_cpu_str, sizeof(per_cpu_str));
+    format_size("MiB", ram->zswap * 1024ULL, zswap_str, sizeof(zswap_str));
+    format_size("MiB", ram->zswapped * 1024ULL, zswapped_str, sizeof(zswapped_str));
+    format_size("MiB", ram->dirty * 1024ULL, dirty_str, sizeof(dirty_str));
+    format_size("MiB", ram->per_cpu * 1024ULL, per_cpu_str, sizeof(per_cpu_str));
 
-  print_header("Random Access Memory (RAM)");
+    print_header("Random Access Memory (RAM)");
 
-  print_field("Total",      "%s", total_str);
-  print_field("Free",       "%s", free_str);
-  print_field("Used",       "%s (%.1f%%)", used_str, ram_pct);
-  print_field("Available",  "%s", avail_str);
-  print_field("Buffers",    "%s", buffers_str);
-  print_field("Cached",     "%s", cached_str);
-  print_field("Buff/Cache", "%s", cache_str);
-  print_field("Swap Total", "%s", swap_tot_str);
-  print_field("Swap Free",  "%s", swap_free_str);
-  print_field("Swap Used",  "%s", swap_used_str);
-  print_field("ZSwap",      "%s", zswap_str);
-  print_field("ZSwapped",   "%s", zswapped_str);
-  print_field("Dirty",      "%s", dirty_str);
-  print_field("Per-CPU",    "%s", per_cpu_str);
+    print_field("Total",      "%s", total_str);
+    print_field("Free",       "%s", free_str);
+    print_field("Used",       "%s (%.1f%%)", used_str, ram_pct);
+    print_field("Available",  "%s", avail_str);
+    print_field("Buffers",    "%s", buffers_str);
+    print_field("Cached",     "%s", cached_str);
+    print_field("Buff/Cache", "%s", cache_str);
+    print_field("Swap Total", "%s", swap_tot_str);
+    print_field("Swap Free",  "%s", swap_free_str);
+    print_field("Swap Used",  "%s", swap_used_str);
+    print_field("ZSwap",      "%s", zswap_str);
+    print_field("ZSwapped",   "%s", zswapped_str);
+    print_field("Dirty",      "%s", dirty_str);
+    print_field("Per-CPU",    "%s", per_cpu_str);
 
-  print_footer();
+    print_footer();
 }
 
 void
 display_gpus(GPU **gpus, int count)
 {
-  if (gpus == NULL || count == 0) {
-    return;
-  }
-
-  for (int i = 0; i < count; ++i) {
-    if (count > 1) {
-      char h_title[64];
-      snprintf(h_title, sizeof(h_title), "Graphics Processing Unit [%d]", i);
-      print_header(h_title);
-    } else {
-      print_header("Graphics Processing Unit (GPU)");
+    if (gpus == NULL || count == 0) {
+        return;
     }
 
-    if (gpus[i]->vendor != NULL && gpus[i]->device_id != NULL) {
-      print_field("Vendor", "%s (%s)", STR_OR_UNK(gpus[i]->vendor), STR_OR_UNK(gpus[i]->device_id));
-    } else {
-      print_field("Vendor", "%s", STR_OR_UNK(gpus[i]->vendor));
+    for (int i = 0; i < count; ++i) {
+        if (count > 1) {
+            char h_title[64];
+            snprintf(h_title, sizeof(h_title), "Graphics Processing Unit [%d]", i);
+            print_header(h_title);
+        } else {
+            print_header("Graphics Processing Unit (GPU)");
+        }
+
+        if (gpus[i]->vendor != NULL && gpus[i]->device_id != NULL) {
+            print_field("Vendor", "%s (%s)", STR_OR_UNK(gpus[i]->vendor), STR_OR_UNK(gpus[i]->device_id));
+        } else {
+            print_field("Vendor", "%s", STR_OR_UNK(gpus[i]->vendor));
+        }
+
+        print_field("Model",    "%s", STR_OR_UNK(gpus[i]->model));
+        print_field("PCI Slot", "%s", STR_OR_UNK(gpus[i]->pci_slot_name));
+        print_field("Bus Type", "%s", STR_OR_UNK(gpus[i]->bus_type));
+        print_field("Driver",   "%s", STR_OR_UNK(gpus[i]->driver));
+
+        if (gpus[i]->vbios != NULL && gpus[i]->vbios[0] != '\0') {
+            print_field("VBIOS", "%s", gpus[i]->vbios);
+        }
+
+        print_footer();
     }
-
-    print_field("Model",    "%s", STR_OR_UNK(gpus[i]->model));
-    print_field("PCI Slot", "%s", STR_OR_UNK(gpus[i]->pci_slot_name));
-    print_field("Bus Type", "%s", STR_OR_UNK(gpus[i]->bus_type));
-    print_field("Driver",   "%s", STR_OR_UNK(gpus[i]->driver));
-
-    if (gpus[i]->vbios != NULL && gpus[i]->vbios[0] != '\0') {
-      print_field("VBIOS", "%s", gpus[i]->vbios);
-    }
-
-    print_footer();
-  }
 }
 
 void
 display_battery(const BATTERY *battery)
 {
-  if (battery == NULL) {
-    return;
-  }
+    if (battery == NULL) {
+        return;
+    }
 
-  print_header("Battery");
+    print_header("Battery");
 
-  print_field("Capacity",       "%u%%", battery->capacity);
-  print_field("Status",         "%s", STR_OR_UNK(battery->status));
-  print_field("Capacity Level", "%s", STR_OR_UNK(battery->capacity_level));
-  print_field("Technology",     "%s", STR_OR_UNK(battery->technology));
-  print_field("Supply Name",    "%s", STR_OR_UNK(battery->supply_name));
-  print_field("Supply Type",    "%s", STR_OR_UNK(battery->supply_type));
-  print_field("Manufacturer",   "%s", STR_OR_UNK(battery->manufacturer));
-  print_field("Model",          "%s", STR_OR_UNK(battery->model_name));
-  print_field("Serial",         "%s", STR_OR_UNK(battery->serial));
-  print_field("Voltage Min",    "%.2f V", battery->voltage_min_design);
-  print_field("Voltage Now",    "%.2f V", battery->voltage_now);
-  print_field("Energy Full",    "%.2f Wh", battery->energy_full_design);
-  print_field("Energy Now",     "%.2f Wh", battery->energy_now);
+    print_field("Capacity",       "%u%%", battery->capacity);
+    print_field("Status",         "%s", STR_OR_UNK(battery->status));
+    print_field("Capacity Level", "%s", STR_OR_UNK(battery->capacity_level));
+    print_field("Technology",     "%s", STR_OR_UNK(battery->technology));
+    print_field("Supply Name",    "%s", STR_OR_UNK(battery->supply_name));
+    print_field("Supply Type",    "%s", STR_OR_UNK(battery->supply_type));
+    print_field("Manufacturer",   "%s", STR_OR_UNK(battery->manufacturer));
+    print_field("Model",          "%s", STR_OR_UNK(battery->model_name));
+    print_field("Serial",         "%s", STR_OR_UNK(battery->serial));
+    print_field("Voltage Min",    "%.2f V", battery->voltage_min_design);
+    print_field("Voltage Now",    "%.2f V", battery->voltage_now);
+    print_field("Energy Full",    "%.2f Wh", battery->energy_full_design);
+    print_field("Energy Now",     "%.2f Wh", battery->energy_now);
 
-  print_footer();
+    print_footer();
 }
 
 void
 display_mainboard(const MAINBOARD *mainboard)
 {
-  if (mainboard == NULL) {
-    return;
-  }
+    if (mainboard == NULL) {
+        return;
+    }
 
-  print_header("Mainboard / System");
+    print_header("Mainboard / System");
 
-  print_field("Sys Vendor",     "%s", STR_OR_UNK(mainboard->sys_vendor));
-  print_field("Product Name",   "%s", STR_OR_UNK(mainboard->product_name));
-  print_field("Product Family", "%s", STR_OR_UNK(mainboard->product_family));
-  print_field("Product SKU",    "%s", STR_OR_UNK(mainboard->product_sku));
-  print_field("Board Vendor",   "%s", STR_OR_UNK(mainboard->board_vendor));
-  print_field("Board Name",     "%s", STR_OR_UNK(mainboard->board_name));
-  print_field("Serial",         "%s", STR_OR_UNK(mainboard->serial));
+    print_field("Sys Vendor",     "%s", STR_OR_UNK(mainboard->sys_vendor));
+    print_field("Product Name",   "%s", STR_OR_UNK(mainboard->product_name));
+    print_field("Product Family", "%s", STR_OR_UNK(mainboard->product_family));
+    print_field("Product SKU",    "%s", STR_OR_UNK(mainboard->product_sku));
+    print_field("Board Vendor",   "%s", STR_OR_UNK(mainboard->board_vendor));
+    print_field("Board Name",     "%s", STR_OR_UNK(mainboard->board_name));
+    print_field("Serial",         "%s", STR_OR_UNK(mainboard->serial));
 
-  print_footer();
+    print_footer();
 }
 
 void
 display_storages(STORAGE **storages, int count)
 {
-  if (storages == NULL || count == 0) {
-    return;
-  }
-
-  for (int i = 0; i < count; ++i) {
-    char h_title[64];
-    snprintf(h_title, sizeof(h_title), "Storage Device [%d] (%s)", i, storages[i]->device);
-    print_header(h_title);
-
-    char size_str[32];
-    format_size("GiB", storages[i]->size_bytes, size_str, sizeof(size_str));
-
-    print_field("Model", "%s", STR_OR_UNK(storages[i]->model));
-    print_field("Size", "%s", size_str);
-    print_field("Removable", "%s", storages[i]->removable ? "Yes" : "No");
-
-    if (storages[i]->pci_slot_name != NULL && storages[i]->pci_slot_name[0] != '\0') {
-      print_field("PCI Slot", "%s", storages[i]->pci_slot_name);
+    if (storages == NULL || count == 0) {
+        return;
     }
 
-    if (storages[i]->serial != NULL && storages[i]->serial[0] != '\0') {
-      print_field("Serial", "%s", storages[i]->serial);
-    }
+    for (int i = 0; i < count; ++i) {
+        char h_title[64];
+        snprintf(h_title, sizeof(h_title), "Storage Device [%d] (%s)", i, storages[i]->device);
+        print_header(h_title);
 
-    if (storages[i]->uuid != NULL && storages[i]->uuid[0] != '\0') {
-      print_field("UUID", "%s", storages[i]->uuid);
-    }
+        char size_str[32];
+        format_size("GiB", storages[i]->size_bytes, size_str, sizeof(size_str));
 
-    print_footer();
-  }
+        print_field("Model", "%s", STR_OR_UNK(storages[i]->model));
+        print_field("Size", "%s", size_str);
+        print_field("Removable", "%s", storages[i]->removable ? "Yes" : "No");
+
+        if (storages[i]->pci_slot_name != NULL && storages[i]->pci_slot_name[0] != '\0') {
+            print_field("PCI Slot", "%s", storages[i]->pci_slot_name);
+        }
+
+        if (storages[i]->serial != NULL && storages[i]->serial[0] != '\0') {
+            print_field("Serial", "%s", storages[i]->serial);
+        }
+
+        if (storages[i]->uuid != NULL && storages[i]->uuid[0] != '\0') {
+            print_field("UUID", "%s", storages[i]->uuid);
+        }
+
+        print_footer();
+    }
 }
 
 void
 display_clear(void)
 {
-  printf("\033[2J\033[H");
-  fflush(stdout);
+    printf("\033[2J\033[H");
+    fflush(stdout);
 }

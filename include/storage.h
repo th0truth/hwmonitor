@@ -18,13 +18,13 @@ extern "C" {
  * \brief Structure to hold storage drive details.
  */
 typedef struct {
-  char *device;
-  bool removable;
-  char *uuid;
-  char *model;
-  char *serial;
-  char *pci_slot_name;
-  uint64_t size_bytes;
+    char *device;
+    bool removable;
+    char *uuid;
+    char *model;
+    char *serial;
+    char *pci_slot_name;
+    uint64_t size_bytes;
 } STORAGE;
 
 /**

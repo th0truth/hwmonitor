@@ -16,13 +16,13 @@ extern "C" {
  * \brief Structure to hold operating system release information.
  */
 typedef struct {
-  char *name;
-  char *version_id;
-  char *build_id;
-  char *release_type;
-  char *id;
-  char *de;
-  char *de_id;
+    char *name;
+    char *version_id;
+    char *build_id;
+    char *release_type;
+    char *id;
+    char *de;
+    char *de_id;
 } OS;
 
 /**
