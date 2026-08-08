@@ -123,69 +123,86 @@ free_hardware(SystemHardware *hw)
     }
 }
 
-void
-output_json(const Config *config, const SystemHardware *hw)
+cJSON *
+hardware_to_json(const SystemHardware *hw)
 {
-    cJSON *json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(json, "schema_version", 1);
-    cJSON_AddStringToObject(json, "tool", "hwmonitor");
+    cJSON *json_obj = cJSON_CreateObject();
+    
+    if (hw == NULL || json_obj == NULL) {
+        return NULL;
+    }
 
     if (hw->battery != NULL) {
-        cJSON_AddItemToObject(json, "battery", battery_to_json_obj(hw->battery));
+        cJSON_AddItemToObject(json_obj, "battery", battery_to_json_obj(hw->battery));
     }
 
     if (hw->cpu != NULL) {
-        cJSON_AddItemToObject(json, "cpu", cpu_to_json_obj(hw->cpu));
-    }
-
-    if (hw->gpus != NULL && hw->gpu_count > 0) {
-        cJSON *gpu_list = cJSON_CreateArray();
-        for (int i = 0; i < hw->gpu_count; ++i) {
-            cJSON_AddItemToArray(gpu_list, gpu_to_json_obj(hw->gpus[i]));
-        }
-        cJSON_AddItemToObject(json, "gpus", gpu_list);
+        cJSON_AddItemToObject(json_obj, "cpu", cpu_to_json_obj(hw->cpu));
     }
 
     if (hw->mainboard != NULL) {
-        cJSON_AddItemToObject(json, "mainboard", mainboard_to_json_obj(hw->mainboard));
-    }
-
-    if (hw->networks != NULL && hw->network_count > 0) {
-        cJSON *network_list = cJSON_CreateArray();
-        for (int i = 0; i < hw->network_count; ++i) {
-            cJSON_AddItemToArray(network_list, network_to_json_obj(hw->networks[i]));
-        }
-        cJSON_AddItemToObject(json, "networks", network_list);
+        cJSON_AddItemToObject(json_obj, "mainboard", mainboard_to_json_obj(hw->mainboard));
     }
 
     if (hw->os != NULL) {
-        cJSON_AddItemToObject(json, "os", os_to_json_obj(hw->os));
+        cJSON_AddItemToObject(json_obj, "os", os_to_json_obj(hw->os));
     }
 
     if (hw->ram != NULL) {
-        cJSON_AddItemToObject(json, "ram", ram_to_json_obj(hw->ram));
+        cJSON_AddItemToObject(json_obj, "ram", ram_to_json_obj(hw->ram));
+    }
+
+    if (hw->gpus != NULL && hw->gpu_count > 0) {
+        cJSON *list = cJSON_CreateArray();
+        for (int i = 0; i < hw->gpu_count; ++i) {
+            cJSON_AddItemToArray(list, gpu_to_json_obj(hw->gpus[i]));
+        }
+        cJSON_AddItemToObject(json_obj, "gpus", list);
+    }
+
+    if (hw->networks != NULL && hw->network_count > 0) {
+        cJSON *list = cJSON_CreateArray();
+        for (int i = 0; i < hw->network_count; ++i) {
+            cJSON_AddItemToArray(list, network_to_json_obj(hw->networks[i]));
+        }
+        cJSON_AddItemToObject(json_obj, "networks", list);
     }
 
     if (hw->storages != NULL && hw->storage_count > 0) {
-        cJSON *storage_list = cJSON_CreateArray();
+        cJSON *list = cJSON_CreateArray();
         for (int i = 0; i < hw->storage_count; ++i) {
-            cJSON_AddItemToArray(storage_list, storage_to_json_obj(hw->storages[i]));
+            cJSON_AddItemToArray(list, storage_to_json_obj(hw->storages[i]));
         }
-        cJSON_AddItemToObject(json, "storages", storage_list);
+        cJSON_AddItemToObject(json_obj, "storages", list);
     }
-
-    char *json_str = cJSON_Print(json);
-    if (config->output_file != NULL) {
-        if (file_write_string(config->output_file, json_str)) {
-            printf("Success: Hardware report saved to '%s'\n", config->output_file);
-        }
-    } else {
-        printf("%s\n", json_str);
-    }
-
-    free(json_str);
-    cJSON_Delete(json);
+    
+    return json_obj;
 }
+
+void
+output_json(const Config *config, const SystemHardware *hw)
+{
+    cJSON *json_obj = hardware_to_json(hw); 
+    if (json_obj == NULL) {
+        return;
+    }
+
+    char *json_str = cJSON_Print(json_obj);
+    if (json_str != NULL) {
+        if (config->output_file != NULL) {
+            if (file_write_string(config->output_file, json_str)) {
+                printf("Success: Hardware report saved to '%s'\n", config->output_file);
+            }
+        } else {
+            printf("%s\n", json_str);
+        }
+        free(json_str);
+    }
+
+    
+    cJSON_Delete(json_obj);
+}
+
 
 void
 output_plaintext(const SystemHardware *hw)

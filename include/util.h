@@ -79,6 +79,8 @@ void free_hardware(SystemHardware *hw);
  */
 void format_size(char *target_format, uint64_t bytes, char *buffer, size_t buf_size);
 
+cJSON *hardware_to_json(const SystemHardware *hw);
+
 /**
  * \brief Generates and prints (or saves) the JSON output.
  * \param[in] config Pointer to the Config structure.
