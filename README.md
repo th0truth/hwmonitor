@@ -1,40 +1,46 @@
 <p align="center">
-  <img src=".github/assets/logo.png" alt="hwmonitor logo" width="200">
+  <img src=".github/assets/logo.png" alt="hwmonitor" width="160">
 </p>
 
 # hwmonitor
 
-> A minimalist, high-performance hardware discovery engine for Linux systems.
+Lightweight hardware discovery and telemetry engine for Linux systems written in C11.
 
-**hwmonitor** is a lightweight, low-dependency (C11) command-line utility designed for developers and system administrators who require structured, low-latency hardware telemetry. Rather than relying on expensive external shell calls (`lspci`, `dmidecode`, or `lshw`), **hwmonitor** interfaces directly with the Linux kernel via `/sys` and `/proc` filesystems.
+## Overview
 
-It provides both beautiful, human-readable terminal output and highly structured JSON for modern monitoring stacks and API integrations.
+`hwmonitor` directly inspects Linux `/sys` and `/proc` kernel interfaces to extract hardware specifications without subprocess overhead from utilities like `lspci`, `dmidecode`, or `lshw`. It supports ANSI terminal formatting, structured JSON output, and AI-driven telemetry diagnostics powered by the Groq API.
 
----
+## Features
 
-## ✨ Key Features
+- **Direct Kernel Querying**: Direct parsing of `sysfs` and `procfs` for minimal overhead and low latency.
+- **Hardware Coverage**: CPU, RAM, Multi-GPU configurations, Storage (NVMe, SSD, HDD), Mainboard (DMI/SMBIOS), Network interfaces, Battery, and OS info.
+- **Output Modes**: Formatted terminal output with ANSI color styling or structured JSON.
+- **Live Watch Mode**: Real-time periodic monitoring (`--watch`).
+- **AI Diagnostics**: Natural language telemetry analysis powered by Groq API (`--ai`).
+- **Zero Heavy Dependencies**: Pure C11 codebase with embedded `cJSON` and `libcurl` for API requests.
 
-* **Native Performance:** Written in pure C. Direct kernel filesystem parsing ensures near-instant execution times.
-* **🕒 Live Watch Mode:** Real-time hardware monitoring with sub-second refreshes using `--watch`.
-* **🤖 AI Hardware Consultant:** Built-in integration with the Groq API allows you to ask natural language questions about your hardware (e.g., bottlenecks, linux driver compatibility) directly from the terminal.
-* **JSON-First Architecture:** Built-in serialization for seamless integration into dashboards, observability pipelines, or scripts.
-* **Comprehensive Hardware Discovery:** Advanced logic for CPU, RAM, Multi-GPU configurations, Storage (block devices), Mainboard (DMI/SMBIOS), Battery, and OS environments.
-* **Zero Bloat:** No Python, no `dbus`. Uses `libcurl` for AI network requests and a single submodule ([cJSON](https://github.com/DaveGamble/cJSON)) for reliable JSON generation.
-* **Memory Safe:** Engineered with an "inside-out" deep-freeing pattern to ensure a zero-leak footprint.
+## Requirements and Build
 
----
+### Dependencies
 
-## 🚀 Installation
+- C compatible compiler (`gcc` or `clang`)
+- `make`
+- `libcurl`
 
-The project uses Git submodules and requires `libcurl` for AI integrations.
+Install dependencies:
 
-### 1. Install Dependencies
-* **Debian / Ubuntu:** `sudo apt install build-essential libcurl4-openssl-dev`
-* **Arch Linux:** `sudo pacman -S base-devel curl`
-* **Fedora / RHEL:** `sudo dnf install gcc make libcurl-devel`
+```bash
+# Debian / Ubuntu
+sudo apt install build-essential libcurl4-openssl-dev
 
-### 2. Build and Install
-Ensure you perform a recursive clone to include all necessary dependencies.
+# Arch Linux
+sudo pacman -S base-devel curl
+
+# Fedora / RHEL
+sudo dnf install gcc make libcurl-devel
+```
+
+### Build and Install
 
 ```bash
 git clone https://github.com/th0truth/hwmonitor.git
@@ -43,133 +49,105 @@ make
 sudo make install
 ```
 
----
+### Test Suite
 
-## 🛠️ Usage
-
-### 🕒 Real-Time Monitoring
 ```bash
+make test
+```
+
+## Usage
+
+```
+hwmonitor [options]
+
+Options:
+  -a, --all               Show all hardware information (default)
+  -b, --battery           Show battery status and health
+  -c, --cpu               Show CPU topology and frequency
+  -g, --gpu               Show GPU details and driver info
+  -m, --mainboard         Show mainboard and DMI system info
+  -n, --network           Show network interfaces and PCI bus info
+  -O, --os                Show operating system and desktop environment
+  -r, --ram               Show RAM, cache, and swap statistics
+  -s, --storage           Show storage drives and block devices
+  -j, --json              Output in JSON format
+  -o, --output <file>     Save JSON output to specified file
+  -w, --watch             Live refresh every second
+  -A, --ai <prompt>       Analyze hardware telemetry using Groq AI
+  -h, --help              Show usage information
+```
+
+## Examples
+
+### Terminal Overview
+
+```bash
+# Show CPU and RAM
+hwmonitor --cpu --ram
+
+# Continuous real-time monitoring
 hwmonitor --cpu --ram --watch
 ```
 
-### 🤖 AI Hardware Consultant
-```bash
-# Set your API token
-export GROQ_API_KEY="gsk_your_api_token"
-
-# Analyze specific hardware
-hwmonitor --gpu -A "What is the best open-source driver branch for this GPU on Wayland?"
-```
-
-### Available Flags
-
-| Flag | Long Flag | Description |
-| :--- | :--- | :--- |
-| `-a` | `--all` | Explicitly targets all hardware modules. |
-| `-b` | `--battery` | Monitors capacity, voltage, and health of system batteries. |
-| `-c` | `--cpu` | Collects architecture, cores, and real-time frequency data. |
-| `-g` | `--gpu` | Performs dynamic bus scanning for all installed GPUs. |
-| `-h` | `--help` | Displays the help menu. |
-| `-j` | `--json` | Serializes hardware data into a JSON object. |
-| `-m` | `--mainboard` | Shows Mainboard/System DMI information (Run with `sudo` for Serial). |
-| `-n` | `--network` | Lists network interfaces, drivers, and PCI bus topology. |
-| `-O` | `--os` | Retrieves Operating System and Desktop Environment details. |
-| `-o` | `--output <file>`| Redirects the JSON output to a specified file. |
-| `-r` | `--ram` | Reports detailed memory utilization, cache, and swap metrics. |
-| `-s` | `--storage` | Discovers block devices (NVMe, SSD, HDD) and their capacities. |
-| `-w` | `--watch` | Enables live watch mode with 1-second refreshes. |
-| `-A` | `--ai <prompt>`| Sends hardware data to Groq AI to answer your prompt. |
-
-### Exact Mode Behavior
-
-- With no hardware selection flags, `hwmonitor` defaults to collecting and displaying all supported hardware modules.
-- `--watch` with `--json` refreshes once per second and prints JSON on each iteration. In watch mode, the screen is cleared before each refresh.
-- `--ai` does not imply hardware selection. If you run `--ai` without flags like `--cpu`, `--gpu`, or `--all`, the AI request is sent with little or no hardware context.
-- Some fields may require `sudo`, especially DMI/SMBIOS-derived values such as mainboard serial information.
-- Values can legitimately appear as `<unknown>` when the kernel does not expose them, the device does not report them, the host lacks the relevant sysfs/procfs entry, or permissions restrict access.
-
-### Why This Is Better Than Shelling Out
+### JSON Export
 
 ```bash
-# Traditional approach
-lspci
-cat /proc/cpuinfo
-lsblk -J
-free -h
-
-# hwmonitor approach
-hwmonitor --cpu --gpu --storage --ram --json
-```
-
-### Additional Examples
-
-```bash
-# Full snapshot as JSON
+# Print hardware snapshot in JSON format
 hwmonitor --all --json
 
-# Write JSON report to disk
+# Save system report to file
 hwmonitor --all --output report.json
+```
 
-# Watch only live-changing resources
-hwmonitor --cpu --ram --watch
+### AI Diagnostics
 
-# AI analysis of detected GPU
+```bash
 export GROQ_API_KEY="gsk_..."
-hwmonitor --gpu -A "Is this GPU suitable for 1440p gaming on Linux?"
 
-# Use in a script
-if hwmonitor --cpu --json > /tmp/cpu.json; then
-  echo "CPU report collected"
-fi
+# Ask Groq AI about hardware compatibility or bottlenecks
+hwmonitor --gpu -A "What is the recommended Linux driver for this GPU?"
 ```
 
-### Maintenance Note
+## Output Formats
 
-`src/util.c` currently handles CLI parsing, hardware orchestration, JSON emission, and plaintext emission support. It is still manageable at the current size, but it is the most likely maintenance hotspot if the project grows.
-
----
-
-## 📊 Sample Output
-
-### Terminal (Human-Readable)
+### Terminal
 
 ```text
-╭─ Operating System (OS) 
-│  Name            : Ubuntu 24.04 LTS
-│  ID              : ubuntu
-╰─
-
-╭─ Mainboard / System 
-│  Sys Vendor      : ASUSTeK COMPUTER INC.
-│  Product Name    : ROG STRIX Z790-E GAMING WIFI
-│  Board Vendor    : ASUSTeK COMPUTER INC.
-│  Board Name      : ROG STRIX Z790-E GAMING WIFI
-╰─
-
 ╭─ Central Processing Unit (CPU) 
-│  Vendor          : AuthenticAMD
-│  Model           : AMD Ryzen 9 7950X3D 16-Core Processor
-│  Arch            : x86_64
-│  Cores           : 16 Physical / 32 Logical
-│  Frequency       : 4200.00 MHz - 5700.00 MHz
+| Vendor          : AuthenticAMD
+| Model           : AMD Ryzen 7 7800X3D 8-Core Processor
+| Arch            : x86_64
+| Cores           : 8 Physical / 16 Logical
+| Frequency       : 4200.00 MHz - 5050.00 MHz
+╰─
+
+╭─ Random Access Memory (RAM) 
+| Total           : 31.18 GiB
+| Free            : 18.45 GiB
+| Used            : 7.22 GiB (23.2%)
+| Available       : 22.96 GiB
+| Buff/Cache      : 5.51 GiB
+| Swap Total      : 8.00 GiB
+| Swap Free       : 8.00 GiB
 ╰─
 ```
 
-### AI Hardware Analysis
+### JSON
 
-```text
-$ hwmonitor --gpu -A "Is this GPU good for local AI inference?"
-
-╭─ AI Hardware Analysis (Groq) 
-│ The NVIDIA GeForce RTX 4090 is currently the premier consumer GPU for local 
-│ AI inference. With 24GB of VRAM and high memory bandwidth, it can comfortably
-│ run large models like Llama-3-70B using 4-bit quantization, or smaller 7B/8B
-│ models with extremely high throughput.
-╰─
+```json
+{
+  "schema_version": 1,
+  "tool": "hwmonitor",
+  "cpu": {
+    "vendor": "AuthenticAMD",
+    "model_name": "AMD Ryzen 7 7800X3D 8-Core Processor",
+    "arch": "x86_64",
+    "total_cores": 8,
+    "total_threads": 16
+  }
+}
 ```
 
----
+## License
 
-## 📄 License
-
-This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+MIT License. See [LICENSE](LICENSE) for details.
