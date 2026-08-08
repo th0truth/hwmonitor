@@ -9,14 +9,12 @@
 BATTERY *
 battery_get_info(void)
 {
-    char buffer[BUFFER_SIZE];
     char *uevent = NULL;
     bool found = false;
 
     /* Search for an active battery interface (typically BAT0 to BAT5) */
     for (int i = 0; i < 5; ++i) {
-        snprintf(buffer, sizeof(buffer), "/sys/class/power_supply/BAT%d/uevent", i);
-        uevent = file_read_stripped(buffer, "=", false);
+        uevent = sysfs_read_attr_fmt("=", "/sys/class/power_supply/BAT%d/uevent", i);
 
         if (uevent != NULL) {
             found = true;

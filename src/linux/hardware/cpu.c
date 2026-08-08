@@ -37,16 +37,12 @@ cpu_get_total_cores(void)
 static float
 cpu_get_total_freq_mhz(uint16_t core_id, const char *filename)
 {
-    char buffer[BUFFER_SIZE];
-    snprintf(buffer, sizeof(buffer), "/sys/devices/system/cpu/cpu%u/cpufreq/%s", core_id, filename);
-
-    char *cpu_freq = file_read_stripped(buffer, "\n", true);
+    char *cpu_freq = sysfs_read_attr_fmt("\n", "/sys/devices/system/cpu/cpu%u/cpufreq/%s", core_id, filename);
     if (cpu_freq == NULL) {
         return -1;
     }
 
     int32_t khz = atoi(cpu_freq);
-   
     free(cpu_freq);
 
     if (khz <= 0) {

@@ -3,6 +3,8 @@
 #include "cJSON.h"
 #include <stdint.h>
 #include <dirent.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 #define FILE_READ_BUFFER 4096
 
@@ -114,5 +116,18 @@ sysfs_enumerate(const char *dir_path, sysfs_parse_fn parse_fn, int max_items, in
     closedir(dir);
         
     return list;
+}
+
+char *
+sysfs_read_attr_fmt(const char *exclude, const char *fmt, ...)
+{
+    char buffer[BUFFER_SIZE];
+    va_list args;
+
+    va_start(args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+
+    return file_read_stripped(buffer, exclude != NULL ? exclude : "\n", false);
 }
 

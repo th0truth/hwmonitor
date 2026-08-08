@@ -17,10 +17,7 @@ network_get_info(const char *interface)
 
     net->interface = strdup(interface);
 
-    char path[BUFFER_SIZE];
-    snprintf(path, sizeof(path), "/sys/class/net/%s/device/uevent", interface);
-
-    char *uevent = file_read_stripped(path, "=", false);
+    char *uevent = sysfs_read_attr_fmt("=", "/sys/class/net/%s/device/uevent", interface);
     if (uevent == NULL) {
         /* Some interfaces might not have a 'device' link (e.g., loopback, virtual) */
         return net;

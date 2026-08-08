@@ -22,7 +22,6 @@ trim_trailing_spaces(char *str)
 static STORAGE *
 storage_parse_sysfs(const char *block_name)
 {
-    char buffer[BUFFER_SIZE];
     STORAGE *storage = calloc(1, sizeof(*storage));
     if (storage == NULL) {
         return NULL;
@@ -31,37 +30,28 @@ storage_parse_sysfs(const char *block_name)
     storage->device = strdup(block_name);
 
     /* Size in sysfs is reported in 512-byte sectors */
-    snprintf(buffer, sizeof(buffer), "/sys/class/block/%s/size", block_name);
-    char *size_str = file_read_stripped(buffer, "\n", false);
+    char *size_str = sysfs_read_attr_fmt("\n", "/sys/class/block/%s/size", block_name);
     if (size_str != NULL) {
         storage->size_bytes = (uint64_t)strtoull(size_str, NULL, 10) * 512ULL;
         free(size_str);
     }
 
-    snprintf(buffer, sizeof(buffer), "/sys/class/block/%s/removable", block_name);
-    char *removable_str = file_read_stripped(buffer, "\n", false);
+    char *removable_str = sysfs_read_attr_fmt("\n", "/sys/class/block/%s/removable", block_name);
     if (removable_str != NULL) {
         storage->removable = (atoi(removable_str) == 1);
         free(removable_str);
     }
 
-    snprintf(buffer, sizeof(buffer), "/sys/class/block/%s/device/model", block_name);
-    storage->model = file_read_stripped(buffer, "\n", false);
+    storage->model = sysfs_read_attr_fmt("\n", "/sys/class/block/%s/device/model", block_name);
     trim_trailing_spaces(storage->model);
 
-    snprintf(buffer, sizeof(buffer), "/sys/class/block/%s/device/serial", block_name);
-    storage->serial = file_read_stripped(buffer, "\n", false);
+    storage->serial = sysfs_read_attr_fmt("\n", "/sys/class/block/%s/device/serial", block_name);
     trim_trailing_spaces(storage->serial);
 
     /* Some drivers put 'address', some just don't have it */
-    snprintf(buffer, sizeof(buffer), "/sys/class/block/%s/device/address", block_name);
-    storage->pci_slot_name = file_read_stripped(buffer, "\n", false);
+    storage->pci_slot_name = sysfs_read_attr_fmt("\n", "/sys/class/block/%s/device/address", block_name);
 
-    /* uuid (note: uuid is usually not exposed under /sys/block directly on modern kernels, 
-     * but often wwid or by-uuid via udev. However, following the snippet's exact structure:)
-     */
-    snprintf(buffer, sizeof(buffer), "/sys/class/block/%s/uuid", block_name);
-    storage->uuid = file_read_stripped(buffer, "\n", false);
+    storage->uuid = sysfs_read_attr_fmt("\n", "/sys/class/block/%s/uuid", block_name);
 
     return storage;
 }

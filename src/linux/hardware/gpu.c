@@ -6,11 +6,8 @@
 static void
 gpu_handle_nvidia(GPU *gpu)
 {
-    char buffer[BUFFER_SIZE];
     /* NVIDIA driver exposes detailed information via procfs */
-    snprintf(buffer, sizeof(buffer), "/proc/driver/nvidia/gpus/%s/information", gpu->pci_slot_name);
-
-    char *n_info = file_read_stripped(buffer, "\t", false);
+    char *n_info = sysfs_read_attr_fmt("\t", "/proc/driver/nvidia/gpus/%s/information", gpu->pci_slot_name);
     if (n_info != NULL) {
         gpu->model    = str_find_value(n_info, "Model:  ", "\n");
         gpu->irq      = str_find_value(n_info, "IRQ:   ", "\n");
@@ -32,11 +29,8 @@ gpu_handle_nvidia(GPU *gpu)
 static GPU *
 gpu_parse_sysfs(const char *card_name)
 {
-    char buffer[BUFFER_SIZE];
     /* Read PCI Vendor ID to verify hardware presence */
-    snprintf(buffer, sizeof(buffer), "/sys/class/drm/%s/device/vendor", card_name);
-
-    char *vendor = file_read_stripped(buffer, "\n", false);
+    char *vendor = sysfs_read_attr_fmt("\n", "/sys/class/drm/%s/device/vendor", card_name);
     if (vendor == NULL) {
         return NULL;
     }
@@ -49,18 +43,12 @@ gpu_parse_sysfs(const char *card_name)
     gpu->vendor = vendor;
 
     /* Basic PCI identifiers */
-    snprintf(buffer, sizeof(buffer), "/sys/class/drm/%s/device/device", card_name);
-    gpu->device_id = file_read_stripped(buffer, "\n", false);
-
-    snprintf(buffer, sizeof(buffer), "/sys/class/drm/%s/device/subsystem_device", card_name);
-    gpu->subsys_device = file_read_stripped(buffer, "\n", false);
-
-    snprintf(buffer, sizeof(buffer), "/sys/class/drm/%s/device/subsystem_vendor", card_name);
-    gpu->subsys_vendor = file_read_stripped(buffer, "\n", false);
+    gpu->device_id     = sysfs_read_attr_fmt("\n", "/sys/class/drm/%s/device/device", card_name);
+    gpu->subsys_device = sysfs_read_attr_fmt("\n", "/sys/class/drm/%s/device/subsystem_device", card_name);
+    gpu->subsys_vendor = sysfs_read_attr_fmt("\n", "/sys/class/drm/%s/device/subsystem_vendor", card_name);
 
     /* Parse uevent file for driver and slot information */
-    snprintf(buffer, sizeof(buffer), "/sys/class/drm/%s/device/uevent", card_name);
-    char *uevent = file_read_stripped(buffer, "=", false);
+    char *uevent = sysfs_read_attr_fmt("=", "/sys/class/drm/%s/device/uevent", card_name);
     if (uevent != NULL) {
         gpu->driver        = str_find_value(uevent, "DRIVER", "\n");
         gpu->pci_id        = str_find_value(uevent, "PCI_ID", "\n");
