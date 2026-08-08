@@ -1,12 +1,61 @@
-#include "base.h"
 #include "api/http.h"
 #include "api/groq.h"
 #include "cJSON.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 #define GROQ_API_URL "https://api.groq.com/openai/v1/chat/completions"
+
+static void
+print_wrapped(const char *text, int max_width)
+{
+    const char *color = "\033[1;37m";
+    const char *reset = "\033[0m";
+
+    int wrap_at = max_width;
+    if (wrap_at < 20) {
+        wrap_at = 20;
+    }
+
+    while (*text != '\0') {
+        /* Handle embedded newlines */
+        if (*text == '\n') {
+            printf("\n");
+            text++;
+            continue;
+        }
+
+        /* Determine length of current segment up to next newline or end */
+        const char *new_line = strchr(text, '\n');
+        int segment_len = new_line ? (int)(new_line - text) : (int)strlen(text);
+
+        if (segment_len <= wrap_at) {
+            printf("%s%.*s%s\n", color, segment_len, text, reset);
+            text += segment_len;
+            if (new_line) {
+                text++;
+            }
+        } else {
+            int brk = wrap_at;
+            while (brk > 0 && text[brk] != ' ') {
+                brk--;
+            }
+            if (brk == 0) {
+                brk = wrap_at;
+            }
+
+            printf("%s%.*s%s\n", color, brk, text, reset);
+            text += brk;
+
+            while (*text == ' ' || *text == '\t') {
+                text++;
+            }
+        }
+    }
+}
 
 static char *
 build_groq_payload(const char *hardware_json, const char *user_prompt)
@@ -38,7 +87,9 @@ build_groq_payload(const char *hardware_json, const char *user_prompt)
     cJSON_AddStringToObject(sys_msg, "content",
         "You are an expert Linux system administrator. Analyze the provided JSON hardware telemetry "
         "and answer the user's prompt. "
-        "Rules: 1) Be exceptionally concise. 2) DO NOT use markdown code blocks (like ```bash). "
+        "Rules:"
+        "1) Be exceptionally concise. "
+        "2) DO NOT use markdown code blocks (like ```bash). "
         "3) Format your answer as a plain conversational paragraph or simple bullet points without markdown formatting. "
         "4) Do not repeat the raw hardware stats back to the user unless absolutely necessary.");
     cJSON_AddItemToArray(messages, sys_msg);
@@ -46,20 +97,32 @@ build_groq_payload(const char *hardware_json, const char *user_prompt)
     /* User Role: The data and the question */
     size_t combined_len = strlen(hardware_json) + strlen(user_prompt) + 128;
     char *combined_content = malloc(combined_len);
-
-    if (combined_content != NULL) {
-        snprintf(combined_content, combined_len,
-                 "Hardware Telemetry:\n%s\n\nUser Question:\n%s",
-                 hardware_json, user_prompt);
-        cJSON *usr_msg = cJSON_CreateObject();
-        cJSON_AddStringToObject(usr_msg, "role", "user");
-        cJSON_AddStringToObject(usr_msg, "content", combined_content);
-        cJSON_AddItemToArray(messages, usr_msg);
-        free(combined_content);
+    if (combined_content == NULL) {
+        cJSON_Delete(root);
+        return NULL;
     }
+
+    snprintf(
+        combined_content, combined_len,
+        "Hardware Telemetry:\n%s\n\nUser Question:\n%s",
+        hardware_json, user_prompt);
+
+    cJSON *usr_msg = cJSON_CreateObject();
+    if (usr_msg == NULL) {
+        cJSON_Delete(root);
+        return NULL;
+    }
+
+
+    cJSON_AddStringToObject(usr_msg, "role", "user");
+    cJSON_AddStringToObject(usr_msg, "content", combined_content);
+    cJSON_AddItemToArray(messages, usr_msg);
+        
+    free(combined_content);
 
     char *payload_str = cJSON_PrintUnformatted(root);
     cJSON_Delete(root);
+
     return payload_str;
 }
 
@@ -104,18 +167,16 @@ groq_analyze_hardware(const char *hardware_json, const char *user_prompt)
                 cJSON *content = cJSON_GetObjectItem(message, "content");
 
                 if (cJSON_IsString(content) && content->valuestring != NULL) {
-                    /* Print matching the aesthetic of src/display.c */
-                    printf("\n\033[1;36m╭─ AI Hardware Analysis (Groq) \033[0m\n");
-
-                    /* Print line by line with the left border */
-                    char *text = content->valuestring;
-                    char *line = strtok(text, "\n");
-                    while (line != NULL) {
-                        printf("\033[1;36m|\033[0m \033[1;37m%s\033[0m\n", line);
-                        line = strtok(NULL, "\n");
+                    /* Get terminal width dynamically, defaulting to 80 */
+                    struct winsize ws;
+                    int terminal_width = 80;
+                    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0 && ws.ws_col > 0) {
+                        terminal_width = ws.ws_col;
                     }
 
-                    printf("\033[1;36m╰─\033[0m\n");
+                    printf("\n\033[1;36m── AI Hardware Analysis (Groq) ──\033[0m\n\n");
+                    print_wrapped(content->valuestring, terminal_width);
+                    printf("\n\033[1;36m────\033[0m\n");
                     success = true;
                 }
             } else {
@@ -136,7 +197,6 @@ groq_analyze_hardware(const char *hardware_json, const char *user_prompt)
         fprintf(stderr, " \033[1;31m[ERROR]\033[0m Network request to Groq API failed.\n");
     }
 
-    /* Deep Cleanup (Zero Leaks) */
     free(payload);
     curl_slist_free_all(headers);
     http_free_response(&response);

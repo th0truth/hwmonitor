@@ -244,6 +244,7 @@ parse_arguments(int argc, char **argv, Config *config)
             case 'A':
                 config->use_ai = true;
                 if (optarg != NULL) {
+                    free(config->ai_prompt);
                     config->ai_prompt = strdup(optarg);
                 }
                 break;
@@ -273,6 +274,7 @@ parse_arguments(int argc, char **argv, Config *config)
                 break;
             case 'o':
                 if (optarg != NULL) {
+                    free(config->output_file);
                     config->output_file = strdup(optarg);
                 }
                 config->use_json = true;
