@@ -1,6 +1,7 @@
 #include "base.h"
 #include "file.h"
 #include "io.h"
+#include <string.h>
 #include "cpu.h"
 
 static int16_t
@@ -14,10 +15,19 @@ cpu_get_total_cores(void)
     int start, end;
     int16_t count = 0;
 
-    if (sscanf(online, "%d-%d", &start, &end) == 2) {
-        count = (end - start) + 1;
-    } else if (sscanf(online, "%d", &start) == 1) {
-        count = 1;
+    char *saveptr = NULL;
+    char *token = strtok_r(online, ",", &saveptr); 
+    
+    while (token != NULL) {
+         if (sscanf(token, "%d-%d", &start, &end) == 2) {
+            if (end >= start) {
+                count += (end - start) + 1;
+            }
+        } else if (sscanf(token, "%d", &start) == 1) {
+            count += 1;
+        }
+        
+        token = strtok_r(NULL, ",", &saveptr); 
     }
 
     free(online);
@@ -36,29 +46,31 @@ cpu_get_total_freq_mhz(uint16_t core_id, const char *filename)
     }
 
     int32_t khz = atoi(cpu_freq);
+   
     free(cpu_freq);
 
     if (khz <= 0) {
         return -1;
     }
 
-    return khz / 1000;
+    return khz / 1000.0f;
 }
 
 static char *
 cpu_get_arch(const char *flags)
 {
     if (flags == NULL) {
-        return "x86";
+        return strdup("x86");
     }
 
     char *flag = str_find_value(flags, "lm", NULL);
     if (flag == NULL) {
-        return "x86";
-    } else {
-        free(flag);
-        return "x86_64";
+        return strdup("x86"); 
     }
+
+    free(flag);
+
+    return strdup("x86_64"); 
 }
 
 CPU *

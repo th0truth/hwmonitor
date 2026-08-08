@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 
 #include "display.h"
+#include "theme.h"
 #include "util.h"
 #include "api/groq.h"
 
@@ -27,6 +28,9 @@ main(int argc, char **argv)
 
     /* Parsed from util.c */
     parse_arguments(argc, argv, &config);
+
+    /* Initialize theme colors based on TTY check */
+    theme_init(false);
 
     if (config.watch_mode) {
         signal(SIGINT, handle_sigint);
