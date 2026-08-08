@@ -2,7 +2,6 @@
 #include "file.h"
 #include "io.h"
 #include "network.h"
-#include <dirent.h>
 
 Network *
 network_get_info(const char *interface)
@@ -18,10 +17,7 @@ network_get_info(const char *interface)
 
     net->interface = strdup(interface);
 
-    char path[BUFFER_SIZE];
-    snprintf(path, sizeof(path), "/sys/class/net/%s/device/uevent", interface);
-
-    char *uevent = file_read_stripped(path, "=", false);
+    char *uevent = sysfs_read_attr_fmt("=", "/sys/class/net/%s/device/uevent", interface);
     if (uevent == NULL) {
         /* Some interfaces might not have a 'device' link (e.g., loopback, virtual) */
         return net;
@@ -39,32 +35,7 @@ network_get_info(const char *interface)
 Network **
 network_get_all(int *count)
 {
-    *count = 0;
-    DIR *dir = opendir("/sys/class/net");
-    if (dir == NULL) {
-        return NULL;
-    }
-
-    Network **list = calloc(MAX_NETWORKS, sizeof(Network *));
-    if (list == NULL) {
-        closedir(dir);
-        return NULL;
-    }
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL && *count < MAX_NETWORKS) {
-        if (entry->d_name[0] == '.') {
-            continue;
-        }
-
-        Network *net = network_get_info(entry->d_name);
-        if (net != NULL) {
-            list[(*count)++] = net;
-        }
-    }
-
-    closedir(dir);
-    return list;
+    return (Network **)sysfs_enumerate("/sys/class/net", (sysfs_parse_fn)network_get_info, MAX_NETWORKS, count);
 }
 
 void
@@ -81,17 +52,7 @@ free_network(Network *net)
     free(net);
 }
 
-void
-free_networks(Network **networks, int count)
-{
-    if (networks == NULL) {
-        return;
-    }
-    for (int i = 0; i < count; ++i) {
-        free_network(networks[i]);
-    }
-    free(networks);
-}
+DEFINE_FREE_ARRAY(free_networks, Network, free_network)
 
 cJSON *
 network_to_json_obj(const Network *net)

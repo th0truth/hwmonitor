@@ -1,8 +1,3 @@
-/**
- * \file theme.h
- * \brief Header file for theme module.
- */
-
 #pragma once
 
 #ifdef __cplusplus
@@ -11,10 +6,6 @@ extern "C" {
 
 #include "base.h"
 
-/**
- * \enum ThemeColor
- * \brief Available theme color categories.
- */
 typedef enum {
     COLOR_PRIMARY,
     COLOR_LABEL,
@@ -25,10 +16,6 @@ typedef enum {
     COLOR_RESET
 } ThemeColor;
 
-/**
- * \struct Theme
- * \brief Holds ANSI escape codes for styling console output.
- */
 typedef struct {
     const char *primary;
     const char *label;

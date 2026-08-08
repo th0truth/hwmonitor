@@ -1,8 +1,3 @@
-/**
- * \file base.h
- * \brief Header file for base module.
- */
-
 #pragma once
 
 #ifdef __cplusplus
@@ -23,6 +18,22 @@ extern "C" {
 
 #define STR_OR_UNK(s) ((s) ? (s) : "<unknown>")
 
+#define DEFINE_FREE_ARRAY(func_name, item_type, free_item_fn) \
+    void func_name(item_type **items, int count)              \
+    {                                                         \
+        if (items == NULL) {                                  \
+            return;                                           \
+        }                                                     \
+                                                              \
+        for (int i = 0; i < count; i++) {                     \
+            if (items[i] != NULL) {                           \
+                free_item_fn(items[i]);                       \
+            }                                                 \
+        }                                                     \
+                                                              \
+        free(items);                                          \
+    }                                                           \
+    
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

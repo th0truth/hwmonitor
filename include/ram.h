@@ -1,8 +1,3 @@
-/**
- * \file ram.h
- * \brief Header file for ram module.
- */
-
 #pragma once
 
 #ifdef __cplusplus
@@ -12,10 +7,6 @@ extern "C" {
 #include <stdint.h>
 #include <cJSON.h>
 
-/**
- * \struct RAM
- * \brief Structure to hold system memory metrics.
- */
 typedef struct {
     uint64_t total;
     uint64_t free;
