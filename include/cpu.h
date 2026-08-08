@@ -1,22 +1,26 @@
 /**
- * @file cpu.h
- * @brief Header file for cpu module.
+ * \file cpu.h
+ * \brief Header file for cpu module.
  */
 
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #include <stdint.h>
 #include <cJSON.h>
 
 /**
- * @struct CPU
- * @brief Structure to hold CPU metrics and vendor information.
+ * \struct CPU
+ * \brief Structure to hold CPU metrics and vendor information.
  */
 typedef struct {
-  char* vendor_id;
-  char* model_name;
-  char* flags;
-  char* arch;
+  char *vendor_id;
+  char *model_name;
+  char *flags;
+  char *arch;
   float max_MHz;
   float min_MHz;
   float curr_temp;
@@ -28,6 +32,10 @@ typedef struct {
   uint16_t online_cores;
 } CPU;
 
-cJSON* cpu_to_json_obj(const CPU* cpu);
-CPU* cpu_get_info(void);
-void free_cpu(CPU* cpu);
+cJSON *cpu_to_json_obj(const CPU *cpu);
+CPU *cpu_get_info(void);
+void free_cpu(CPU *cpu);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

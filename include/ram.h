@@ -1,16 +1,20 @@
 /**
- * @file ram.h
- * @brief Header file for ram module.
+ * \file ram.h
+ * \brief Header file for ram module.
  */
 
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #include <stdint.h>
 #include <cJSON.h>
 
 /**
- * @struct RAM
- * @brief Structure to hold system memory metrics.
+ * \struct RAM
+ * \brief Structure to hold system memory metrics.
  */
 typedef struct {
   uint64_t total;
@@ -26,6 +30,10 @@ typedef struct {
   uint64_t per_cpu;
 } RAM;
 
-cJSON* ram_to_json_obj(const RAM* ram);
-RAM* ram_get_info(void);
-void free_ram(RAM* ram);
+cJSON *ram_to_json_obj(const RAM *ram);
+RAM *ram_get_info(void);
+void free_ram(RAM *ram);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

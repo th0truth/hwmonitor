@@ -1,8 +1,3 @@
-/**
- * @file display.c
- * @brief Formatting and printing logic for hardware information.
- */
-
 #include "base.h"
 #include "theme.h"
 #include "util.h"
@@ -17,96 +12,97 @@
 #include "storage.h"
 #include "network.h"
 
-/**
- * @brief Displays OS information.
- */
-void display_os(const OS* os)
+
+void
+display_os(const OS *os)
 {
-  if (!os)
+  if (os == NULL) {
     return;
+  }
 
   print_header("Operating System (OS)");
 
-  print_field("Name", "%s", STR_OR_UNK(os->name));
-  print_field("Version ID", "%s", STR_OR_UNK(os->version_id));
-  print_field("Build ID", "%s", STR_OR_UNK(os->build_id));
+  print_field("Name",         "%s", STR_OR_UNK(os->name));
+  print_field("Version ID",   "%s", STR_OR_UNK(os->version_id));
+  print_field("Build ID",     "%s", STR_OR_UNK(os->build_id));
   print_field("Release Type", "%s", STR_OR_UNK(os->release_type));
-  print_field("ID", "%s", STR_OR_UNK(os->id));
-  print_field("DE Variant", "%s", STR_OR_UNK(os->de));
-  print_field("DE ID", "%s", STR_OR_UNK(os->de_id));
+  print_field("ID",           "%s", STR_OR_UNK(os->id));
+  print_field("DE Variant",   "%s", STR_OR_UNK(os->de));
+  print_field("DE ID",        "%s", STR_OR_UNK(os->de_id));
 
   print_footer();
 }
 
-/**
- * @brief Displays CPU information.
- */
-void display_cpu(const CPU* cpu)
+void
+display_cpu(const CPU *cpu)
 {
-  if (!cpu)
+  if (cpu == NULL) {
     return;
+  }
 
   print_header("Central Processing Unit (CPU)");
 
-  print_field("Vendor", "%s", STR_OR_UNK(cpu->vendor_id));
-  print_field("Model", "%s", STR_OR_UNK(cpu->model_name));
-  print_field("Arch", "%s", STR_OR_UNK(cpu->arch));
-  print_field("Cores", "%u Physical / %u Logical", cpu->total_cores, cpu->total_threads);
+  print_field("Vendor",    "%s", STR_OR_UNK(cpu->vendor_id));
+  print_field("Model",     "%s", STR_OR_UNK(cpu->model_name));
+  print_field("Arch",      "%s", STR_OR_UNK(cpu->arch));
+  print_field("Cores",     "%u Physical / %u Logical", cpu->total_cores, cpu->total_threads);
   print_field("Frequency", "%.2f MHz - %.2f MHz", cpu->min_MHz, cpu->max_MHz);
 
   print_footer();
 }
 
-/**
- * @brief Displays Network interfaces information.
- */
-void display_networks(Network** networks, int count)
+void
+display_networks(Network **networks, int count)
 {
-  if (!networks || count == 0)
+  if (networks == NULL || count == 0) {
     return;
+  }
 
-  for (int i = 0; i < count; i++) {
+  for (int i = 0; i < count; ++i) {
     char h_title[64];
-    snprintf(h_title, sizeof(h_title), "Network Interface [%d] (%s)", i, networks[i]->interface);    
+
+    snprintf(h_title, sizeof(h_title), "Network Interface [%d] (%s)", i, networks[i]->interface);
     print_header(h_title);
 
     print_field("Driver", "%s", STR_OR_UNK(networks[i]->driver));
-    
-    if (networks[i]->pci_id)
+
+    if (networks[i]->pci_id != NULL) {
       print_field("PCI ID", "%s", networks[i]->pci_id);
-    
-    if (networks[i]->pci_slot_name)
+    }
+
+    if (networks[i]->pci_slot_name != NULL) {
       print_field("PCI Slot", "%s", networks[i]->pci_slot_name);
-      
-    if (networks[i]->pci_subsys_id)
+    }
+
+    if (networks[i]->pci_subsys_id != NULL) {
       print_field("PCI Subsys ID", "%s", networks[i]->pci_subsys_id);
+    }
 
     print_footer();
   }
 }
 
-
-/**
- * @brief Displays RAM information.
- */
-void display_ram(const RAM* ram)
+void
+display_ram(const RAM *ram)
 {
-  if (!ram)
+  if (ram == NULL) {
     return;
+  }
 
-  // Calculation for actual "used" application memory
+  /* Calculation for actual "used" application memory */
   uint64_t used = ram->total - ram->free - ram->buffers - ram->cached;
 
-  // Prevent underflow just in case kernel reports weird numbers during race conditions
-  if (ram->total < (ram->free + ram->buffers + ram->cached))
+  /* Prevent underflow just in case kernel reports weird numbers during race conditions */
+  if (ram->total < (ram->free + ram->buffers + ram->cached)) {
     used = 0;
-  
+  }
+
   uint64_t swap_used = ram->swap_total > ram->swap_free ? (ram->swap_total - ram->swap_free) : 0;
 
-  // Calculate percentages
+  /* Calculate percentages */
   double ram_pct = ram->total > 0 ? ((double)used / ram->total) * 100.0 : 0.0;
 
-  // Format the numbers into strings
+  /* Format the numbers into strings */
   char total_str[32];
   char free_str[32];
   char used_str[32];
@@ -134,7 +130,7 @@ void display_ram(const RAM* ram)
   format_size("GiB", ram->swap_total * 1024ULL, swap_tot_str, sizeof(swap_tot_str));
   format_size("GiB", ram->swap_free * 1024ULL, swap_free_str, sizeof(swap_free_str));
   format_size("GiB", swap_used * 1024ULL, swap_used_str, sizeof(swap_used_str));
-  
+
   format_size("MiB", ram->zswap * 1024ULL, zswap_str, sizeof(zswap_str));
   format_size("MiB", ram->zswapped * 1024ULL, zswapped_str, sizeof(zswapped_str));
   format_size("MiB", ram->dirty * 1024ULL, dirty_str, sizeof(dirty_str));
@@ -142,145 +138,142 @@ void display_ram(const RAM* ram)
 
   print_header("Random Access Memory (RAM)");
 
-  print_field("Total", "%s", total_str);
-  print_field("Free", "%s", free_str);
-  print_field("Used", "%s (%.1f%%)", used_str, ram_pct);
-  print_field("Available", "%s", avail_str);
-  print_field("Buffers", "%s", buffers_str);
-  print_field("Cached", "%s", cached_str);
+  print_field("Total",      "%s", total_str);
+  print_field("Free",       "%s", free_str);
+  print_field("Used",       "%s (%.1f%%)", used_str, ram_pct);
+  print_field("Available",  "%s", avail_str);
+  print_field("Buffers",    "%s", buffers_str);
+  print_field("Cached",     "%s", cached_str);
   print_field("Buff/Cache", "%s", cache_str);
   print_field("Swap Total", "%s", swap_tot_str);
-  print_field("Swap Free", "%s", swap_free_str);
-  print_field("Swap Used", "%s", swap_used_str);
-  print_field("ZSwap", "%s", zswap_str);
-  print_field("ZSwapped", "%s", zswapped_str);
-  print_field("Dirty", "%s", dirty_str);
-  print_field("Per-CPU", "%s", per_cpu_str);
+  print_field("Swap Free",  "%s", swap_free_str);
+  print_field("Swap Used",  "%s", swap_used_str);
+  print_field("ZSwap",      "%s", zswap_str);
+  print_field("ZSwapped",   "%s", zswapped_str);
+  print_field("Dirty",      "%s", dirty_str);
+  print_field("Per-CPU",    "%s", per_cpu_str);
 
   print_footer();
 }
 
-/**
- * @brief Displays GPUS information.
- */
-void display_gpus(GPU** gpus, int count)
+void
+display_gpus(GPU **gpus, int count)
 {
-  if (!gpus || count == 0)
+  if (gpus == NULL || count == 0) {
     return;
+  }
 
-  for (int i = 0; i < count; i++) {
+  for (int i = 0; i < count; ++i) {
     if (count > 1) {
       char h_title[64];
-      snprintf(h_title, sizeof(h_title), "Graphics Processing Unit [%d]", i);    
+      snprintf(h_title, sizeof(h_title), "Graphics Processing Unit [%d]", i);
       print_header(h_title);
     } else {
       print_header("Graphics Processing Unit (GPU)");
     }
 
-    if (gpus[i]->vendor && gpus[i]->device_id) {
+    if (gpus[i]->vendor != NULL && gpus[i]->device_id != NULL) {
       print_field("Vendor", "%s (%s)", STR_OR_UNK(gpus[i]->vendor), STR_OR_UNK(gpus[i]->device_id));
     } else {
       print_field("Vendor", "%s", STR_OR_UNK(gpus[i]->vendor));
     }
 
-    print_field("Model", "%s", STR_OR_UNK(gpus[i]->model));
+    print_field("Model",    "%s", STR_OR_UNK(gpus[i]->model));
     print_field("PCI Slot", "%s", STR_OR_UNK(gpus[i]->pci_slot_name));
     print_field("Bus Type", "%s", STR_OR_UNK(gpus[i]->bus_type));
-    print_field("Driver", "%s", STR_OR_UNK(gpus[i]->driver));
-  
-    if (gpus[i]->vbios && gpus[i]->vbios[0] != '\0')
+    print_field("Driver",   "%s", STR_OR_UNK(gpus[i]->driver));
+
+    if (gpus[i]->vbios != NULL && gpus[i]->vbios[0] != '\0') {
       print_field("VBIOS", "%s", gpus[i]->vbios);
+    }
 
     print_footer();
   }
 }
 
-/**
- * @brief Displays BATTERY information.
- */
-void display_battery(BATTERY* battery)
+void
+display_battery(const BATTERY *battery)
 {
-  if (!battery)
+  if (battery == NULL) {
     return;
+  }
 
   print_header("Battery");
 
-  print_field("Capacity", "%u%%", battery->capacity);
-  print_field("Status", "%s", STR_OR_UNK(battery->status));
+  print_field("Capacity",       "%u%%", battery->capacity);
+  print_field("Status",         "%s", STR_OR_UNK(battery->status));
   print_field("Capacity Level", "%s", STR_OR_UNK(battery->capacity_level));
-  print_field("Technology", "%s", STR_OR_UNK(battery->technology));
-  print_field("Supply Name", "%s", STR_OR_UNK(battery->supply_name));
-  print_field("Supply Type", "%s", STR_OR_UNK(battery->supply_type));
-  print_field("Manufacturer", "%s", STR_OR_UNK(battery->manufacturer));
-  print_field("Model", "%s", STR_OR_UNK(battery->model_name));
-  print_field("Serial", "%s", STR_OR_UNK(battery->serial));
-  print_field("Voltage Min", "%.2f V", battery->voltage_min_design);
-  print_field("Voltage Now", "%.2f V", battery->voltage_now);
-  print_field("Energy Full", "%.2f Wh", battery->energy_full_design);
-  print_field("Energy Now", "%.2f Wh", battery->energy_now);
-
-  print_footer();
-} 
-
-/**
- * @brief Displays MAINBOARD information.
- */
-void display_mainboard(const MAINBOARD* mainboard)
-{
-  if (!mainboard)
-    return;
-
-  print_header("Mainboard / System");
-
-  print_field("Sys Vendor", "%s", STR_OR_UNK(mainboard->sys_vendor));
-  print_field("Product Name", "%s", STR_OR_UNK(mainboard->product_name));
-  print_field("Product Family", "%s", STR_OR_UNK(mainboard->product_family));
-  print_field("Product SKU", "%s", STR_OR_UNK(mainboard->product_sku));
-  print_field("Board Vendor", "%s", STR_OR_UNK(mainboard->board_vendor));
-  print_field("Board Name", "%s", STR_OR_UNK(mainboard->board_name));
-  print_field("Serial", "%s", STR_OR_UNK(mainboard->serial));
+  print_field("Technology",     "%s", STR_OR_UNK(battery->technology));
+  print_field("Supply Name",    "%s", STR_OR_UNK(battery->supply_name));
+  print_field("Supply Type",    "%s", STR_OR_UNK(battery->supply_type));
+  print_field("Manufacturer",   "%s", STR_OR_UNK(battery->manufacturer));
+  print_field("Model",          "%s", STR_OR_UNK(battery->model_name));
+  print_field("Serial",         "%s", STR_OR_UNK(battery->serial));
+  print_field("Voltage Min",    "%.2f V", battery->voltage_min_design);
+  print_field("Voltage Now",    "%.2f V", battery->voltage_now);
+  print_field("Energy Full",    "%.2f Wh", battery->energy_full_design);
+  print_field("Energy Now",     "%.2f Wh", battery->energy_now);
 
   print_footer();
 }
 
-/**
- * @brief Displays STORAGE information.
- */
-void display_storages(STORAGE** storages, int count)
+void
+display_mainboard(const MAINBOARD *mainboard)
 {
-  if (!storages || count == 0)
+  if (mainboard == NULL) {
     return;
+  }
 
-  for (int i = 0; i < count; i++) {
+  print_header("Mainboard / System");
+
+  print_field("Sys Vendor",     "%s", STR_OR_UNK(mainboard->sys_vendor));
+  print_field("Product Name",   "%s", STR_OR_UNK(mainboard->product_name));
+  print_field("Product Family", "%s", STR_OR_UNK(mainboard->product_family));
+  print_field("Product SKU",    "%s", STR_OR_UNK(mainboard->product_sku));
+  print_field("Board Vendor",   "%s", STR_OR_UNK(mainboard->board_vendor));
+  print_field("Board Name",     "%s", STR_OR_UNK(mainboard->board_name));
+  print_field("Serial",         "%s", STR_OR_UNK(mainboard->serial));
+
+  print_footer();
+}
+
+void
+display_storages(STORAGE **storages, int count)
+{
+  if (storages == NULL || count == 0) {
+    return;
+  }
+
+  for (int i = 0; i < count; ++i) {
     char h_title[64];
-    snprintf(h_title, sizeof(h_title), "Storage Device [%d] (%s)", i, storages[i]->device);    
+    snprintf(h_title, sizeof(h_title), "Storage Device [%d] (%s)", i, storages[i]->device);
     print_header(h_title);
 
     char size_str[32];
     format_size("GiB", storages[i]->size_bytes, size_str, sizeof(size_str));
-    
+
     print_field("Model", "%s", STR_OR_UNK(storages[i]->model));
     print_field("Size", "%s", size_str);
     print_field("Removable", "%s", storages[i]->removable ? "Yes" : "No");
-    
-    if (storages[i]->pci_slot_name && storages[i]->pci_slot_name[0] != '\0')
-      print_field("PCI Slot", "%s", storages[i]->pci_slot_name);
-      
-    if (storages[i]->serial && storages[i]->serial[0] != '\0')
-      print_field("Serial", "%s", storages[i]->serial);
 
-    if (storages[i]->uuid && storages[i]->uuid[0] != '\0')
+    if (storages[i]->pci_slot_name != NULL && storages[i]->pci_slot_name[0] != '\0') {
+      print_field("PCI Slot", "%s", storages[i]->pci_slot_name);
+    }
+
+    if (storages[i]->serial != NULL && storages[i]->serial[0] != '\0') {
+      print_field("Serial", "%s", storages[i]->serial);
+    }
+
+    if (storages[i]->uuid != NULL && storages[i]->uuid[0] != '\0') {
       print_field("UUID", "%s", storages[i]->uuid);
+    }
 
     print_footer();
   }
 }
 
-/**
- * @brief Clears the terminal screen and resets cursor position.
- * Uses ANSI Escape Codes: \033[2J (Clear Screen) and \033[H (Move to Home).
- */
-void display_clear(void)
+void
+display_clear(void)
 {
   printf("\033[2J\033[H");
   fflush(stdout);

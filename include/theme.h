@@ -1,13 +1,19 @@
 /**
- * @file theme.h
- * @brief Header file for theme module.
+ * \file theme.h
+ * \brief Header file for theme module.
  */
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+#include "base.h"
+
 /**
- * @enum ThemeColor
- * @brief Available theme color categories.
+ * \enum ThemeColor
+ * \brief Available theme color categories.
  */
 typedef enum {
   COLOR_PRIMARY,
@@ -20,22 +26,26 @@ typedef enum {
 } ThemeColor;
 
 /**
- * @struct Theme
- * @brief Holds ANSI escape codes for styling console output.
+ * \struct Theme
+ * \brief Holds ANSI escape codes for styling console output.
  */
 typedef struct {
-  const char* primary;
-  const char* label;
-  const char* value;
-  const char* success;
-  const char* warning;
-  const char* danger;
+  const char *primary;
+  const char *label;
+  const char *value;
+  const char *success;
+  const char *warning;
+  const char *danger;
 } Theme;
 
 void theme_init(bool force_no_color);
-char* theme_get_reset(void);
-const char* theme_get_color(ThemeColor color);
+char *theme_get_reset(void);
+const char *theme_get_color(ThemeColor color);
 
-void print_header(const char* text);
-void print_field(const char* label, const char* format, ...);
+void print_header(const char *text);
+void print_field(const char *label, const char *format, ...);
 void print_footer(void);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

@@ -1,15 +1,20 @@
 /**
- * @file battery.h
- * @brief Header file for battery module.
+ * \file battery.h
+ * \brief Header file for battery module.
  */
 
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #include <inttypes.h>
 #include <cJSON.h>
 
 /**
- * Structure to hold battery metrics and vendor information.
+ * \struct BATTERY
+ * \brief Structure to hold battery metrics and vendor information.
  */
 typedef struct {
   uint16_t capacity;
@@ -18,31 +23,35 @@ typedef struct {
   float energy_full_design;
   float energy_full;
   float energy_now;
-  char* supply_name;
-  char* supply_type;
-  char* capacity_level;
-  char* status;
-  char* technology;
-  char* model_name;
-  char* manufacturer;
-  char* serial;
+  char *supply_name;
+  char *supply_type;
+  char *capacity_level;
+  char *status;
+  char *technology;
+  char *model_name;
+  char *manufacturer;
+  char *serial;
 } BATTERY;
 
 /**
- * Discovers and parses battery information from /sys/class/power_supply.
- * @return Pointer to a newly allocated BATTERY struct, or NULL on failure.
+ * \brief Discovers and parses battery information from /sys/class/power_supply.
+ * \return Pointer to a newly allocated BATTERY struct, or NULL on failure.
  */
-BATTERY* battery_get_info(void);
+BATTERY *battery_get_info(void);
 
 /**
- * Deep-frees a BATTERY structure and its internal strings.
- * @param battery Pointer to the structure to free.
+ * \brief Deep-frees a BATTERY structure and its internal strings.
+ * \param[in] battery Pointer to the structure to free.
  */
-void free_battery(BATTERY* battery);
+void free_battery(BATTERY *battery);
 
 /**
- * Converts a BATTERY structure to a cJSON object.
- * @param battery Pointer to the BATTERY structure.
- * @return Pointer to a cJSON object (caller must delete).
+ * \brief Converts a BATTERY structure to a cJSON object.
+ * \param[in] battery Pointer to the BATTERY structure.
+ * \return Pointer to a cJSON object (caller must delete).
  */
-cJSON* battery_to_json_obj(const BATTERY* battery);
+cJSON *battery_to_json_obj(const BATTERY *battery);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

@@ -1,21 +1,16 @@
-/**
- * @file mainboard.c
- * @brief Hardware discovery and parsing logic for system/mainboard DMI.
- */
-
 #include "base.h"
 #include "file.h"
 #include "io.h"
 #include "mainboard.h"
 
-MAINBOARD* mainboard_get_info(void)
+MAINBOARD *
+mainboard_get_info(void)
 {
-  MAINBOARD* mainboard = calloc(1, sizeof(MAINBOARD));
-  if (!mainboard)
+  MAINBOARD *mainboard = calloc(1, sizeof(MAINBOARD));
+  if (mainboard == NULL) {
     return NULL;
-  
-  // Note: some of these (especially serial) may require root permissions.
-  // file_read_stripped will safely return NULL if permission is denied.
+  }
+
   mainboard->sys_vendor     = file_read_stripped("/sys/class/dmi/id/sys_vendor", "\n", false);
   mainboard->product_name   = file_read_stripped("/sys/class/dmi/id/product_name", "\n", false);
   mainboard->product_family = file_read_stripped("/sys/class/dmi/id/product_family", "\n", false);
@@ -27,10 +22,12 @@ MAINBOARD* mainboard_get_info(void)
   return mainboard;
 }
 
-void free_mainboard(MAINBOARD* mainboard)
+void
+free_mainboard(MAINBOARD *mainboard)
 {
-  if (!mainboard)
+  if (mainboard == NULL) {
     return;
+  }
   free(mainboard->sys_vendor);
   free(mainboard->product_name);
   free(mainboard->product_family);
@@ -41,11 +38,13 @@ void free_mainboard(MAINBOARD* mainboard)
   free(mainboard);
 }
 
-cJSON* mainboard_to_json_obj(const MAINBOARD* mainboard)
+cJSON *
+mainboard_to_json_obj(const MAINBOARD *mainboard)
 {
-  cJSON* obj = cJSON_CreateObject();
-  if (!mainboard)
+  cJSON *obj = cJSON_CreateObject();
+  if (mainboard == NULL) {
     return obj;
+  }
 
   cJSON_AddStringToObject(obj, "sys_vendor", STR_OR_UNK(mainboard->sys_vendor));
   cJSON_AddStringToObject(obj, "product_name", STR_OR_UNK(mainboard->product_name));

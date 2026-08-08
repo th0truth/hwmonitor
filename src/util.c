@@ -1,8 +1,3 @@
-/**
- * @file util.c
- * @brief General utility functions, hardware orchestration, and CLI parsing.
- */
-
 #include "base.h"
 #include "util.h"
 #include "display.h"
@@ -13,9 +8,7 @@
 
 #define SHORT_OPTS "aA:bcghjmno:rsOw"
 
-/**
- * @brief Command-line options defined for getopt_long (Sorted Alphabetically).
- */
+/* Command-line options defined for getopt_long (Sorted Alphabetically) */
 static struct option long_options[] = {
   {"ai",          required_argument,  NULL, 'A'},
   {"all",         no_argument,        NULL, 'a'},
@@ -34,140 +27,155 @@ static struct option long_options[] = {
   {NULL,          0,                  NULL,  0}
 };
 
-/**
- * @brief Fetches required hardware data based on configuration.
- */
-void fetch_hardware(const Config* config, SystemHardware* hw)
+void
+fetch_hardware(const Config *config, SystemHardware *hw)
 {
-  if (config->show_battery)
+  if (config->show_battery) {
     hw->battery = battery_get_info();
+  }
 
-  if (config->show_cpu) 
+  if (config->show_cpu) {
     hw->cpu = cpu_get_info();
+  }
 
-  if (config->show_gpu)
+  if (config->show_gpu) {
     hw->gpus = gpu_get_all(&hw->gpu_count);
+  }
 
-  if (config->show_mainboard)
+  if (config->show_mainboard) {
     hw->mainboard = mainboard_get_info();
+  }
 
-  if (config->show_network)
+  if (config->show_network) {
     hw->networks = network_get_all(&hw->network_count);
+  }
 
-  if (config->show_os)
+  if (config->show_os) {
     hw->os = os_get_info();
+  }
 
-  if (config->show_ram) 
+  if (config->show_ram) {
     hw->ram = ram_get_info();
+  }
 
-  if (config->show_storage)
+  if (config->show_storage) {
     hw->storages = storage_get_all(&hw->storage_count);
+  }
 }
 
-/**
- * @brief Formats a byte size into a human-readable string.
- */
-void format_size(char* target_format, uint64_t bytes, char* buffer, size_t buf_size)
+void
+format_size(char *target_format, uint64_t bytes, char *buffer, size_t buf_size)
 {
-  const char* suffixes[] = {"EiB", "PiB", "TiB", "GiB", "MiB", "KiB", "B"};
-  uint64_t multiplier = 1ULL << 60; 
+  const char *suffixes[] = {"EiB", "PiB", "TiB", "GiB", "MiB", "KiB", "B"};
+  uint64_t multiplier = 1ULL << 60;
   int target_idx = 0;
   int num_suffixes = sizeof(suffixes) / sizeof(suffixes[0]);
+  double final_value;
 
-  for (; target_idx < num_suffixes; target_idx++, multiplier >>= 10) {
-    if (strcmp(suffixes[target_idx], target_format) == 0)
+  for (; target_idx < num_suffixes; ++target_idx, multiplier >>= 10) {
+    if (strcmp(suffixes[target_idx], target_format) == 0) {
       break;
+    }
   }
 
   if (target_idx == num_suffixes) {
-    target_idx = num_suffixes - 1; 
+    target_idx = num_suffixes - 1;
     multiplier = 1;
   }
 
-  double final_value = (double)bytes / (double)multiplier;
+  final_value = (double)bytes / (double)multiplier;
   snprintf(buffer, buf_size, "%.2f %s", final_value, suffixes[target_idx]);
 }
 
-/**
- * @brief Frees all allocated memory within the SystemHardware struct.
- */
-void free_hardware(SystemHardware* hw)
+void
+free_hardware(SystemHardware *hw)
 {
-  if (hw->battery)
+  if (hw->battery != NULL) {
     free_battery(hw->battery);
+  }
 
-  if (hw->cpu)
+  if (hw->cpu != NULL) {
     free_cpu(hw->cpu);
-    
-  if (hw->gpus)
+  }
+
+  if (hw->gpus != NULL) {
     free_gpus(hw->gpus, hw->gpu_count);
+  }
 
-  if (hw->mainboard)
+  if (hw->mainboard != NULL) {
     free_mainboard(hw->mainboard);
+  }
 
-  if (hw->networks)
+  if (hw->networks != NULL) {
     free_networks(hw->networks, hw->network_count);
+  }
 
-  if (hw->os)
+  if (hw->os != NULL) {
     free(hw->os);
+  }
 
-  if (hw->ram)
+  if (hw->ram != NULL) {
     free_ram(hw->ram);
+  }
 
-  if (hw->storages)
+  if (hw->storages != NULL) {
     free_storages(hw->storages, hw->storage_count);
+  }
 }
 
-/**
- * @brief Generates and prints (or saves) the JSON output.
- */
-void output_json(const Config* config, const SystemHardware* hw)
+void
+output_json(const Config *config, const SystemHardware *hw)
 {
-  cJSON* json = cJSON_CreateObject();
+  cJSON *json = cJSON_CreateObject();
   cJSON_AddNumberToObject(json, "schema_version", 1);
   cJSON_AddStringToObject(json, "tool", "hwmonitor");
-  
-  if (hw->battery)
+
+  if (hw->battery != NULL) {
     cJSON_AddItemToObject(json, "battery", battery_to_json_obj(hw->battery));
+  }
 
-  if (hw->cpu)
+  if (hw->cpu != NULL) {
     cJSON_AddItemToObject(json, "cpu", cpu_to_json_obj(hw->cpu));
+  }
 
-  if (hw->gpus && hw->gpu_count > 0) {
-    cJSON* gpu_list = cJSON_CreateArray();
-    for (int i = 0; i < hw->gpu_count; i++) {
+  if (hw->gpus != NULL && hw->gpu_count > 0) {
+    cJSON *gpu_list = cJSON_CreateArray();
+    for (int i = 0; i < hw->gpu_count; ++i) {
       cJSON_AddItemToArray(gpu_list, gpu_to_json_obj(hw->gpus[i]));
     }
     cJSON_AddItemToObject(json, "gpus", gpu_list);
   }
-  
-  if (hw->mainboard)
+
+  if (hw->mainboard != NULL) {
     cJSON_AddItemToObject(json, "mainboard", mainboard_to_json_obj(hw->mainboard));
-  
-  if (hw->networks && hw->network_count > 0) {
-    cJSON* network_list = cJSON_CreateArray();
-    for (int i = 0; i < hw->network_count; i++) {
+  }
+
+  if (hw->networks != NULL && hw->network_count > 0) {
+    cJSON *network_list = cJSON_CreateArray();
+    for (int i = 0; i < hw->network_count; ++i) {
       cJSON_AddItemToArray(network_list, network_to_json_obj(hw->networks[i]));
     }
     cJSON_AddItemToObject(json, "networks", network_list);
   }
 
-  if (hw->os)
+  if (hw->os != NULL) {
     cJSON_AddItemToObject(json, "os", os_to_json_obj(hw->os));
+  }
 
-  if (hw->ram)
+  if (hw->ram != NULL) {
     cJSON_AddItemToObject(json, "ram", ram_to_json_obj(hw->ram));
+  }
 
-  if (hw->storages && hw->storage_count > 0) {
-    cJSON* storage_list = cJSON_CreateArray();
-    for (int i = 0; i < hw->storage_count; i++) {
+  if (hw->storages != NULL && hw->storage_count > 0) {
+    cJSON *storage_list = cJSON_CreateArray();
+    for (int i = 0; i < hw->storage_count; ++i) {
       cJSON_AddItemToArray(storage_list, storage_to_json_obj(hw->storages[i]));
     }
     cJSON_AddItemToObject(json, "storages", storage_list);
   }
 
-  char* json_str = cJSON_Print(json);
-  if (config->output_file) {
+  char *json_str = cJSON_Print(json);
+  if (config->output_file != NULL) {
     if (file_write_string(config->output_file, json_str)) {
       printf("Success: Hardware report saved to '%s'\n", config->output_file);
     }
@@ -179,43 +187,48 @@ void output_json(const Config* config, const SystemHardware* hw)
   cJSON_Delete(json);
 }
 
-/**
- * @brief Renders the hardware data in a formatted plain-text view.
- */
-void output_plaintext(const SystemHardware* hw)
+void
+output_plaintext(const SystemHardware *hw)
 {
-  if (hw->battery)
+  if (hw->battery != NULL) {
     display_battery(hw->battery);
+  }
 
-  if (hw->cpu)
+  if (hw->cpu != NULL) {
     display_cpu(hw->cpu);
+  }
 
-  if (hw->gpus && hw->gpu_count > 0)
+  if (hw->gpus != NULL && hw->gpu_count > 0) {
     display_gpus(hw->gpus, hw->gpu_count);
+  }
 
-  if (hw->mainboard)
+  if (hw->mainboard != NULL) {
     display_mainboard(hw->mainboard);
+  }
 
-  if (hw->networks && hw->network_count > 0)
+  if (hw->networks != NULL && hw->network_count > 0) {
     display_networks(hw->networks, hw->network_count);
+  }
 
-  if (hw->os)
+  if (hw->os != NULL) {
     display_os(hw->os);
+  }
 
-  if (hw->ram)
+  if (hw->ram != NULL) {
     display_ram(hw->ram);
+  }
 
-  if (hw->storages && hw->storage_count > 0)
+  if (hw->storages != NULL && hw->storage_count > 0) {
     display_storages(hw->storages, hw->storage_count);
+  }
 }
 
-/**
- * @brief Parses command-line arguments (Sorted Alphabetically).
- */
-void parse_arguments(int argc, char** argv, Config* config)
+void
+parse_arguments(int argc, char **argv, Config *config)
 {
   int opt;
   int opt_idx = 0;
+
   while ((opt = getopt_long(argc, argv, SHORT_OPTS, long_options, &opt_idx)) != -1) {
     switch (opt) {
       case 'a':
@@ -230,7 +243,9 @@ void parse_arguments(int argc, char** argv, Config* config)
         break;
       case 'A':
         config->use_ai = true;
-        if (optarg) config->ai_prompt = strdup(optarg);
+        if (optarg != NULL) {
+          config->ai_prompt = strdup(optarg);
+        }
         break;
       case 'b':
         config->show_battery = true;
@@ -257,7 +272,9 @@ void parse_arguments(int argc, char** argv, Config* config)
         config->show_os = true;
         break;
       case 'o':
-        if (optarg) config->output_file = strdup(optarg);
+        if (optarg != NULL) {
+          config->output_file = strdup(optarg);
+        }
         config->use_json = true;
         break;
       case 'r':
@@ -275,9 +292,9 @@ void parse_arguments(int argc, char** argv, Config* config)
     }
   }
 
-  // Default: show all if no filters set
-  if (!config->show_battery && !config->show_cpu && !config->show_gpu && 
-      !config->show_mainboard && !config->show_network && !config->show_os && 
+  /* Default: show all if no filters set */
+  if (!config->show_battery && !config->show_cpu && !config->show_gpu &&
+      !config->show_mainboard && !config->show_network && !config->show_os &&
       !config->show_ram && !config->show_storage && !config->use_ai) {
     config->show_battery = true;
     config->show_cpu = true;
@@ -290,10 +307,8 @@ void parse_arguments(int argc, char** argv, Config* config)
   }
 }
 
-/**
- * @brief Prints usage and help documentation (Sorted Alphabetically).
- */
-void print_usage(const char* prog_name)
+void
+print_usage(const char *prog_name)
 {
   printf("Usage: %s [options]\n", prog_name);
   printf("Options:\n");
@@ -312,4 +327,3 @@ void print_usage(const char* prog_name)
   printf("  -s, --storage    Show Storage/Disk information\n");
   printf("  -w, --watch      Live refresh hardware data every second\n");
 }
-

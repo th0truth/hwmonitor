@@ -1,9 +1,13 @@
 /**
- * @file base.h
- * @brief Header file for base module.
+ * \file base.h
+ * \brief Header file for base module.
  */
 
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,3 +22,7 @@
 #define BUFFER_SIZE 256
 
 #define STR_OR_UNK(s) ((s) ? (s) : "<unknown>")
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

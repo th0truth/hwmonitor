@@ -2,7 +2,8 @@
 #include <string.h>
 #include "util.h"
 
-int main(void)
+int
+main(void)
 {
   char buffer[32];
 

@@ -3,23 +3,21 @@
 #include "io.h"
 #include "ram.h"
 
-/**
- * Discovers and parses memory information from /proc/meminfo.
- * @return Pointer to a newly allocated RAM struct, or NULL on failure.
- */
-RAM* ram_get_info(void)
+RAM *
+ram_get_info(void)
 {
-  RAM* ram = calloc(1, sizeof(*ram));
-  if (!ram)
+  RAM *ram = calloc(1, sizeof(*ram));
+  if (ram == NULL) {
     return NULL;
+  }
 
-  char* info = file_read_stripped("/proc/meminfo", "\n", false);
-  if (!info) {
+  char *info = file_read_stripped("/proc/meminfo", "\n", false);
+  if (info == NULL) {
     free(ram);
     return NULL;
   }
 
-  // Use the helper to populate the RAM fields in kB
+  /* Use the helper to populate the RAM fields in kB */
   ram->total      = str_parse_value(info, "MemTotal", "kB");
   ram->free       = str_parse_value(info, "MemFree", "kB");
   ram->available  = str_parse_value(info, "MemAvailable", "kB");
@@ -36,26 +34,21 @@ RAM* ram_get_info(void)
   return ram;
 }
 
-/**
- * Frees a RAM structure.
- * @param ram Pointer to the RAM structure to free.
- */
-void free_ram(RAM* ram)
+void
+free_ram(RAM *ram)
 {
-  if (ram)
+  if (ram != NULL) {
     free(ram);
+  }
 }
 
-/**
- * Converts a RAM structure to a cJSON object.
- * @param ram Pointer to the RAM structure.
- * @return Pointer to a cJSON object (caller must delete).
- */
-cJSON* ram_to_json_obj(const RAM* ram)
+cJSON *
+ram_to_json_obj(const RAM *ram)
 {
-  cJSON* obj = cJSON_CreateObject();
-  if (!ram)
+  cJSON *obj = cJSON_CreateObject();
+  if (ram == NULL) {
     return obj;
+  }
 
   cJSON_AddNumberToObject(obj, "total", ram->total);
   cJSON_AddNumberToObject(obj, "free", ram->free);

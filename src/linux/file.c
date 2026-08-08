@@ -3,26 +3,22 @@
 
 #define FILE_READ_BUFFER 4096
 
-/**
- * Reads a file and strips specific characters from the output.
- * @param filename Path to the file.
- * @param exclude String containing characters to exclude (e.g., ":\t").
- * @param verbose If true, prints errors to stderr.
- * @return Dynamically allocated stripped content, or NULL on failure.
- */
-char* file_read_stripped(const char* filename, const char* exclude, bool verbose)
+char *
+file_read_stripped(const char *filename, const char *exclude, bool verbose)
 {
-  FILE* fp = fopen(filename, "r");
-  if (!fp) {
-    if (verbose)
+  FILE *fp = fopen(filename, "r");
+  if (fp == NULL) {
+    if (verbose) {
       fprintf(stderr, "error: failed to open '%s': %s\n", filename, strerror(errno));
+    }
     return NULL;
   }
 
-  char* buffer = malloc(FILE_READ_BUFFER);
-  if (!buffer) {
-    if (verbose)
+  char *buffer = malloc(FILE_READ_BUFFER);
+  if (buffer == NULL) {
+    if (verbose) {
       fprintf(stderr, "error: failed to allocate memory: %s", strerror(errno));
+    }
     fclose(fp);
     return NULL;
   }
@@ -31,12 +27,12 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
   size_t n = 0;
   size_t capacity = FILE_READ_BUFFER;
 
-  // Read the file character by character and strip excluded ones
+  /* Read the file character by character and strip excluded ones */
   while ((c = fgetc(fp)) != EOF) {
     if (n + 1 >= capacity) {
       capacity *= 2;
-      char* line_buffer = realloc(buffer, capacity);
-      if (!line_buffer) {
+      char *line_buffer = realloc(buffer, capacity);
+      if (line_buffer == NULL) {
         free(buffer);
         fclose(fp);
         return NULL;
@@ -44,7 +40,7 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
       buffer = line_buffer;
     }
 
-    if (!exclude || !strchr(exclude, c)) {
+    if (exclude == NULL || strchr(exclude, c) == NULL) {
       buffer[n++] = c;
     }
   }
@@ -54,23 +50,19 @@ char* file_read_stripped(const char* filename, const char* exclude, bool verbose
   return buffer;
 }
 
-/**
- * Writes a string directly to a file.
- * @param filename Path to the file.
- * @param data String content to write.
- * @return true on success, false on failure.
- */
-bool file_write_string(const char* filename, const char* data)
+bool
+file_write_string(const char *filename, const char *data)
 {
-  if (!filename || !data)
+  if (filename == NULL || data == NULL) {
     return false;
+  }
 
-  FILE* fp = fopen(filename, "w");
-  if (!fp) {
+  FILE *fp = fopen(filename, "w");
+  if (fp == NULL) {
     fprintf(stderr, "error: failed to open '%s' for writing: %s\n", filename, strerror(errno));
     return false;
   }
-  
+
   if (fputs(data, fp) == EOF) {
     fprintf(stderr, "error: failed to write to '%s': %s\n", filename, strerror(errno));
     fclose(fp);

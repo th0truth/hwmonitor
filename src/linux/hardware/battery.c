@@ -1,47 +1,40 @@
-/**
- * @file battery.c
- * @brief Hardware discovery and parsing logic for system batteries.
- */
-
 #include "base.h"
 #include "file.h"
 #include "io.h"
 #include "battery.h"
 
-// Standard Linux sysfs unit conversion factor (micro to standard)
+/* Standard Linux sysfs unit conversion factor (micro to standard) */
 #define SYSFS_UNIT_CONVERSION 1000000.0
 
-/**
- * Discovers and parses primary battery information from sysfs.
- * @return Pointer to a newly allocated BATTERY struct, or NULL if no battery is found.
- */
-BATTERY* battery_get_info(void)
+BATTERY *
+battery_get_info(void)
 {
   char buffer[BUFFER_SIZE];
-  char* uevent = NULL;
+  char *uevent = NULL;
   bool found = false;
 
-  // Search for an active battery interface (typically BAT0 to BAT5)
-  for (int i = 0; i < 5; i++) {
+  /* Search for an active battery interface (typically BAT0 to BAT5) */
+  for (int i = 0; i < 5; ++i) {
     snprintf(buffer, sizeof(buffer), "/sys/class/power_supply/BAT%d/uevent", i);
     uevent = file_read_stripped(buffer, "=", false);
-    
-    if (uevent) {
+
+    if (uevent != NULL) {
       found = true;
-      break; 
+      break;
     }
   }
 
-  if (found == false)
+  if (!found) {
     return NULL;
+  }
 
-  BATTERY* battery = calloc(1, sizeof(*battery));
-  if (!battery) {
+  BATTERY *battery = calloc(1, sizeof(*battery));
+  if (battery == NULL) {
     free(uevent);
     return NULL;
   }
 
-  // Parse numeric values and convert from micro-units to standard units
+  /* Parse numeric values and convert from micro-units to standard units */
   battery->capacity           = str_parse_value(uevent, "POWER_SUPPLY_CAPACITY", "\n");
   battery->voltage_min_design = str_parse_value(uevent, "POWER_SUPPLY_VOLTAGE_MIN_DESIGN", "\n") / SYSFS_UNIT_CONVERSION;
   battery->voltage_now        = str_parse_value(uevent, "POWER_SUPPLY_VOLTAGE_NOW", "\n") / SYSFS_UNIT_CONVERSION;
@@ -49,7 +42,7 @@ BATTERY* battery_get_info(void)
   battery->energy_full        = str_parse_value(uevent, "POWER_SUPPLY_ENERGY_FULL", "\n") / SYSFS_UNIT_CONVERSION;
   battery->energy_now         = str_parse_value(uevent, "POWER_SUPPLY_ENERGY_NOW", "\n") / SYSFS_UNIT_CONVERSION;
 
-  // Parse string values for vendor and state
+  /* Parse string values for vendor and state */
   battery->supply_name    = str_find_value(uevent, "POWER_SUPPLY_NAME", "\n");
   battery->supply_type    = str_find_value(uevent, "POWER_SUPPLY_TYPE", "\n");
   battery->capacity_level = str_find_value(uevent, "POWER_SUPPLY_CAPACITY_LEVEL", "\n");
@@ -63,14 +56,12 @@ BATTERY* battery_get_info(void)
   return battery;
 }
 
-/**
- * Deep-frees a BATTERY structure and its internal dynamically allocated strings.
- * @param battery Pointer to the structure to free.
- */
-void free_battery(BATTERY* battery)
+void
+free_battery(BATTERY *battery)
 {
-  if (!battery)
+  if (battery == NULL) {
     return;
+  }
 
   free(battery->supply_name);
   free(battery->supply_type);
@@ -83,18 +74,15 @@ void free_battery(BATTERY* battery)
   free(battery);
 }
 
-/**
- * Converts a BATTERY structure into a cJSON object for serialization.
- * @param battery Pointer to the BATTERY structure.
- * @return Pointer to a cJSON object (caller must delete).
- */
-cJSON* battery_to_json_obj(const BATTERY* battery)
+cJSON *
+battery_to_json_obj(const BATTERY *battery)
 {
-  cJSON* obj = cJSON_CreateObject();
-  if (!battery)
+  cJSON *obj = cJSON_CreateObject();
+  if (battery == NULL) {
     return obj;
+  }
 
-  // Numeric Metrics
+  /* Numeric Metrics */
   cJSON_AddNumberToObject(obj, "capacity_percent", battery->capacity);
   cJSON_AddNumberToObject(obj, "voltage_now", battery->voltage_now);
   cJSON_AddNumberToObject(obj, "voltage_min_design", battery->voltage_min_design);
@@ -102,7 +90,7 @@ cJSON* battery_to_json_obj(const BATTERY* battery)
   cJSON_AddNumberToObject(obj, "energy_full", battery->energy_full);
   cJSON_AddNumberToObject(obj, "energy_full_design", battery->energy_full_design);
 
-  // Vendor & State Strings
+  /* Vendor & State Strings */
   cJSON_AddStringToObject(obj, "name", STR_OR_UNK(battery->supply_name));
   cJSON_AddStringToObject(obj, "type", STR_OR_UNK(battery->supply_type));
   cJSON_AddStringToObject(obj, "status", STR_OR_UNK(battery->status));
