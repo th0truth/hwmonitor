@@ -46,29 +46,31 @@ cpu_get_total_freq_mhz(uint16_t core_id, const char *filename)
     }
 
     int32_t khz = atoi(cpu_freq);
+   
     free(cpu_freq);
 
     if (khz <= 0) {
         return -1;
     }
 
-    return khz / 1000;
+    return khz / 1000.0f;
 }
 
 static char *
 cpu_get_arch(const char *flags)
 {
     if (flags == NULL) {
-        return "x86";
+        return strdup("x86");
     }
 
     char *flag = str_find_value(flags, "lm", NULL);
     if (flag == NULL) {
-        return "x86";
-    } else {
-        free(flag);
-        return "x86_64";
+        return strdup("x86"); 
     }
+
+    free(flag);
+
+    return strdup("x86_64"); 
 }
 
 CPU *
