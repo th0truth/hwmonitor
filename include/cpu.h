@@ -1,8 +1,3 @@
-/**
- * \file cpu.h
- * \brief Header file for cpu module.
- */
-
 #pragma once
 
 #ifdef __cplusplus
@@ -12,10 +7,6 @@ extern "C" {
 #include <stdint.h>
 #include <cJSON.h>
 
-/**
- * \struct CPU
- * \brief Structure to hold CPU metrics and vendor information.
- */
 typedef struct {
     char *vendor_id;
     char *model_name;

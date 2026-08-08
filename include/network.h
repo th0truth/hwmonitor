@@ -1,8 +1,3 @@
-/**
- * \file network.h
- * \brief Header file for network module.
- */
-
 #pragma once
 
 #ifdef __cplusplus
@@ -14,10 +9,6 @@ extern "C" {
 
 #define MAX_NETWORKS 32
 
-/**
- * \struct Network
- * \brief Structure to hold network interface information.
- */
 typedef struct {
     char *interface;
     char *driver;

@@ -1,8 +1,3 @@
-/**
- * \file base.h
- * \brief Header file for base module.
- */
-
 #pragma once
 
 #ifdef __cplusplus
