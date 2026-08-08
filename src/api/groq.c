@@ -9,11 +9,6 @@
 
 #define GROQ_API_URL "https://api.groq.com/openai/v1/chat/completions"
 
-/**
- * \brief Prints text with word-wrapping to fit terminal width.
- * \param[in] text      The text to print.
- * \param[in] max_width The terminal width in columns.
- */
 static void
 print_wrapped(const char *text, int max_width)
 {
