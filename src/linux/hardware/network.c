@@ -52,17 +52,7 @@ free_network(Network *net)
     free(net);
 }
 
-void
-free_networks(Network **networks, int count)
-{
-    if (networks == NULL) {
-        return;
-    }
-    for (int i = 0; i < count; ++i) {
-        free_network(networks[i]);
-    }
-    free(networks);
-}
+DEFINE_FREE_ARRAY(free_networks, Network, free_network)
 
 cJSON *
 network_to_json_obj(const Network *net)

@@ -105,17 +105,7 @@ free_gpu(GPU *gpu)
     free(gpu);
 }
 
-void
-free_gpus(GPU **gpus, int count)
-{
-    if (gpus == NULL) {
-        return;
-    }
-    for (int i = 0; i < count; ++i) {
-        free_gpu(gpus[i]);
-    }
-    free(gpus);
-}
+DEFINE_FREE_ARRAY(free_gpus, GPU, free_gpu)
 
 cJSON *
 gpu_to_json_obj(const GPU *gpu)

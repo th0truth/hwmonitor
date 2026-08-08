@@ -89,17 +89,7 @@ free_storage(STORAGE *storage)
     free(storage);
 }
 
-void
-free_storages(STORAGE **storages, int count)
-{
-    if (storages == NULL) {
-        return;
-    }
-    for (int i = 0; i < count; ++i) {
-        free_storage(storages[i]);
-    }
-    free(storages);
-}
+DEFINE_FREE_ARRAY(free_storages, STORAGE, free_storage)
 
 cJSON *
 storage_to_json_obj(const STORAGE *storage)
