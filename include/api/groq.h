@@ -6,7 +6,7 @@ extern "C" {
 
 #include "base.h"
 
-#define GROQ_DEFAULT_MODEL "llama-3.1-8b-instant"
+#define GROQ_DEFAULT_MODEL "openai/gpt-oss-20b"
 
 bool groq_analyze_hardware(const char *hardware_json, const char *user_prompt);
 

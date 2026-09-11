@@ -6,6 +6,11 @@
 
 Lightweight hardware discovery and telemetry engine for Linux systems written in C11.
 
+[![CI](https://github.com/th0truth/hwmonitor/actions/workflows/ci.yaml/badge.svg)](https://github.com/th0truth/hwmonitor/actions/workflows/ci.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Language: C11](https://img.shields.io/badge/C-11-blue.svg)
+![Platform: Linux](https://img.shields.io/badge/platform-Linux-lightgrey.svg)
+
 ## Overview
 
 `hwmonitor` directly inspects Linux `/sys` and `/proc` kernel interfaces to extract hardware specifications without subprocess overhead from utilities like `lspci`, `dmidecode`, or `lshw`. It supports ANSI terminal formatting, structured JSON output, and AI-driven telemetry diagnostics powered by the Groq API.
