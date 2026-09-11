@@ -44,6 +44,14 @@ display_cpu(const CPU *cpu)
     print_field("Vendor",    "%s", STR_OR_UNK(cpu->vendor_id));
     print_field("Model",     "%s", STR_OR_UNK(cpu->model_name));
     print_field("Arch",      "%s", STR_OR_UNK(cpu->arch));
+    
+
+    if (cpu->curr_usage >= 0.0f) {
+        print_field("Usage",  "%.1f %%", cpu->curr_usage);
+    } else {
+        print_field("Usage",  "--");  
+    }
+
     print_field("Cores",     "%u Physical / %u Logical", cpu->total_cores, cpu->total_threads);
     print_field("Frequency", "%.2f MHz - %.2f MHz", cpu->min_MHz, cpu->max_MHz);
 
