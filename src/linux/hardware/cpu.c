@@ -2,7 +2,75 @@
 #include "file.h"
 #include "io.h"
 #include <string.h>
+#include <inttypes.h>
+#include <time.h>
 #include "cpu.h"
+
+static bool
+cpu_read_times(CPUTimes *out)
+{
+    char *stat = file_read_stripped("/proc/stat", NULL, false);
+    if (stat == NULL) {
+        return false;
+    }
+
+   int n = sscanf(stat,
+        "cpu %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64
+        " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64,
+        &out->user, &out->nice, &out->system, &out->idle,
+        &out->iowait, &out->irq, &out->softirq, &out->steal
+    );
+
+
+    free(stat);
+
+    return n == 8;
+}
+
+static float
+cpu_usage_percent(const CPUTimes *a, const CPUTimes *b)
+{
+    uint64_t idle_a = a->idle + a->iowait;
+    uint64_t idle_b = b->idle + b->iowait;
+    uint64_t busy_a = a->user + a->nice + a->system + a->irq + a->softirq + a->steal;
+    uint64_t busy_b = b->user + b->nice + b->system + b->irq + b->softirq + b->steal;
+
+    uint64_t total_d = (busy_b + idle_b) - (busy_a + idle_a);
+    uint64_t busy_d  = busy_b - busy_a;
+
+    if (total_d == 0) {
+        return -1.0f;  
+    }
+    
+    return 100.0f * (float)busy_d / (float)total_d;    
+}
+
+static float
+cpu_get_usage(void)
+{
+    static CPUTimes prev;
+    static bool have_prev = false;
+    CPUTimes curr;
+
+    if (!cpu_read_times(&curr)) {
+        return -1.0f;
+    }
+
+    if (!have_prev) {
+        prev = curr;
+        struct timespec ts = { .tv_sec = 0, .tv_nsec = 200000000 }; /* 200ms */
+        nanosleep(&ts, NULL);
+        if (!cpu_read_times(&curr)) {
+            return -1.0f;
+        }
+    }
+
+    float pct = cpu_usage_percent(&prev, &curr);
+    prev = curr;
+    have_prev = true;
+
+    return pct;
+}
 
 static int16_t
 cpu_get_total_cores(void)
@@ -87,6 +155,7 @@ cpu_get_info(void)
     cpu->model_name     = str_find_value(cpu_info, "model name", "\n");
     cpu->flags          = str_find_value(cpu_info, "flags", "\n");
     cpu->arch           = cpu_get_arch(cpu->flags);
+    cpu->curr_usage     = cpu_get_usage();
 
     cpu->online_cores   = cpu_get_total_cores();
     if (cpu->online_cores > 0) {
@@ -104,6 +173,7 @@ cpu_get_info(void)
     cpu->total_threads  = str_parse_value(cpu_info, "siblings", "\n");
 
     free(cpu_info);
+
     return cpu;
 }
 
@@ -115,7 +185,7 @@ free_cpu(CPU *cpu)
     }
     free(cpu->vendor_id);
     free(cpu->model_name);
-    free(cpu->flags);
+free(cpu->flags);
     free(cpu);
 }
 
