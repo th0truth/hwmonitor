@@ -75,6 +75,7 @@ Options:
   -O, --os                Show operating system and desktop environment
   -r, --ram               Show RAM, cache, and swap statistics
   -s, --storage           Show storage drives and block devices
+  -S, --serial <port>     Transmit telemetry over serial port
   -j, --json              Output in JSON format
   -o, --output <file>     Save JSON output to specified file
   -w, --watch             Live refresh every second
@@ -111,6 +112,13 @@ export GROQ_API_KEY="gsk_..."
 
 # Ask Groq AI about hardware compatibility or bottlenecks
 hwmonitor --gpu -A "What is the recommended Linux driver for this GPU?"
+```
+
+### Serial Streaming
+
+```bash
+# Stream telemetry to an external display (e.g. ESP32)
+hwmonitor --cpu --ram --serial /dev/ttyUSB0 --watch
 ```
 
 ## Output Formats
