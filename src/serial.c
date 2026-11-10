@@ -103,7 +103,7 @@ serial_write(int serial_port, const char *buff)
     return (ssize_t)total_written;
 }
 
-int
+void
 serial_close(int serial_port)
 {
     if (serial_port >= 0) {
