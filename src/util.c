@@ -6,9 +6,9 @@
 #include <getopt.h>
 #include <sys/sysinfo.h>
 
-#define SHORT_OPTS "aA:bcghjmno:rsOw"
+#define SHORT_OPTS "aA:bcghjmno:rsSOw"
 
-/* Command-line options defined for getopt_long (Sorted Alphabetically) */
+/* Command-line options defined for getopt_long */
 static struct option long_options[] = {
     {"ai",          required_argument,  NULL, 'A'},
     {"all",         no_argument,        NULL, 'a'},
@@ -23,6 +23,7 @@ static struct option long_options[] = {
     {"output",      required_argument,  NULL, 'o'},
     {"ram",         no_argument,        NULL, 'r'},
     {"storage",     no_argument,        NULL, 's'},
+    {"serial",      required_argument,  NULL, 'S'},
     {"watch",       no_argument,        NULL, 'w'},
     {NULL,          0,                  NULL,  0}
 };
@@ -302,6 +303,12 @@ parse_arguments(int argc, char **argv, Config *config)
             case 's':
                 config->show_storage = true;
                 break;
+            case 'S':
+                if (optarg != NULL) {
+                    free(config->serial_port);
+                    config->serial_port = strdup(optarg);
+                }
+                break;
             case 'w':
                 config->watch_mode = true;
                 break;
@@ -311,10 +318,12 @@ parse_arguments(int argc, char **argv, Config *config)
         }
     }
 
-    /* Default: show all if no filters set */
-    if (!config->show_battery && !config->show_cpu && !config->show_gpu &&
+    /* show all if no filters set */
+    if (
+        !config->show_battery && !config->show_cpu && !config->show_gpu &&
         !config->show_mainboard && !config->show_network && !config->show_os &&
-        !config->show_ram && !config->show_storage && !config->use_ai) {
+        !config->show_ram && !config->show_storage && !config->use_ai
+    ) {
         config->show_battery = true;
         config->show_cpu = true;
         config->show_gpu = true;
@@ -344,5 +353,6 @@ print_usage(const char *prog_name)
     printf("  -o, --output <f> Save output to a JSON file\n");
     printf("  -r, --ram        Show RAM information\n");
     printf("  -s, --storage    Show Storage/Disk information\n");
+    printf("  -S, --serial     Transmit data over serial protocol\n");
     printf("  -w, --watch      Live refresh hardware data every second\n");
 }

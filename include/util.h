@@ -17,6 +17,7 @@ extern "C" {
 typedef struct {
     char *ai_prompt;
     char *output_file;
+    char *serial_port;
     bool show_battery;
     bool show_cpu;
     bool show_gpu;
