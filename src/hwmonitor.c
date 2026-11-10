@@ -48,7 +48,7 @@ main(int argc, char **argv)
             return 1;
         }
 
-        sleep(300000);
+        sleep(1);
     }
 
     do {

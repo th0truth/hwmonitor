@@ -204,12 +204,16 @@ cpu_to_json_obj(const CPU *cpu)
 
     cJSON_AddNumberToObject(obj, "max_freq_mhz", cpu->max_MHz);
     cJSON_AddNumberToObject(obj, "min_freq_mhz", cpu->min_MHz);
-    cJSON_AddNumberToObject(obj, "online_cores", cpu->online_cores);
+
+    cJSON_AddNumberToObject(obj, "cpu_usage", cpu->curr_usage);
+    
     cJSON_AddNumberToObject(obj, "cpu_family", cpu->cpu_family);
     cJSON_AddNumberToObject(obj, "model", cpu->model);
     cJSON_AddNumberToObject(obj, "stepping", cpu->stepping);
+
     cJSON_AddNumberToObject(obj, "total_cores", cpu->total_cores);
     cJSON_AddNumberToObject(obj, "total_threads", cpu->total_threads);
+    cJSON_AddNumberToObject(obj, "online_cores", cpu->online_cores);
 
     return obj;
 }
