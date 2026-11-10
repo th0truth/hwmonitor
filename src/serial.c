@@ -13,9 +13,9 @@ serial_open(const char *port, speed_t baud)
         return -1;
     }
 
-    int serial = open(port, O_RDWR | O_NOCTTY | O_SYNC);
+    int serial_port = open(port, O_RDWR | O_NOCTTY | O_SYNC);
 
-    if (serial < 0) {
+    if (serial_port < 0) {
         fprintf(stderr, "error: failed to open '%s': %s\n", port, strerror(errno));
         return -1;
     }
@@ -23,9 +23,9 @@ serial_open(const char *port, speed_t baud)
     struct termios tty;
     memset(&tty, 0, sizeof(tty));
     
-    if (tcgetattr(serial, &tty) != 0) {
+    if (tcgetattr(serial_port, &tty) != 0) {
         fprintf(stderr, "error: tcgetattr failed on '%s': %s\n", port, strerror(errno));
-        close(serial);
+        close(serial_port);
         return -1;
     }
 
@@ -63,13 +63,51 @@ serial_open(const char *port, speed_t baud)
     cfsetispeed(&tty, baud);
     cfsetospeed(&tty, baud);
 
-    tcflush(serial, TCIOFLUSH);
+    tcflush(serial_port, TCIOFLUSH);
 
-    if (tcsetattr(serial, TCSANOW, &tty) != 0) {
+    if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {
         fprintf(stderr, "error: tcsetattr on '%s': %s\n", port, strerror(errno));
-        close(serial);
+        close(serial_port);
         return -1;
     }
 
-    return serial;
+    return serial_port;
+}
+
+
+ssize_t
+serial_write(int serial_port, const char *buff)
+{
+    if (serial_port < 0 || serial_port == NULL) {
+        return -1;
+    }
+
+    size_t total_written = 0;
+    size_t buff_size = sizeof(buff);
+
+    while (total_written < buff_size) {
+        size_t written = write(serial_port, buff, buff_size);
+
+        if (written == 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            
+            fprintf(stderr, "error: write to serial port failed: %s\n", strerror(errno));
+            return -1;
+        }
+        
+        total_written += written;
+    }
+
+    return (ssize_t)total_written;
+}
+
+int
+serial_close(int serial_port)
+{
+    if (serial_port >= 0) {
+        tcdrain(serial_port);
+        close(serial_port);
+    }
 }
