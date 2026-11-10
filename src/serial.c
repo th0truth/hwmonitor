@@ -78,17 +78,17 @@ serial_open(const char *port, speed_t baud)
 ssize_t
 serial_write(int serial_port, const char *buff)
 {
-    if (serial_port < 0 || serial_port == NULL) {
+    if (serial_port < 0 || buff == NULL) {
         return -1;
     }
 
-    size_t total_written = 0;
-    size_t buff_size = sizeof(buff);
+    ssize_t total_written = 0;
+    ssize_t buff_size = strlen(buff);
 
     while (total_written < buff_size) {
-        size_t written = write(serial_port, buff, buff_size);
+        ssize_t written = write(serial_port, buff, buff_size - total_written);
 
-        if (written == 0) {
+        if (written < 0) {
             if (errno == EINTR) {
                 continue;
             }
@@ -100,7 +100,7 @@ serial_write(int serial_port, const char *buff)
         total_written += written;
     }
 
-    return (ssize_t)total_written;
+    return total_written;
 }
 
 void

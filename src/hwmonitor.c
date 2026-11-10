@@ -5,6 +5,8 @@
 #include "display.h"
 #include "theme.h"
 #include "util.h"
+#include "serial.h"
+
 #include "api/groq.h"
 
 /* Global flag to control the watch loop */
@@ -36,6 +38,19 @@ main(int argc, char **argv)
         signal(SIGINT, handle_sigint);
     }
 
+    /* Initialize serial port connection */
+    int serial_fd = -1;
+
+    if (config.serial_port != NULL) {
+        serial_fd = serial_open(config.serial_port, BAUD_RATE);
+
+        if (serial_fd < 0) {
+            return 1;
+        }
+
+        sleep(300000);
+    }
+
     do {
         SystemHardware hw = {0};
         fetch_hardware(&config, &hw);
@@ -44,6 +59,23 @@ main(int argc, char **argv)
             display_clear();
             printf("hwmonitor - Live View (Press Ctrl+C to exit)\n");
         }
+
+        if (serial_fd >= 0) {
+            cJSON *ctx = hardware_to_json(&hw);
+
+            if (ctx != NULL) {
+                char *ctx_str = cJSON_PrintUnformatted(ctx);
+
+                if (ctx_str != NULL) {
+                    serial_write(serial_fd, ctx_str);
+                    serial_write(serial_fd, "\n");
+                    free(ctx_str);
+                }
+
+                cJSON_Delete(ctx);
+            } 
+        } 
+
         if (config.use_ai && config.ai_prompt != NULL) {
             cJSON *ctx = hardware_to_json(&hw);
             if (ctx != NULL) {
@@ -79,6 +111,15 @@ main(int argc, char **argv)
         free(config.ai_prompt);
     }
 
+    if (serial_fd >= 0) {
+        serial_close(serial_fd);
+    }
+
+    if (config.serial_port != NULL) {
+        free(config.serial_port);
+    }
+
     curl_global_cleanup();
+
     return 0;
 }
