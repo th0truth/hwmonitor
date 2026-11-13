@@ -11,7 +11,7 @@ ram_get_info(void)
         return NULL;
     }
 
-    char *info = file_read_stripped("/proc/meminfo", "\n", false);
+    char *info = file_read_stripped("/proc/meminfo", NULL, false);
     if (info == NULL) {
         free(ram);
         return NULL;
